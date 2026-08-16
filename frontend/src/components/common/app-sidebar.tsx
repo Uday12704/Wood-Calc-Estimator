@@ -135,7 +135,7 @@ export function AppSidebar() {
                 {/* Company */}
                 <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                     <p className="truncate text-sm font-semibold">
-                    Wood Estimator
+                    Wood Calc Estimator
                     </p>
 
                     <p className="truncate text-xs text-muted-foreground">
