@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useAuth } from "@/features/auth/auth-context";
+import { Button } from "../ui/button";
 
 const pageTitles: Record<string, string> = {
   "/app/dashboard": "Dashboard",
@@ -57,6 +59,8 @@ export function AppNavbar() {
   const currentPage =
     pageTitles[location.pathname] ?? "Wood Estimator";
 
+  const { user, logout } = useAuth();
+
   return (
     <nav className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background px-4">
 
@@ -75,20 +79,25 @@ export function AppNavbar() {
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-2">
-        <Link
-          to="/app/notifications"
-          className="relative inline-flex size-9 items-center justify-center rounded-md border bg-background transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          {/* Notification */}
-          <Bell className="size-4" />
 
-          {/* Unread indicator */}
-          <span className="absolute right-1 top-1 size-2 rounded-full bg-destructive" />
+          <Link
+            to="/app/notifications"
+            className="inline-flex"
+          >
+            <Button
+              variant="outline"
+              size="icon"
+              className="relative"
+            >
+              <Bell className="size-5" />
 
-          <span className="sr-only">
-            Notifications
-          </span>
-        </Link>
+              <span className="absolute right-1 top-1 size-2 rounded-full bg-destructive" />
+
+              <span className="sr-only">
+                Notifications
+              </span>
+            </Button>
+          </Link>
 
         {/* THEME */}
         <DropdownMenu>
@@ -170,7 +179,9 @@ export function AppNavbar() {
                 alt="User profile"
               />
               <AvatarFallback>
-                UR
+                {user?.name
+                ?.slice(0, 2)
+                .toUpperCase()}
               </AvatarFallback>
             </Avatar>
 
@@ -210,10 +221,7 @@ export function AppNavbar() {
 
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => {
-                // TODO:
-                // Implement logout after authentication.
-              }}
+              onClick={logout}
             >
               <LogOut className="mr-2 size-4" />
 
