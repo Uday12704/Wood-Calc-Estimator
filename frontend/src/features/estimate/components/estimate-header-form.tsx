@@ -45,7 +45,7 @@ export function EstimateHeaderForm({
             
             <div className="flex items-center gap-3 rounded-lg border bg-muted/30 p-3">
                 <span className="text-sm font-medium">
-                    Status :
+                    Status
                 </span>
 
                 <span className="inline-flex items-center gap-2 rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-medium text-yellow-600 dark:text-yellow-400">

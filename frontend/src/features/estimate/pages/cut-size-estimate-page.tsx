@@ -4,8 +4,17 @@ import {
   EstimateHeaderForm,
 } from "../components/estimate-header-form";
 
+import {
+  WoodItemsTable,
+} from "../components/wood-items-table";
+
+import {
+  woodCategories,
+} from "../data/wood-categories";
+
 import type {
   EstimateHeader,
+  WoodItem,
 } from "../types";
 
 import {
@@ -19,7 +28,7 @@ import {
 export function CutSizeEstimatePage() {
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
-      documentTitle: "Cut Size Estimate",
+      documentTitle: "Estimate",
       estimateNumber:
         generateEstimateNumber(),
       date: getTodayDate(),
@@ -29,26 +38,51 @@ export function CutSizeEstimatePage() {
       status: "ON_HOLD",
     }));
 
+  const [items, setItems] =
+    useState<WoodItem[]>([
+      {
+        id: crypto.randomUUID(),
+
+        breadth: "",
+        height: "",
+
+        woodType: "",
+
+        pricePerUnit: "",
+
+        length: "",
+        quantity: 1,
+
+        note: "",
+
+        totalCft: 0,
+        lineTotal: 0,
+      },
+    ]);
+
   return (
     <div className="space-y-6">
 
-      {/* PAGE HEADER */}
-
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Cut Size Estimate
+          New Estimate
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Create a new cut-size wood estimate.
+          Build, calculate and share in
+          seconds.
         </p>
       </div>
-
-      {/* ESTIMATE HEADER */}
 
       <EstimateHeaderForm
         value={header}
         onChange={setHeader}
+      />
+
+      <WoodItemsTable
+        items={items}
+        categories={woodCategories}
+        onChange={setItems}
       />
 
     </div>
