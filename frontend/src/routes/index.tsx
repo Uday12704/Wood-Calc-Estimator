@@ -13,6 +13,9 @@ import { DashboardPage } from "@/features/dashboard/dashboard-page";
 import { ProtectedRoute } from "./protected-route";
 import { RoleRoute } from "./role-route";
 import { UnauthorizedPage } from "@/pages/unauthorized-page";
+import { NewEstimatePage } from "@/features/estimate/pages/new-estimate-page";
+import { CutSizeEstimatePage } from "@/features/estimate/pages/cut-size-estimate-page";
+import { RoundSizeEstimatePage } from "@/features/estimate/pages/round-size-estimate-page";
 
 export function AppRoutes() {
   return (
@@ -55,6 +58,21 @@ export function AppRoutes() {
             <Route
               path="/app/dashboard"
               element={<DashboardPage />}
+            />
+
+            <Route
+              path="/app/estimates/new"
+              element={<NewEstimatePage />}
+            />
+
+            <Route
+              path="/app/estimates/new/cut-size"
+              element={<CutSizeEstimatePage />}
+            />
+
+            <Route
+              path="/app/estimates/new/round-size"
+              element={<RoundSizeEstimatePage />}
             />
 
           </Route>

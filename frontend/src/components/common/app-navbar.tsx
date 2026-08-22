@@ -34,19 +34,16 @@ const pageTitles: Record<string, string> = {
   "/app/dashboard": "Dashboard",
 
   "/app/estimates/new": "New Estimate",
+  "/app/estimates/new/cut-size": "Cut Size Estimate",
+  "/app/estimates/new/round-size": "Round Size Estimate",
+  
   "/app/estimates/history": "Estimate History",
   "/app/estimates/confirmed": "Confirmed Orders",
-
   "/app/customers": "Customers",
-
   "/app/delivery": "Delivery Checklist",
-
   "/app/calculator": "Quick Calculator",
-
   "/app/notifications": "Notifications",
-
   "/app/settings": "General Settings",
-
   "/app/support": "Customer Support",
 };
 
