@@ -1,29 +1,19 @@
 import { useState } from "react";
 
-import {
-  EstimateHeaderForm,
-} from "../components/estimate-header-form";
+import { EstimateHeaderForm, } from "../components/estimate-header-form";
 
-import {
-  WoodItemsTable,
-} from "../components/wood-items-table";
+import { WoodItemsTable, } from "../components/wood-items-table";
 
-import {
-  woodCategories,
-} from "../data/wood-categories";
+import { woodCategories, } from "../data/wood-categories";
 
-import type {
-  EstimateHeader,
-  WoodItem,
-} from "../types";
+import type { EstimateHeader, WoodItem, } from "../types";
 
-import {
-  generateEstimateNumber,
-} from "../utils/estimate-number";
+import { generateEstimateNumber, } from "../utils/estimate-number";
 
-import {
-  getTodayDate,
-} from "../utils/date";
+import { getTodayDate, } from "../utils/date";
+import { EstimateBottomSection } from "../components/estimate-bottom-section";
+import type { OtherCharge } from "../components/other-charges";
+import { calculateEstimateTotals } from "../estimate-calculations";
 
 export function CutSizeEstimatePage() {
   const [header, setHeader] =
@@ -60,6 +50,78 @@ export function CutSizeEstimatePage() {
       },
     ]);
 
+    const [otherCharges, setOtherCharges] = useState<
+      OtherCharge[]
+    >([]);
+
+    const addOtherCharge = () => {
+      setOtherCharges((current) => [
+        ...current,
+        {
+          id: crypto.randomUUID(),
+          name: "",
+          amount: 0,
+        },
+      ]);
+    };
+
+    const updateOtherCharge = (
+      id: string,
+      field: "name" | "amount",
+      value: string | number,
+    ) => {
+      setOtherCharges((current) =>
+        current.map((charge) =>
+          charge.id === id
+            ? {
+                ...charge,
+                [field]: value,
+              }
+            : charge,
+        ),
+      );
+    };
+
+    const deleteOtherCharge = (
+      id: string,
+    ) => {
+      setOtherCharges((current) =>
+        current.filter(
+          (charge) => charge.id !== id,
+        ),
+      );
+    };
+
+    const [gstEnabled, setGstEnabled] =
+      useState(false);
+
+    const [gstRate, setGstRate] =
+      useState(18);
+
+    const [discountType, setDiscountType] =
+      useState<"flat" | "percentage">(
+        "flat",
+      );
+
+    const [discountValue, setDiscountValue] =
+      useState(0);
+
+    const [advancePaid, setAdvancePaid] =
+      useState(0);
+
+    const totals = calculateEstimateTotals({
+      items,
+      otherCharges,
+
+      gstEnabled,
+      gstRate,
+
+      discountType,
+      discountValue,
+
+      advancePaid,
+    });
+
   return (
     <div className="space-y-6">
 
@@ -83,6 +145,44 @@ export function CutSizeEstimatePage() {
         items={items}
         categories={woodCategories}
         onChange={setItems}
+      />
+
+      <EstimateBottomSection
+        charges={otherCharges}
+        onAdd={addOtherCharge}
+        onUpdate={updateOtherCharge}
+        onDelete={deleteOtherCharge}
+
+        gstEnabled={gstEnabled}
+        gstRate={gstRate}
+        onGstEnabledChange={setGstEnabled}
+        onGstRateChange={setGstRate}
+
+        discountType={discountType}
+        discountValue={discountValue}
+        onDiscountTypeChange={
+          setDiscountType
+        }
+        onDiscountValueChange={
+          setDiscountValue
+        }
+
+        advancePaid={advancePaid}
+        onAdvancePaidChange={
+          setAdvancePaid
+        }
+
+        subtotal={totals.subtotal}
+        gstAmount={totals.gstAmount}
+        otherCharges={
+          totals.totalOtherCharges
+        }
+        discountAmount={
+          totals.discountAmount
+        }
+        grandTotal={totals.grandTotal}
+        balanceDue={totals.balanceDue}
+        totalCft={totals.totalCft}
       />
 
     </div>

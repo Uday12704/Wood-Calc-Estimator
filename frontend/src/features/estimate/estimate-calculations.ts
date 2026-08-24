@@ -45,7 +45,6 @@ export function calculateEstimateTotals({
     0,
   );
 
-  // GST applies ONLY to subtotal
   const gstAmount = gstEnabled
     ? (subtotal * gstRate) / 100
     : 0;
@@ -53,20 +52,35 @@ export function calculateEstimateTotals({
   let discountAmount = 0;
 
   if (discountType === "percentage") {
+    const percentage = Math.min(
+      Math.max(discountValue, 0),
+      100,
+    );
+
     discountAmount =
-      (subtotal * discountValue) / 100;
+      (subtotal * percentage) / 100;
   } else {
-    discountAmount = discountValue;
+    discountAmount = Math.min(
+      Math.max(discountValue, 0),
+      subtotal,
+    );
   }
 
-  const grandTotal =
+  const grandTotal = Math.max(
+    0,
     subtotal +
-    gstAmount +
-    totalOtherCharges -
-    discountAmount;
+      gstAmount +
+      totalOtherCharges -
+      discountAmount,
+  );
+
+  const validAdvancePaid = Math.min(
+    Math.max(advancePaid, 0),
+    grandTotal,
+  );
 
   const balanceDue =
-    grandTotal - advancePaid;
+    grandTotal - validAdvancePaid;
 
   return {
     subtotal,
@@ -74,7 +88,7 @@ export function calculateEstimateTotals({
     totalOtherCharges,
     discountAmount,
     grandTotal,
-    advancePaid,
+    advancePaid: validAdvancePaid,
     balanceDue,
     totalCft,
   };
