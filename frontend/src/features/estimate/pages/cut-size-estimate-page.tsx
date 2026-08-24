@@ -14,6 +14,8 @@ import { getTodayDate, } from "../utils/date";
 import { EstimateBottomSection } from "../components/estimate-bottom-section";
 import type { OtherCharge } from "../components/other-charges";
 import { calculateEstimateTotals } from "../estimate-calculations";
+import { EstimateNotes } from "../components/estimate-notes";
+import { EstimateActions } from "../components/estimate-actions";
 
 export function CutSizeEstimatePage() {
   const [header, setHeader] =
@@ -109,6 +111,8 @@ export function CutSizeEstimatePage() {
     const [advancePaid, setAdvancePaid] =
       useState(0);
 
+    const [notes, setNotes] = useState("");
+
     const totals = calculateEstimateTotals({
       items,
       otherCharges,
@@ -184,6 +188,27 @@ export function CutSizeEstimatePage() {
         balanceDue={totals.balanceDue}
         totalCft={totals.totalCft}
       />
+
+      <EstimateNotes
+        value={notes}
+        onChange={setNotes}
+      />
+      
+      <EstimateActions
+        onSaveDraft={() => {
+          console.log("Save draft");
+        }}
+        onConfirm={() => {
+          console.log("Confirm estimate");
+        }}
+        onShare={() => {
+          console.log("Share estimate");
+        }}
+        onPrintExport={() => {
+          console.log("Print / Export");
+        }}
+      />
+
 
     </div>
   );
