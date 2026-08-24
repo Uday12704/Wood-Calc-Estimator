@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useRef,
   useState,
 } from "react";
@@ -272,7 +271,7 @@ export function WoodItemsTable({
               </th>
 
               <th className="border-b px-3 py-3 text-right text-xs font-semibold">
-                TOTAL
+                TOTAL CFT
               </th>
 
               <th className="border-b px-3 py-3 text-right text-xs font-semibold">
