@@ -33,6 +33,7 @@ export function EstimateActions({
           variant="outline"
           onClick={onSaveDraft}
           disabled={isSaving}
+          className="cursor-pointer"
         >
           <Save className="mr-2 size-4" />
           Save as Draft
@@ -42,6 +43,7 @@ export function EstimateActions({
           type="button"
           onClick={onConfirm}
           disabled={isSaving}
+          className="cursor-pointer"
         >
           <CheckCircle2 className="mr-2 size-4" />
           Mark as Confirmed
@@ -55,6 +57,7 @@ export function EstimateActions({
           type="button"
           variant="outline"
           onClick={onShare}
+          className="cursor-pointer"
         >
           <Share2 className="mr-2 size-4" />
           Share
@@ -64,6 +67,7 @@ export function EstimateActions({
           type="button"
           variant="outline"
           onClick={onPrintExport}
+          className="cursor-pointer"
         >
           <Download className="mr-2 size-4" />
           Print / Export

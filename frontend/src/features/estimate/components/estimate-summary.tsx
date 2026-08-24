@@ -11,6 +11,7 @@ interface EstimateSummaryProps {
   advancePaid: number;
   balanceDue: number;
   totalCft: number;
+  totalSqft: number;
 }
 
 function formatCurrency(
@@ -39,6 +40,7 @@ export function EstimateSummary({
   advancePaid,
   balanceDue,
   totalCft,
+  totalSqft,
 }: EstimateSummaryProps) {
   return (
     <div className="rounded-xl border bg-card p-5">
@@ -167,6 +169,18 @@ export function EstimateSummary({
 
           <span>
             {totalCft.toFixed(2)}
+          </span>
+        </div>
+
+        {/* SQFT */}
+
+        <div className="flex justify-between pt-2 text-xs">
+          <span className="text-muted-foreground">
+            Total SQFT
+          </span>
+
+          <span>
+            {totalSqft.toFixed(2)}
           </span>
         </div>
 

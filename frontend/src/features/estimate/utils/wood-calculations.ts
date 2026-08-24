@@ -33,7 +33,7 @@ export function calculateWoodItem(
     quantity <= 0
   ) {
     return {
-      totalCft: 0,
+      total: 0,
       lineTotal: 0,
     };
   }
@@ -82,7 +82,7 @@ export function calculateWoodItem(
     total * price;
 
   return {
-    totalCft: Number(total.toFixed(2)),
+    total: Number(total.toFixed(2)),
     lineTotal: Number(lineTotal.toFixed(2)),
   };
 }

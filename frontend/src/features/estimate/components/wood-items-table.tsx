@@ -40,7 +40,7 @@ function createEmptyItem(): WoodItem {
 
     note: "",
 
-    totalCft: 0,
+    total: 0,
     lineTotal: 0,
   };
 }
@@ -137,10 +137,113 @@ export function WoodItemsTable({
   }
 
   function handleKeyDown(
-    event: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>,
+    event: React.KeyboardEvent<
+      HTMLInputElement | HTMLSelectElement
+    >,
     itemId: string,
     field: keyof WoodItem,
   ) {
+    /*
+    * TAB
+    *
+    * When Tab is pressed from Quantity,
+    * create a new row and focus its Breadth.
+    */
+    if (
+      event.key === "Tab" &&
+      field === "quantity"
+    ) {
+      event.preventDefault();
+
+      const currentIndex = items.findIndex(
+        (item) => item.id === itemId,
+      );
+
+      if (
+        currentIndex ===
+        items.length - 1
+      ) {
+        const currentItem =
+          items[currentIndex];
+
+        const selectedCategory =
+          categories.find(
+            (category) =>
+              category.name ===
+              currentItem.woodType,
+          );
+
+        const calculation =
+          calculateWoodItem({
+            breadth: currentItem.breadth,
+            height: currentItem.height,
+            length: currentItem.length,
+            quantity: 1,
+            pricePerUnit:
+              currentItem.pricePerUnit,
+            calculationMode:
+              selectedCategory?.calculationMode ??
+              "CFT",
+          });
+
+        const newItem: WoodItem = {
+          id: crypto.randomUUID(),
+
+          /*
+          * Copy the values from the
+          * previous row.
+          */
+          breadth: currentItem.breadth,
+          height: currentItem.height,
+          woodType: currentItem.woodType,
+          pricePerUnit:
+            currentItem.pricePerUnit,
+          length: currentItem.length,
+
+          quantity: 1,
+          note: "",
+
+          total: calculation.total,
+          lineTotal: calculation.lineTotal,
+        };
+
+        onChange([
+          ...items,
+          newItem,
+        ]);
+
+        /*
+        * Wait until React renders the
+        * new row before focusing it.
+        */
+        requestAnimationFrame(() => {
+          inputRefs.current[
+            `${newItem.id}-breadth`
+          ]?.focus();
+        });
+
+        return;
+      }
+
+      /*
+      * If there is already another row,
+      * move directly to its Breadth.
+      */
+      const nextItem =
+        items[currentIndex + 1];
+
+      inputRefs.current[
+        `${nextItem.id}-breadth`
+      ]?.focus();
+
+      return;
+    }
+
+    /*
+    * Everything below this point is
+    * your existing ENTER behavior.
+    */
+
     if (event.key !== "Enter") {
       return;
     }
@@ -153,11 +256,10 @@ export function WoodItemsTable({
       );
 
     /*
-     * Enter from Notes or Quantity:
-     * create the next row if this is
-     * the last row.
-     */
-
+    * Enter from Notes or Quantity:
+    * create the next row if this is
+    * the last row.
+    */
     if (
       field === "note" ||
       field === "quantity"
@@ -181,10 +283,9 @@ export function WoodItemsTable({
     }
 
     /*
-     * For other fields, move to the
-     * next logical input.
-     */
-
+    * For other fields, move to the
+    * next logical input.
+    */
     const fieldOrder: (
       keyof WoodItem
     )[] = [
@@ -217,6 +318,20 @@ export function WoodItemsTable({
     element: HTMLInputElement | null,
   ) {
     inputRefs.current[id] = element;
+  }
+
+  function getNotePreview(note: string) {
+    if (!note.trim()) {
+      return "Add note";
+    }
+
+    const trimmed = note.trim();
+
+    if (trimmed.length <= 12) {
+      return trimmed;
+    }
+
+    return `${trimmed.slice(0, 12)}...`;
   }
 
   return (
@@ -271,7 +386,7 @@ export function WoodItemsTable({
               </th>
 
               <th className="border-b px-3 py-3 text-right text-xs font-semibold">
-                TOTAL CFT
+                TOTAL
               </th>
 
               <th className="border-b px-3 py-3 text-right text-xs font-semibold">
@@ -591,8 +706,7 @@ export function WoodItemsTable({
 
                     <td className="px-2 py-2">
 
-                      {activeNoteId ===
-                      item.id ? (
+                      {activeNoteId === item.id ? (
                         <Input
                           ref={(element) =>
                             setInputRef(
@@ -606,13 +720,10 @@ export function WoodItemsTable({
                             updateItem(
                               item.id,
                               "note",
-                              event.target
-                                .value,
+                              event.target.value,
                             )
                           }
-                          onKeyDown={(
-                            event,
-                          ) =>
+                          onKeyDown={(event) =>
                             handleKeyDown(
                               event,
                               item.id,
@@ -620,9 +731,7 @@ export function WoodItemsTable({
                             )
                           }
                           onBlur={() =>
-                            setActiveNoteId(
-                              null,
-                            )
+                            setActiveNoteId(null)
                           }
                           className="h-9"
                           autoFocus
@@ -633,17 +742,16 @@ export function WoodItemsTable({
                           variant="ghost"
                           size="sm"
                           onClick={() =>
-                            setActiveNoteId(
-                              item.id,
-                            )
+                            setActiveNoteId(item.id)
                           }
-                          className="text-muted-foreground cursor-pointer"
+                          className="max-w-28 cursor-pointer justify-start overflow-hidden text-muted-foreground"
+                          title={item.note || "Add note"}
                         >
-                          <MessageSquare className="mr-1 size-4" />
+                          <MessageSquare className="mr-1 size-4 shrink-0" />
 
-                          {item.note
-                            ? "Edit note"
-                            : "Add note"}
+                          <span className="truncate">
+                            {getNotePreview(item.note)}
+                          </span>
                         </Button>
                       )}
 
@@ -651,12 +759,14 @@ export function WoodItemsTable({
 
                     {/* TOTAL */}
 
-                    <td className="px-3 py-3 text-right text-sm font-medium">
-
-                      {item.totalCft.toFixed(
-                        2,
+                    <td className="px-2 py-2 text-right text-sm font-medium">
+                      {!category ? (
+                        "—"
+                      ) : category.calculationMode === "SQFT" ? (
+                        `${item.total.toFixed(2)} SQFT`
+                      ) : (
+                        `${item.total.toFixed(2)} CFT`
                       )}
-
                     </td>
 
                     {/* LINE TOTAL */}

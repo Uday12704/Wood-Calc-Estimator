@@ -48,6 +48,6 @@ export interface WoodItem {
 
   note: string;
 
-  totalCft: number;
+  total: number;
   lineTotal: number;
 }

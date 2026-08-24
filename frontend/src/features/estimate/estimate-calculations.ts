@@ -1,3 +1,5 @@
+import type { CalculationMode } from "./types";
+
 export type DiscountType =
   | "flat"
   | "percentage";
@@ -5,7 +7,8 @@ export type DiscountType =
 export interface CalculateEstimateParams {
   items: {
     lineTotal: number;
-    totalCft: number;
+    total: number;
+    calculationMode: CalculationMode;
   }[];
 
   otherCharges: {
@@ -30,41 +33,127 @@ export function calculateEstimateTotals({
   discountValue,
   advancePaid,
 }: CalculateEstimateParams) {
+  /*
+   * ----------------------------------------
+   * SUBTOTAL
+   * ----------------------------------------
+   */
+
   const subtotal = items.reduce(
-    (sum, item) => sum + item.lineTotal,
+    (sum, item) =>
+      sum + item.lineTotal,
     0,
   );
+
+  /*
+   * ----------------------------------------
+   * TOTAL CFT
+   * ----------------------------------------
+   *
+   * Only add rows whose calculation mode
+   * is CFT.
+   */
 
   const totalCft = items.reduce(
-    (sum, item) => sum + item.totalCft,
+    (sum, item) => {
+      if (
+        item.calculationMode === "CFT"
+      ) {
+        return sum + item.total;
+      }
+
+      return sum;
+    },
     0,
   );
 
-  const totalOtherCharges = otherCharges.reduce(
-    (sum, charge) => sum + charge.amount,
+  /*
+   * ----------------------------------------
+   * TOTAL SQFT
+   * ----------------------------------------
+   *
+   * Only add rows whose calculation mode
+   * is SQFT.
+   */
+
+  const totalSqft = items.reduce(
+    (sum, item) => {
+      if (
+        item.calculationMode === "SQFT"
+      ) {
+        return sum + item.total;
+      }
+
+      return sum;
+    },
     0,
   );
+
+  /*
+   * ----------------------------------------
+   * OTHER CHARGES
+   * ----------------------------------------
+   */
+
+  const totalOtherCharges =
+    otherCharges.reduce(
+      (sum, charge) =>
+        sum + charge.amount,
+      0,
+    );
+
+  /*
+   * ----------------------------------------
+   * GST
+   * ----------------------------------------
+   *
+   * GST is applied ONLY to subtotal.
+   *
+   * Other charges are NOT included.
+   */
 
   const gstAmount = gstEnabled
     ? (subtotal * gstRate) / 100
     : 0;
 
+  /*
+   * ----------------------------------------
+   * DISCOUNT
+   * ----------------------------------------
+   */
+
   let discountAmount = 0;
 
-  if (discountType === "percentage") {
+  if (
+    discountType ===
+    "percentage"
+  ) {
     const percentage = Math.min(
-      Math.max(discountValue, 0),
+      Math.max(
+        discountValue,
+        0,
+      ),
       100,
     );
 
     discountAmount =
-      (subtotal * percentage) / 100;
+      (subtotal * percentage) /
+      100;
   } else {
     discountAmount = Math.min(
-      Math.max(discountValue, 0),
+      Math.max(
+        discountValue,
+        0,
+      ),
       subtotal,
     );
   }
+
+  /*
+   * ----------------------------------------
+   * GRAND TOTAL
+   * ----------------------------------------
+   */
 
   const grandTotal = Math.max(
     0,
@@ -74,22 +163,55 @@ export function calculateEstimateTotals({
       discountAmount,
   );
 
-  const validAdvancePaid = Math.min(
-    Math.max(advancePaid, 0),
-    grandTotal,
-  );
+  /*
+   * ----------------------------------------
+   * ADVANCE PAYMENT
+   * ----------------------------------------
+   */
+
+  const validAdvancePaid =
+    Math.min(
+      Math.max(
+        advancePaid,
+        0,
+      ),
+      grandTotal,
+    );
+
+  /*
+   * ----------------------------------------
+   * BALANCE DUE
+   * ----------------------------------------
+   */
 
   const balanceDue =
-    grandTotal - validAdvancePaid;
+    grandTotal -
+    validAdvancePaid;
 
   return {
     subtotal,
+
     gstAmount,
+
     totalOtherCharges,
+
     discountAmount,
+
     grandTotal,
-    advancePaid: validAdvancePaid,
+
+    advancePaid:
+      validAdvancePaid,
+
     balanceDue,
-    totalCft,
+
+    totalCft:
+      Number(
+        totalCft.toFixed(2),
+      ),
+
+    totalSqft:
+      Number(
+        totalSqft.toFixed(2),
+      ),
   };
 }

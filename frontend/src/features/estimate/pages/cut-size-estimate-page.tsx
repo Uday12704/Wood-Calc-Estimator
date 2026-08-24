@@ -47,7 +47,7 @@ export function CutSizeEstimatePage() {
 
         note: "",
 
-        totalCft: 0,
+        total: 0,
         lineTotal: 0,
       },
     ]);
@@ -114,7 +114,20 @@ export function CutSizeEstimatePage() {
     const [notes, setNotes] = useState("");
 
     const totals = calculateEstimateTotals({
-      items,
+      items: items.map((item) => {
+        const category = woodCategories.find(
+          (category) =>
+            category.name === item.woodType,
+        );
+
+        return {
+          lineTotal: item.lineTotal,
+          total: item.total,
+          calculationMode:
+            category?.calculationMode ?? "CFT",
+        };
+      }),
+
       otherCharges,
 
       gstEnabled,
@@ -187,7 +200,8 @@ export function CutSizeEstimatePage() {
         grandTotal={totals.grandTotal}
         balanceDue={totals.balanceDue}
         totalCft={totals.totalCft}
-      />
+        totalSqft={totals.totalSqft}
+        />
 
       <EstimateNotes
         value={notes}

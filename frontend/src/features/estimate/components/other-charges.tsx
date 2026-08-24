@@ -124,6 +124,7 @@ export function OtherCharges({
               type="button"
               variant="ghost"
               size="icon"
+              className="cursor-pointer"
               onClick={() =>
                 onDelete(charge.id)
               }
@@ -137,7 +138,7 @@ export function OtherCharges({
       <Button
         type="button"
         variant="ghost"
-        className="mt-3 px-0"
+        className="mt-3 px-0 cursor-pointer"
         onClick={onAdd}
       >
         <Plus className="mr-1 size-4" />
@@ -206,7 +207,7 @@ export function OtherCharges({
                   "flat",
                 )
               }
-              className={`px-4 py-2 text-sm ${
+              className={`px-4 py-2 text-sm cursor-pointer ${
                 discountType === "flat"
                   ? "bg-primary text-primary-foreground"
                   : "bg-background"
@@ -222,7 +223,7 @@ export function OtherCharges({
                   "percentage",
                 )
               }
-              className={`px-4 py-2 text-sm ${
+              className={`px-4 py-2 text-sm cursor-pointer ${
                 discountType ===
                 "percentage"
                   ? "bg-primary text-primary-foreground"

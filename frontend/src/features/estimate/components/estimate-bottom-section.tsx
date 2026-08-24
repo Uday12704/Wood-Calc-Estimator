@@ -49,6 +49,7 @@ interface EstimateBottomSectionProps {
   grandTotal: number;
   balanceDue: number;
   totalCft: number;
+  totalSqft: number;
 }
 
 export function EstimateBottomSection(
