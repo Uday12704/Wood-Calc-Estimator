@@ -6,16 +6,17 @@ import { WoodItemsTable, } from "../components/wood-items-table";
 
 import { woodCategories, } from "../data/wood-categories";
 
-import type { EstimateHeader, WoodItem, } from "../types";
+import type { EstimateHeader, OtherCharge, SavedEstimate, WoodItem, } from "../types";
 
 import { generateEstimateNumber, } from "../utils/estimate-number";
 
 import { getTodayDate, } from "../utils/date";
 import { EstimateBottomSection } from "../components/estimate-bottom-section";
-import type { OtherCharge } from "../components/other-charges";
 import { calculateEstimateTotals } from "../estimate-calculations";
 import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
+import { saveEstimate } from "../services/estimate-storage";
+import { toast } from "react-toastify";
 
 export function CutSizeEstimatePage() {
   const [header, setHeader] =
@@ -139,6 +140,74 @@ export function CutSizeEstimatePage() {
       advancePaid,
     });
 
+    const [estimateId] = useState(() => crypto.randomUUID());
+
+    const buildEstimate = (
+      status: "ON_HOLD" | "CONFIRMED",
+    ): SavedEstimate => {
+      const now =
+        new Date().toISOString();
+
+      return {
+        id: estimateId,
+        estimateNumber:header.estimateNumber,
+        documentTitle:header.documentTitle,
+        date: header.date,
+        partyName:header.partyName,
+        contactNumber:header.contactNumber,
+        reference:header.reference,
+        status,
+        type: "CUT_SIZE",
+        items,
+        otherCharges,
+        gstEnabled,
+        gstRate,
+        discountType,
+        discountValue,
+        advancePaid,
+        notes,
+        totals: {
+          subtotal: totals.subtotal,
+          gstAmount: totals.gstAmount,
+          totalOtherCharges: totals.totalOtherCharges,
+          discountAmount: totals.discountAmount,
+          grandTotal: totals.grandTotal,
+          balanceDue: totals.balanceDue,
+          totalCft: totals.totalCft,
+          totalSqft: totals.totalSqft,
+        },
+
+        createdAt: now,
+        updatedAt: now,
+      };
+    };
+
+    const validateEstimate = () => {
+      if (!header.partyName.trim()) {
+        toast.error(
+          "Please enter the party name.",
+        );
+
+        return false;
+      }
+
+      if (!items.some(
+        (item) =>
+          item.woodType &&
+          item.breadth !== "" &&
+          item.height !== "" &&
+          item.length !== "",
+      )) {
+        toast.error(
+          "Please add at least one wood item.",
+        );
+
+        return false;
+      }
+
+      return true;
+    };
+
   return (
     <div className="space-y-6">
 
@@ -210,10 +279,24 @@ export function CutSizeEstimatePage() {
       
       <EstimateActions
         onSaveDraft={() => {
-          console.log("Save draft");
+          if (!validateEstimate()) {
+            return;
+          }
+          const estimate =
+            buildEstimate("ON_HOLD");
+
+          saveEstimate(estimate);
+          toast.success("Estimate saved as draft.");
         }}
         onConfirm={() => {
-          console.log("Confirm estimate");
+          if (!validateEstimate()) {
+            return;
+          }
+          const estimate =
+            buildEstimate("CONFIRMED");
+
+          saveEstimate(estimate);
+          toast.success("Estimate marked as confirmed.");
         }}
         onShare={() => {
           console.log("Share estimate");
@@ -222,8 +305,6 @@ export function CutSizeEstimatePage() {
           console.log("Print / Export");
         }}
       />
-
-
     </div>
   );
 }

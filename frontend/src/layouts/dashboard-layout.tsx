@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 import { AppSidebar } from "@/components/common/app-sidebar";

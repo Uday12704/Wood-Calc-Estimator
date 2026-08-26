@@ -23,7 +23,6 @@ interface EstimateTypeCardProps {
 }
 
 export function EstimateTypeCard({
-  type,
   title,
   description,
   image,

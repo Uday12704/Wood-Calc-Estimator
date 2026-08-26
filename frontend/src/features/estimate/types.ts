@@ -51,3 +51,60 @@ export interface WoodItem {
   total: number;
   lineTotal: number;
 }
+
+export interface OtherCharge {
+  id: string;
+  name: string;
+  amount: number;
+}
+
+export interface SavedEstimate {
+  id: string;
+
+  estimateNumber: string;
+  documentTitle: string;
+  date: string;
+
+  partyName: string;
+  contactNumber: string;
+  reference: string;
+
+  status:
+    | "ON_HOLD"
+    | "CONFIRMED";
+
+  type:
+    | "CUT_SIZE"
+    | "ROUND_SIZE";
+
+  items: WoodItem[];
+
+  otherCharges: OtherCharge[];
+
+  gstEnabled: boolean;
+  gstRate: number;
+
+  discountType:
+    | "flat"
+    | "percentage";
+
+  discountValue: number;
+
+  advancePaid: number;
+
+  notes: string;
+
+  totals: {
+    subtotal: number;
+    gstAmount: number;
+    totalOtherCharges: number;
+    discountAmount: number;
+    grandTotal: number;
+    balanceDue: number;
+    totalCft: number;
+    totalSqft: number;
+  };
+
+  createdAt: string;
+  updatedAt: string;
+}

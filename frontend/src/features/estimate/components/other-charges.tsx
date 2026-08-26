@@ -2,12 +2,7 @@ import { Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-export interface OtherCharge {
-  id: string;
-  name: string;
-  amount: number;
-}
+import type { OtherCharge } from "../types";
 
 interface OtherChargesProps {
   charges: OtherCharge[];

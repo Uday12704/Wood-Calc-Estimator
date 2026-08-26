@@ -1,5 +1,6 @@
-import { OtherCharges, type OtherCharge } from "./other-charges";
+import { OtherCharges } from "./other-charges";
 import { EstimateSummary } from "./estimate-summary";
+import type { OtherCharge } from "../types";
 
 interface EstimateBottomSectionProps {
   charges: OtherCharge[];
