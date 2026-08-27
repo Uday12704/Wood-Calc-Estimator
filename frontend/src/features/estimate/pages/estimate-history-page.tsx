@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  CalendarDays,
   Download,
   Eye,
   Pencil,
@@ -34,8 +33,12 @@ import {
 } from "../services/estimate-storage";
 
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 export function EstimateHistoryPage() {
+
+  const navigate = useNavigate();
   const [estimates, setEstimates] =
     useState<SavedEstimate[]>([]);
 
@@ -229,8 +232,8 @@ export function EstimateHistoryPage() {
 
             {/* FROM */}
 
-            <div className="relative">
-              <CalendarDays className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative flex items-center gap-2">
+              <label className="text-md ">From</label>
 
               <Input
                 type="date"
@@ -246,8 +249,8 @@ export function EstimateHistoryPage() {
 
             {/* TO */}
 
-            <div className="relative">
-              <CalendarDays className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative flex items-center gap-2">
+              <label className="text-md ">To</label>
 
               <Input
                 type="date"
@@ -262,36 +265,38 @@ export function EstimateHistoryPage() {
             </div>
 
             {/* STATUS */}
+            <div className="relative flex items-center gap-2">
+              <label className="text-md ">Status</label>
+              <Select
+                value={status}
+                onValueChange={(value) =>
+                  setStatus(
+                    value as
+                      | "ALL"
+                      | "ON_HOLD"
+                      | "CONFIRMED",
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
 
-            <Select
-              value={status}
-              onValueChange={(value) =>
-                setStatus(
-                  value as
-                    | "ALL"
-                    | "ON_HOLD"
-                    | "CONFIRMED",
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">
+                    All Status
+                  </SelectItem>
 
-              <SelectContent>
-                <SelectItem value="ALL">
-                  All Status
-                </SelectItem>
+                  <SelectItem value="ON_HOLD">
+                    On Hold
+                  </SelectItem>
 
-                <SelectItem value="ON_HOLD">
-                  On Hold
-                </SelectItem>
-
-                <SelectItem value="CONFIRMED">
-                  Confirmed
-                </SelectItem>
-              </SelectContent>
-            </Select>
+                  <SelectItem value="CONFIRMED">
+                    Confirmed
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
           </div>
 
@@ -399,19 +404,20 @@ export function EstimateHistoryPage() {
                       </td>
 
                       <td className="px-4 py-3">
-                        <span
-                          className={
+                        <Badge
+                          variant={
                             estimate.status ===
                             "CONFIRMED"
-                              ? "rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700"
-                              : "rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700"
+                              ? "success"
+                              : "warning"
                           }
+                          className="font-semibold"
                         >
                           {estimate.status ===
                           "CONFIRMED"
                             ? "Confirmed"
                             : "On Hold"}
-                        </span>
+                        </Badge>
                       </td>
 
                       <td className="px-4 py-3">
@@ -443,6 +449,11 @@ export function EstimateHistoryPage() {
                             size="icon"
                             variant="ghost"
                             title="Preview"
+                            onClick={() =>
+                              navigate(
+                                `/app/estimates/${estimate.id}/preview`,
+                              )
+                            }
                           >
                             <Eye className="size-4" />
                           </Button>
@@ -451,6 +462,11 @@ export function EstimateHistoryPage() {
                             size="icon"
                             variant="ghost"
                             title="Edit"
+                            onClick={() =>
+                              navigate(
+                                `/app/estimates/${estimate.id}/edit`,
+                              )
+                            }
                           >
                             <Pencil className="size-4" />
                           </Button>

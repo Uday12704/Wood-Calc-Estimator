@@ -100,6 +100,7 @@ export interface SavedEstimate {
     totalOtherCharges: number;
     discountAmount: number;
     grandTotal: number;
+    advancePaid: number;
     balanceDue: number;
     totalCft: number;
     totalSqft: number;

@@ -16,6 +16,9 @@ import { UnauthorizedPage } from "@/pages/unauthorized-page";
 import { NewEstimatePage } from "@/features/estimate/pages/new-estimate-page";
 import { CutSizeEstimatePage } from "@/features/estimate/pages/cut-size-estimate-page";
 import { RoundSizeEstimatePage } from "@/features/estimate/pages/round-size-estimate-page";
+import { EstimateHistoryPage } from "@/features/estimate/pages/estimate-history-page";
+import { EstimatePreviewPage } from "@/features/estimate/pages/estimate-preview-page";
+import { EditCutSizeEstimatePage } from "@/features/estimate/pages/edit-cut-size-estimate-page";
 
 export function AppRoutes() {
   return (
@@ -75,8 +78,26 @@ export function AppRoutes() {
               element={<RoundSizeEstimatePage />}
             />
 
-          </Route>
+            <Route
+              path="/app/estimates/history"
+              element={
+                <EstimateHistoryPage />
+              }
+            />
 
+            <Route
+              path="/app/estimates/:id/preview"
+              element={
+                <EstimatePreviewPage />
+              }
+            />
+
+            <Route
+              path="/app/estimates/:id/edit"
+              element={<EditCutSizeEstimatePage />}
+            />
+
+          </Route>
         </Route>
 
         {/* ADMIN */}
@@ -99,6 +120,7 @@ export function AppRoutes() {
               </div>
             }
           />
+
 
         </Route>
 

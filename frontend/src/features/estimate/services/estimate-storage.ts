@@ -1,12 +1,10 @@
 import type { SavedEstimate } from "../types";
 
-const STORAGE_KEY =
-  "wood-calc-estimates";
+const STORAGE_KEY = "wood-calc-estimates";
 
 export function getSavedEstimates(): SavedEstimate[] {
   try {
-    const stored =
-      localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY);
 
     if (!stored) {
       return [];

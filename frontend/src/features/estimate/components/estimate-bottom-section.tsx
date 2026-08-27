@@ -37,17 +37,17 @@ interface EstimateBottomSectionProps {
     value: number,
   ) => void;
 
-  advancePaid: number;
-
+  
   onAdvancePaidChange: (
     value: number,
   ) => void;
-
+  
   subtotal: number;
   gstAmount: number;
   otherCharges: number;
   discountAmount: number;
   grandTotal: number;
+  advancePaid: number;
   balanceDue: number;
   totalCft: number;
   totalSqft: number;

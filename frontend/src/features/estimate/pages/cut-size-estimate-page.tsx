@@ -172,6 +172,7 @@ export function CutSizeEstimatePage() {
           totalOtherCharges: totals.totalOtherCharges,
           discountAmount: totals.discountAmount,
           grandTotal: totals.grandTotal,
+          advancePaid: totals.advancePaid,
           balanceDue: totals.balanceDue,
           totalCft: totals.totalCft,
           totalSqft: totals.totalSqft,

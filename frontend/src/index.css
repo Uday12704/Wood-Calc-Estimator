@@ -26,6 +26,7 @@
     --color-border: var(--border);
     --color-destructive: var(--destructive);
     --color-warning: var(--warning);
+    --color-success: var(--success);
     --color-accent-foreground: var(--accent-foreground);
     --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
@@ -68,6 +69,7 @@
     --accent-foreground: oklch(0.205 0 0);
     --destructive: oklch(0.577 0.245 27.325);
     --warning: oklch(0.808 0.165 95.1);
+    --success: oklch(0.72 0.18 145);
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
@@ -106,6 +108,7 @@
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.704 0.191 22.216);
     --warning: oklch(0.85 0.18 95);
+    --success: oklch(0.72 0.18 145);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
@@ -136,4 +139,35 @@
   html {
     @apply font-sans;
     }
+}
+
+@media print {
+  /* Hide the application UI */
+  body {
+    background: white !important;
+  }
+
+  /* Hide everything marked as no-print */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Remove card styling when printing */
+  .print-estimate {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  /* Make the estimate use the complete page */
+  .print-page {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
 }
