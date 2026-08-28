@@ -60,11 +60,9 @@ export interface OtherCharge {
 
 export interface SavedEstimate {
   id: string;
-
   estimateNumber: string;
   documentTitle: string;
   date: string;
-
   partyName: string;
   contactNumber: string;
   reference: string;
@@ -108,4 +106,15 @@ export interface SavedEstimate {
 
   createdAt: string;
   updatedAt: string;
+}
+
+export interface RoundSizeItem {
+  id: string;
+  woodType: string;
+  logNo: string;
+  length: number | "";
+  girth: number | "";
+  cbm: number;
+  cft: number;
+  note: string;
 }

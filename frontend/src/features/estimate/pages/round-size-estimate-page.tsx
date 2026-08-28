@@ -6,6 +6,7 @@ import {
 
 import type {
   EstimateHeader,
+  RoundSizeItem,
 } from "../types";
 
 import {
@@ -15,6 +16,8 @@ import {
 import {
   getTodayDate,
 } from "../utils/date";
+import { RoundSizeItemsTable } from "../components/round-size-items-table";
+import { woodCategories } from "../data/wood-categories";
 
 export function RoundSizeEstimatePage() {
   const [header, setHeader] =
@@ -28,6 +31,53 @@ export function RoundSizeEstimatePage() {
       reference: "",
       status: "ON_HOLD",
     }));
+
+  const [items, setItems] =
+    useState<RoundSizeItem[]>([
+      {
+        id: crypto.randomUUID(),
+
+        woodType: "",
+        logNo: "",
+        length: "",
+        girth: "",
+
+        cbm: 0,
+        cft: 0,
+
+        note: "",
+      },
+    ]);
+
+    const [cftEnabled, setCftEnabled] = useState(false);
+
+    const [pricePerCbm, setPricePerCbm] = useState<number | "">("");
+
+    const totalCbm = items.reduce(
+      (sum, item) =>
+        sum + item.cbm,
+      0,
+    );
+
+    const totalCft = cftEnabled
+      ? items.reduce(
+          (sum, item) =>
+            sum + item.cft,
+          0,
+        )
+      : 0;
+
+    const roundedTotalCbm =
+      Number(totalCbm.toFixed(3));
+
+    const roundedTotalCft =
+      Number(totalCft.toFixed(2));
+
+    const subtotal =
+      roundedTotalCbm *
+      (pricePerCbm === ""
+        ? 0
+        : pricePerCbm);
 
   return (
     <div className="space-y-6">
@@ -49,6 +99,16 @@ export function RoundSizeEstimatePage() {
       <EstimateHeaderForm
         value={header}
         onChange={setHeader}
+      />
+
+      <RoundSizeItemsTable
+        items={items}
+        categories={woodCategories}
+        cftEnabled={cftEnabled}
+        onCftEnabledChange={
+          setCftEnabled
+        }
+        onChange={setItems}
       />
 
     </div>

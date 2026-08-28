@@ -359,7 +359,7 @@ export function EstimatePreviewPage() {
 
           {/* BOTTOM SECTION */}
 
-          <div className="grid gap-8 border-t pt-6 md:grid-cols-2">
+          <div className="grid gap-8 border-t pt-6 sm:grid-cols-2">
 
             {/* OTHER CHARGES */}
 

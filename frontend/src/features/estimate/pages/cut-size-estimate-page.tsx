@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { EstimateHeaderForm, } from "../components/estimate-header-form";
 
-import { WoodItemsTable, } from "../components/wood-items-table";
+import { WoodItemsTable, } from "../components/cut-size-items-table";
 
 import { woodCategories, } from "../data/wood-categories";
 
@@ -209,6 +209,11 @@ export function CutSizeEstimatePage() {
       return true;
     };
 
+    function updateStatus(newStatus: EstimateHeader["status"]) {
+      setHeader((prev) => ({ ...prev, status: newStatus }));
+    }
+
+
   return (
     <div className="space-y-6">
 
@@ -286,6 +291,8 @@ export function CutSizeEstimatePage() {
           const estimate =
             buildEstimate("ON_HOLD");
 
+          updateStatus("ON_HOLD");
+
           saveEstimate(estimate);
           toast.success("Estimate saved as draft.");
         }}
@@ -295,6 +302,8 @@ export function CutSizeEstimatePage() {
           }
           const estimate =
             buildEstimate("CONFIRMED");
+
+          updateStatus("CONFIRMED");
 
           saveEstimate(estimate);
           toast.success("Estimate marked as confirmed.");

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import type { EstimateHeader } from "../types";
+import { Badge } from "@/components/ui/badge";
 
 interface EstimateHeaderFormProps {
   value: EstimateHeader;
@@ -47,10 +48,10 @@ export function EstimateHeaderForm({
                     Status
                 </span>
 
-                <span className="inline-flex items-center gap-2 rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-medium text-yellow-600 dark:text-yellow-400">
-                    <span className="size-2 rounded-full bg-yellow-500" />
-                    On Hold
-                </span>
+                <Badge
+                 variant={value.status === "ON_HOLD" ? "warning" : "success"}>
+                  {value.status}
+                </Badge>
             </div>
 
         </div>

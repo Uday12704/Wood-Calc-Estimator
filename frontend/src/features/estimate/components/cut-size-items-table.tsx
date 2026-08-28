@@ -198,7 +198,7 @@ export function WoodItemsTable({
           woodType: currentItem.woodType,
           pricePerUnit:
             currentItem.pricePerUnit,
-          length: currentItem.length,
+          length: "",
 
           quantity: 1,
           note: "",
@@ -218,7 +218,7 @@ export function WoodItemsTable({
         */
         requestAnimationFrame(() => {
           inputRefs.current[
-            `${newItem.id}-breadth`
+            `${newItem.id}-length`
           ]?.focus();
         });
 

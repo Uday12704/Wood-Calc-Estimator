@@ -141,6 +141,7 @@
     }
 }
 
+/*Print*/
 @media print {
   /* Hide the application UI */
   body {
@@ -169,5 +170,21 @@
   @page {
     size: A4;
     margin: 12mm;
+  }
+}
+
+/*remove arrows in number field*/
+
+@layer base {
+  /* Chrome, Safari, Edge */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 }

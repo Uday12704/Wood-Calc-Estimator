@@ -3,7 +3,6 @@ import {
   Download,
   Eye,
   Pencil,
-  Copy,
   Trash2,
   RotateCcw,
 } from "lucide-react";
@@ -29,7 +28,6 @@ import type { SavedEstimate } from "../types";
 import {
   getSavedEstimates,
   deleteEstimate,
-  saveEstimate,
 } from "../services/estimate-storage";
 
 import { toast } from "react-toastify";
@@ -157,41 +155,41 @@ export function EstimateHistoryPage() {
     );
   }
 
-  function handleCopy(
-    estimate: SavedEstimate,
-  ) {
-    const copiedEstimate: SavedEstimate = {
-      ...estimate,
+  // function handleCopy(
+  //   estimate: SavedEstimate,
+  // ) {
+  //   const copiedEstimate: SavedEstimate = {
+  //     ...estimate,
 
-      id: crypto.randomUUID(),
+  //     id: crypto.randomUUID(),
 
-      estimateNumber:
-        `${estimate.estimateNumber}-COPY`,
+  //     estimateNumber:
+  //       `${estimate.estimateNumber}-COPY`,
 
-      status: "ON_HOLD",
+  //     status: "ON_HOLD",
 
-      createdAt:
-        new Date().toISOString(),
+  //     createdAt:
+  //       new Date().toISOString(),
 
-      updatedAt:
-        new Date().toISOString(),
-    };
+  //     updatedAt:
+  //       new Date().toISOString(),
+  //   };
 
-    saveEstimate(
-      copiedEstimate,
-    );
+  //   saveEstimate(
+  //     copiedEstimate,
+  //   );
 
-    setEstimates(
-      (current) => [
-        copiedEstimate,
-        ...current,
-      ],
-    );
+  //   setEstimates(
+  //     (current) => [
+  //       copiedEstimate,
+  //       ...current,
+  //     ],
+  //   );
 
-    toast.success(
-      "Estimate copied successfully.",
-    );
-  }
+  //   toast.success(
+  //     "Estimate copied successfully.",
+  //   );
+  // }
 
   return (
     <div className="space-y-6">
@@ -398,7 +396,7 @@ export function EstimateHistoryPage() {
 
                       <td className="px-4 py-3">
                         {
-                          estimate.partyName ||
+                          `${estimate.partyName} (${estimate.reference})` ||
                           "—"
                         }
                       </td>
@@ -469,19 +467,6 @@ export function EstimateHistoryPage() {
                             }
                           >
                             <Pencil className="size-4" />
-                          </Button>
-
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            title="Copy"
-                            onClick={() =>
-                              handleCopy(
-                                estimate,
-                              )
-                            }
-                          >
-                            <Copy className="size-4" />
                           </Button>
 
                           <Button

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { EstimateHeaderForm } from "../components/estimate-header-form";
-import { WoodItemsTable } from "../components/wood-items-table";
+import { WoodItemsTable } from "../components/cut-size-items-table";
 import { EstimateBottomSection } from "../components/estimate-bottom-section";
 import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
@@ -272,70 +272,31 @@ function EditCutSizeEstimateForm({
   ): SavedEstimate => {
     return {
       ...estimate,
-
-      documentTitle:
-        header.documentTitle,
-
-      estimateNumber:
-        header.estimateNumber,
-
-      date:
-        header.date,
-
-      partyName:
-        header.partyName,
-
-      contactNumber:
-        header.contactNumber,
-
-      reference:
-        header.reference,
-
+      documentTitle:header.documentTitle,
+      estimateNumber:header.estimateNumber,
+      date:header.date,
+      partyName:header.partyName,
+      contactNumber:header.contactNumber,
+      reference:header.reference,
       status,
-
       items,
-
       otherCharges,
-
       gstEnabled,
-
       gstRate,
-
       discountType,
-
       discountValue,
-
       advancePaid,
-
       notes,
-
       totals: {
-        subtotal:
-          totals.subtotal,
-
-        gstAmount:
-          totals.gstAmount,
-
-        totalOtherCharges:
-          totals.totalOtherCharges,
-
-        discountAmount:
-          totals.discountAmount,
-
-        grandTotal:
-          totals.grandTotal,
-
-        advancePaid:
-          totals.advancePaid,
-
-        balanceDue:
-          totals.balanceDue,
-
-        totalCft:
-          totals.totalCft,
-
-        totalSqft:
-          totals.totalSqft,
+        subtotal:totals.subtotal,
+        gstAmount:totals.gstAmount,
+        totalOtherCharges:totals.totalOtherCharges,
+        discountAmount:totals.discountAmount,
+        grandTotal:totals.grandTotal,
+        advancePaid:totals.advancePaid,
+        balanceDue:totals.balanceDue,
+        totalCft:totals.totalCft,
+        totalSqft:totals.totalSqft,
       },
 
       updatedAt:

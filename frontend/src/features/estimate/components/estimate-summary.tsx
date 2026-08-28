@@ -162,27 +162,31 @@ export function EstimateSummary({
 
         {/* CFT */}
 
-        <div className="flex justify-between pt-2 text-xs">
-          <span className="text-muted-foreground">
-            Total CFT
-          </span>
+        {totalCft > 0 && (
+          <div className="flex justify-between pt-2 text-xs">
+            <span className="text-muted-foreground">
+              Total CFT
+            </span>
 
-          <span>
-            {totalCft.toFixed(2)}
-          </span>
-        </div>
+            <span>
+              {totalCft.toFixed(2)}
+            </span>
+          </div>
+        )}
 
         {/* SQFT */}
 
-        <div className="flex justify-between pt-2 text-xs">
-          <span className="text-muted-foreground">
-            Total SQFT
-          </span>
+        {totalSqft > 0 && (
+          <div className="flex justify-between pt-2 text-xs">
+            <span className="text-muted-foreground">
+              Total SQFT
+            </span>
 
-          <span>
-            {totalSqft.toFixed(2)}
-          </span>
-        </div>
+            <span>
+              {totalSqft.toFixed(2)}
+            </span>
+          </div>
+        )}
 
       </div>
     </div>
