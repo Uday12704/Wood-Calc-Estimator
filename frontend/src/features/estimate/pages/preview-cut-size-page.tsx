@@ -16,8 +16,11 @@ import {
   getSavedEstimates,
 } from "../services/estimate-storage";
 import { woodCategories } from "../data/wood-categories";
+import { pdf } from "@react-pdf/renderer";
+import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
+import { toast } from "react-toastify";
 
-export function EstimatePreviewPage() {
+export function PreviewCutSizePage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -29,10 +32,10 @@ export function EstimatePreviewPage() {
     const estimates =
       getSavedEstimates();
 
-    return estimates.find(
-      (item) => item.id === id,
-    );
-  }, [id]);
+      return estimates.find(
+        (item) => item.id === id,
+      );
+    }, [id]);
 
   if (!estimate) {
     return (
@@ -64,6 +67,54 @@ export function EstimatePreviewPage() {
 
       </div>
     );
+  }
+
+  async function handleExport() {
+    if (!estimate) {
+      toast.error("Estimate not found.");
+      return;
+    }
+    
+    try {
+      const blob =
+        await pdf(
+          <CutSizeEstimatePdf
+            estimate={estimate}
+          />,
+        ).toBlob();
+
+      const url =
+        URL.createObjectURL(blob);
+
+      const link =
+        document.createElement("a");
+
+      link.href = url;
+
+      link.download =
+        `${estimate.estimateNumber}.pdf`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+      toast.success(
+        "PDF exported successfully.",
+      );
+    } catch (error) {
+      console.error(
+        "PDF export failed:",
+        error,
+      );
+
+      toast.error(
+        "Unable to export PDF.",
+      );
+    }
   }
 
   return (
@@ -109,7 +160,9 @@ export function EstimatePreviewPage() {
             Print
           </Button>
 
-          <Button>
+          <Button
+           onClick={handleExport}
+          >
             <Download className="mr-2 size-4" />
             Export
           </Button>

@@ -1,4 +1,4 @@
-import type { CalculationMode } from "./types";
+import type { CalculationMode } from "../types";
 
 export type DiscountType =
   | "flat"

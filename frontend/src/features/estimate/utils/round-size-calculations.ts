@@ -1,3 +1,4 @@
+
 interface RoundSizeCalculationInput {
   length: number | "";
   girth: number | "";
@@ -14,7 +15,7 @@ export function calculateRoundSizeItem(
   const girth =
     input.girth === ""
       ? 0
-      : Number(input.girth);
+      : Number(input.girth)/100;
 
   if (
     length <= 0 ||
@@ -39,7 +40,11 @@ export function calculateRoundSizeItem(
   };
 }
 
-export interface RoundSizeTotalsParams {
+export type DiscountType =
+  | "flat"
+  | "percentage";
+
+export interface CalculateRoundSizeEstimateParams {
   items: {
     cbm: number;
     cft: number;
@@ -49,19 +54,53 @@ export interface RoundSizeTotalsParams {
   pricePerCbm: number | "";
 
   cftEnabled: boolean;
+
+  otherCharges: {
+    amount: number;
+  }[];
+
+  gstEnabled: boolean;
+  gstRate: number;
+
+  discountType: DiscountType;
+  discountValue: number;
+
+  advancePaid: number;
 }
 
-export function calculateRoundSizeTotals({
+export function calculateRoundSizeEstimateTotals({
   items,
   pricePerCbm,
   cftEnabled,
-}: RoundSizeTotalsParams) {
+  otherCharges,
+  gstEnabled,
+  gstRate,
+  discountType,
+  discountValue,
+  advancePaid,
+}: CalculateRoundSizeEstimateParams) {
+
+  /*
+   * ----------------------------------------
+   * TOTAL CBM
+   * ----------------------------------------
+   */
+
   const totalCbm =
     items.reduce(
       (sum, item) =>
         sum + item.cbm,
       0,
     );
+
+  /*
+   * ----------------------------------------
+   * TOTAL CFT
+   * ----------------------------------------
+   *
+   * Only calculate/use it when
+   * CFT is enabled.
+   */
 
   const totalCft = cftEnabled
     ? items.reduce(
@@ -70,6 +109,12 @@ export function calculateRoundSizeTotals({
         0,
       )
     : 0;
+
+  /*
+   * ----------------------------------------
+   * AVERAGE GIRTH
+   * ----------------------------------------
+   */
 
   const validGirths =
     items
@@ -88,20 +133,140 @@ export function calculateRoundSizeTotals({
           (sum, girth) =>
             sum + girth,
           0,
-        ) / validGirths.length
+        ) /
+        validGirths.length
       : 0;
 
-  const price =
+  /*
+   * ----------------------------------------
+   * PRICE / CBM
+   * ----------------------------------------
+   */
+
+  const validPrice =
     pricePerCbm === ""
       ? 0
-      : Number(pricePerCbm);
+      : Math.max(
+          Number(pricePerCbm),
+          0,
+        );
 
   /*
-   * TOTAL CBM × PRICE / CBM
+   * ----------------------------------------
+   * SUBTOTAL
+   * ----------------------------------------
+   *
+   * Total CBM × Price / CBM
    */
 
   const subtotal =
-    totalCbm * price;
+    totalCbm * validPrice;
+
+  /*
+   * ----------------------------------------
+   * OTHER CHARGES
+   * ----------------------------------------
+   */
+
+  const totalOtherCharges =
+    otherCharges.reduce(
+      (sum, charge) =>
+        sum + Math.max(
+          Number(charge.amount),
+          0,
+        ),
+      0,
+    );
+
+  /*
+   * ----------------------------------------
+   * GST
+   * ----------------------------------------
+   *
+   * GST applies ONLY to subtotal.
+   */
+
+  const gstAmount = gstEnabled
+    ? (subtotal * gstRate) / 100
+    : 0;
+
+  /*
+   * ----------------------------------------
+   * DISCOUNT
+   * ----------------------------------------
+   *
+   * Discount applies to subtotal.
+   * Same behavior as Cut Size.
+   */
+
+  let discountAmount = 0;
+
+  if (
+    discountType ===
+    "percentage"
+  ) {
+    const percentage =
+      Math.min(
+        Math.max(
+          discountValue,
+          0,
+        ),
+        100,
+      );
+
+    discountAmount =
+      (subtotal * percentage) /
+      100;
+  } else {
+    discountAmount =
+      Math.min(
+        Math.max(
+          discountValue,
+          0,
+        ),
+        subtotal,
+      );
+  }
+
+  /*
+   * ----------------------------------------
+   * GRAND TOTAL
+   * ----------------------------------------
+   */
+
+  const grandTotal =
+    Math.max(
+      0,
+      subtotal +
+        gstAmount +
+        totalOtherCharges -
+        discountAmount,
+    );
+
+  /*
+   * ----------------------------------------
+   * ADVANCE
+   * ----------------------------------------
+   */
+
+  const validAdvancePaid =
+    Math.min(
+      Math.max(
+        advancePaid,
+        0,
+      ),
+      grandTotal,
+    );
+
+  /*
+   * ----------------------------------------
+   * BALANCE DUE
+   * ----------------------------------------
+   */
+
+  const balanceDue =
+    grandTotal -
+    validAdvancePaid;
 
   return {
     totalCbm: Number(
@@ -116,10 +281,39 @@ export function calculateRoundSizeTotals({
       avgGirth.toFixed(2),
     ),
 
-    pricePerCbm: price,
+    pricePerCbm:
+      validPrice,
 
     subtotal: Number(
       subtotal.toFixed(2),
     ),
+
+    gstAmount: Number(
+      gstAmount.toFixed(2),
+    ),
+
+    totalOtherCharges:
+      Number(
+        totalOtherCharges.toFixed(2),
+      ),
+
+    discountAmount:
+      Number(
+        discountAmount.toFixed(2),
+      ),
+
+    grandTotal: Number(
+      grandTotal.toFixed(2),
+    ),
+
+    advancePaid:
+      Number(
+        validAdvancePaid.toFixed(2),
+      ),
+
+    balanceDue:
+      Number(
+        balanceDue.toFixed(2),
+      ),
   };
 }

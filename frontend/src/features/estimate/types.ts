@@ -107,6 +107,60 @@ export interface SavedEstimate {
   createdAt: string;
   updatedAt: string;
 }
+export interface SavedRoundSizeEstimate {
+  id: string;
+  estimateNumber: string;
+  documentTitle: string;
+  date: string;
+  partyName: string;
+  contactNumber: string;
+  reference: string;
+
+  status:
+    | "ON_HOLD"
+    | "CONFIRMED";
+
+  type:
+    | "CUT_SIZE"
+    | "ROUND_SIZE";
+
+  items: RoundSizeItem[];
+
+  cftEnabled: boolean;
+
+  pricePerCbm: number | "";
+
+  otherCharges: OtherCharge[];
+
+  gstEnabled: boolean;
+  gstRate: number;
+
+  discountType:
+    | "flat"
+    | "percentage";
+
+  discountValue: number;
+
+  advancePaid: number;
+
+  notes: string;
+
+  totals: {
+    subtotal: number;
+    gstAmount: number;
+    totalOtherCharges: number;
+    discountAmount: number;
+    grandTotal: number;
+    advancePaid: number;
+    balanceDue: number;
+    avgGirth: number;
+    totalCbm: number;
+    totalCft: number;
+  };
+
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface RoundSizeItem {
   id: string;

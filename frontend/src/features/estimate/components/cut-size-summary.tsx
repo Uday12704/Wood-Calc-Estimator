@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/lib/formatters";
+
 interface EstimateSummaryProps {
   subtotal: number;
   gstEnabled: boolean;
@@ -10,21 +12,9 @@ interface EstimateSummaryProps {
   grandTotal: number;
   advancePaid: number;
   balanceDue: number;
+
   totalCft: number;
   totalSqft: number;
-}
-
-function formatCurrency(
-  amount: number,
-) {
-  return new Intl.NumberFormat(
-    "en-IN",
-    {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 2,
-    },
-  ).format(amount);
 }
 
 export function EstimateSummary({

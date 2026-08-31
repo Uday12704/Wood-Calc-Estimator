@@ -1,8 +1,8 @@
 import { OtherCharges } from "./other-charges";
-import { EstimateSummary } from "./cut-size-summary";
 import type { OtherCharge } from "../types";
+import { RoundSizeSummary } from "./round-size-summary";
 
-interface EstimateBottomSectionProps {
+interface RoundSizeBottomSectionProps {
   charges: OtherCharge[];
 
   onAdd: () => void;
@@ -49,12 +49,14 @@ interface EstimateBottomSectionProps {
   grandTotal: number;
   advancePaid: number;
   balanceDue: number;
+  avgGirth: number;
+  totalCbm: number;
   totalCft: number;
-  totalSqft: number;
+  cftEnabled: boolean;
 }
 
-export function EstimateBottomSection(
-  props: EstimateBottomSectionProps,
+export function RoundSizeBottomSection(
+  props: RoundSizeBottomSectionProps,
 ) {
   return (
     <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)]">
@@ -62,7 +64,7 @@ export function EstimateBottomSection(
         {...props}
       />
 
-      <EstimateSummary
+      <RoundSizeSummary
         {...props}
       />
     </div>

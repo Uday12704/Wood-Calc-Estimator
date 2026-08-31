@@ -22,7 +22,9 @@ import {
   saveEstimate,
 } from "../services/estimate-storage";
 
-import { calculateEstimateTotals } from "../estimate-calculations";
+import { calculateEstimateTotals } from "../utils/cut-size-calculations";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface EditCutSizeEstimateFormProps {
   estimate: SavedEstimate;
@@ -324,7 +326,7 @@ function EditCutSizeEstimateForm({
     );
 
     navigate(
-      `/app/estimates/${estimate.id}/preview`,
+      `/app/estimates/preview-cut-size/${estimate.id}`,
     );
   };
 
@@ -349,7 +351,7 @@ function EditCutSizeEstimateForm({
     );
 
     navigate(
-      `/app/estimates/${estimate.id}/preview`,
+      `/app/estimates/preview-cut-size/${estimate.id}`,
     );
   };
 
@@ -358,15 +360,26 @@ function EditCutSizeEstimateForm({
 
       {/* PAGE HEADER */}
 
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Edit Estimate
-        </h1>
+      <div className="flex items-start gap-3">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            navigate(-1)
+          }
+        >
+          <ArrowLeft className="size-4" />
+        </Button>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update estimate details,
-          calculations and charges.
-        </p>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Edit Round Size Estimate
+          </h1>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            {estimate.estimateNumber}
+          </p>
+        </div>
       </div>
 
       {/* HEADER */}

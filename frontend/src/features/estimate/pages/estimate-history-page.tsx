@@ -23,22 +23,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { SavedEstimate } from "../types";
+import type { SavedEstimate, SavedRoundSizeEstimate } from "../types";
 
 import {
   getSavedEstimates,
   deleteEstimate,
+  getSavedRoundEstimates,
+  deleteRoundEstimate,
 } from "../services/estimate-storage";
 
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
+type EstimateUnion =
+  | ({ kind: "CUT" } & SavedEstimate)
+  | ({ kind: "ROUND" } & SavedRoundSizeEstimate)
+
 export function EstimateHistoryPage() {
 
   const navigate = useNavigate();
   const [estimates, setEstimates] =
-    useState<SavedEstimate[]>([]);
+    useState<EstimateUnion[]>([]);
 
   const [search, setSearch] =
     useState("");
@@ -55,9 +61,13 @@ export function EstimateHistoryPage() {
     >("ALL");
 
   useEffect(() => {
-    setEstimates(
-      getSavedEstimates(),
+    const cut: EstimateUnion[] = getSavedEstimates().map(
+      (e) => ({ ...e, kind: "CUT" as const })
     );
+    const round: EstimateUnion[] = getSavedRoundEstimates().map(
+      (e) => ({ ...e, kind: "ROUND" as const })
+    );
+    setEstimates([...cut, ...round]);
   }, []);
 
   const filteredEstimates =
@@ -126,7 +136,7 @@ export function EstimateHistoryPage() {
   }
 
   function handleDelete(
-    estimate: SavedEstimate,
+    estimate: EstimateUnion,
   ) {
     const confirmed =
       window.confirm(
@@ -137,9 +147,11 @@ export function EstimateHistoryPage() {
       return;
     }
 
-    deleteEstimate(
-      estimate.id,
-    );
+    if (estimate.kind === "CUT") {
+      deleteEstimate(estimate.id);
+    } else {
+      deleteRoundEstimate(estimate.id);
+    }
 
     setEstimates(
       (current) =>
@@ -396,8 +408,11 @@ export function EstimateHistoryPage() {
 
                       <td className="px-4 py-3">
                         {
-                          `${estimate.partyName} (${estimate.reference})` ||
-                          "—"
+                          `${estimate.partyName}${
+                              estimate.reference.trim()
+                                ? ` (${estimate.reference})`
+                                : ""
+                            }` || "—"
                         }
                       </td>
 
@@ -449,7 +464,9 @@ export function EstimateHistoryPage() {
                             title="Preview"
                             onClick={() =>
                               navigate(
-                                `/app/estimates/${estimate.id}/preview`,
+                                estimate.kind === "CUT"
+                                ? `/app/estimates/preview-cut-size/${estimate.id}`
+                                : `/app/estimates/preview-round-size/${estimate.id}`
                               )
                             }
                           >
@@ -462,7 +479,9 @@ export function EstimateHistoryPage() {
                             title="Edit"
                             onClick={() =>
                               navigate(
-                                `/app/estimates/${estimate.id}/edit`,
+                                estimate.kind === "CUT"
+                                ? `/app/estimates/edit-cut-size/${estimate.id}`
+                                : `/app/estimates/edit-round-size/${estimate.id}`
                               )
                             }
                           >

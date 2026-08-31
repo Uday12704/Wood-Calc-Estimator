@@ -12,13 +12,15 @@ import { generateEstimateNumber, } from "../utils/estimate-number";
 
 import { getTodayDate, } from "../utils/date";
 import { EstimateBottomSection } from "../components/estimate-bottom-section";
-import { calculateEstimateTotals } from "../estimate-calculations";
+import { calculateEstimateTotals } from "../utils/cut-size-calculations";
 import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
 import { saveEstimate } from "../services/estimate-storage";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export function CutSizeEstimatePage() {
+  const navigate = useNavigate();
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
       documentTitle: "Estimate",
@@ -295,6 +297,9 @@ export function CutSizeEstimatePage() {
 
           saveEstimate(estimate);
           toast.success("Estimate saved as draft.");
+          navigate(
+            `/app/estimates/history`,
+          );
         }}
         onConfirm={() => {
           if (!validateEstimate()) {
@@ -307,6 +312,9 @@ export function CutSizeEstimatePage() {
 
           saveEstimate(estimate);
           toast.success("Estimate marked as confirmed.");
+          navigate(
+            `/app/estimates/history`,
+          );
         }}
         onShare={() => {
           console.log("Share estimate");
