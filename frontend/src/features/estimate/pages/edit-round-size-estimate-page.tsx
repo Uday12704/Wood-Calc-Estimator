@@ -46,6 +46,7 @@ import type {
   RoundSizeItem,
   SavedRoundSizeEstimate,
 } from "../types";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 export function EditRoundSizeEstimatePage() {
     const { id } = useParams();
@@ -454,7 +455,9 @@ export function EditRoundSizeEstimatePage() {
         });
     }
 
-      return (
+    const [shareOpen, setShareOpen] = useState(false);
+
+  return (
     <div className="space-y-6">
 
       {/* PAGE HEADER */}
@@ -689,9 +692,7 @@ export function EditRoundSizeEstimatePage() {
         }}
 
         onShare={() => {
-          console.log(
-            "Share estimate",
-          );
+          setShareOpen(true);
         }}
 
         onPrintExport={() => {
@@ -699,6 +700,14 @@ export function EditRoundSizeEstimatePage() {
             "Print / Export",
           );
         }}
+      />
+
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={buildUpdatedEstimate(
+          header.status,
+        )}
       />
 
     </div>

@@ -28,6 +28,7 @@ import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
 import { saveRoundEstimate } from "../services/estimate-storage";
 import { useNavigate } from "react-router-dom";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 export function RoundSizeEstimatePage() {
   const navigate = useNavigate();
@@ -220,6 +221,7 @@ export function RoundSizeEstimatePage() {
       setHeader((prev) => ({ ...prev, status: newStatus }));
     }
 
+    const [shareOpen, setShareOpen] = useState(false);
   return (
     <div className="space-y-6">
 
@@ -337,11 +339,19 @@ export function RoundSizeEstimatePage() {
             );
         }}
         onShare={() => {
-          console.log("Share estimate");
+          setShareOpen(true);
         }}
         onPrintExport={() => {
           console.log("Print / Export");
         }}
+      />
+
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={buildEstimate(
+          header.status,
+        )}
       />
 
     </div>

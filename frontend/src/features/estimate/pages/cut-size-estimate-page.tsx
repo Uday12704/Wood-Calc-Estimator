@@ -18,6 +18,7 @@ import { EstimateActions } from "../components/estimate-actions";
 import { saveEstimate } from "../services/estimate-storage";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 export function CutSizeEstimatePage() {
   const navigate = useNavigate();
@@ -215,7 +216,8 @@ export function CutSizeEstimatePage() {
       setHeader((prev) => ({ ...prev, status: newStatus }));
     }
 
-
+    const [shareOpen, setShareOpen] = useState(false);
+    
   return (
     <div className="space-y-6">
 
@@ -317,11 +319,19 @@ export function CutSizeEstimatePage() {
           );
         }}
         onShare={() => {
-          console.log("Share estimate");
+          setShareOpen(true);
         }}
         onPrintExport={() => {
           console.log("Print / Export");
         }}
+      />
+
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={buildEstimate(
+          header.status,
+        )}
       />
     </div>
   );

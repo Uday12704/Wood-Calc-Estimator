@@ -19,7 +19,7 @@ import { RoundSizeEstimatePage } from "@/features/estimate/pages/round-size-esti
 import { EstimateHistoryPage } from "@/features/estimate/pages/estimate-history-page";
 import { EditCutSizeEstimatePage } from "@/features/estimate/pages/edit-cut-size-estimate-page";
 import { PreviewCutSizePage } from "@/features/estimate/pages/preview-cut-size-page";
-import { PreviewRoundSizePage } from "@/features/estimate/pages/preview-round-size-estimate-page";
+import { PreviewRoundSizePage } from "@/features/estimate/pages/preview-round-size-page";
 import { EditRoundSizeEstimatePage } from "@/features/estimate/pages/edit-round-size-estimate-page";
 
 export function AppRoutes() {

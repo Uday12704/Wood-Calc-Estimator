@@ -25,6 +25,7 @@ import {
 import { calculateEstimateTotals } from "../utils/cut-size-calculations";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 interface EditCutSizeEstimateFormProps {
   estimate: SavedEstimate;
@@ -355,6 +356,8 @@ function EditCutSizeEstimateForm({
     );
   };
 
+  const [shareOpen, setShareOpen] = useState(false);
+
     return (
     <div className="space-y-6">
 
@@ -459,15 +462,21 @@ function EditCutSizeEstimateForm({
           handleConfirm
         }
         onShare={() => {
-          console.log(
-            "Share estimate",
-          );
+          setShareOpen(true);
         }}
         onPrintExport={() => {
           console.log(
             "Print / Export",
           );
         }}
+      />
+
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={buildEstimate(
+          header.status,
+        )}
       />
 
     </div>

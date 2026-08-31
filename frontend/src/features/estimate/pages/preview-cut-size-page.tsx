@@ -552,20 +552,24 @@ export function PreviewCutSizePage() {
                   )}
                 </span>
               </div>
-
+              
+              {estimate.totals.totalCft > 0 && 
               <div className="flex justify-between text-muted-foreground">
                 <span>Total CFT</span>
                 <span>
                     {estimate.totals.totalCft.toFixed(2)} CFT
                 </span>
               </div>
+              }
 
+              {estimate.totals.totalSqft > 0 && 
               <div className="flex justify-between text-muted-foreground">
                 <span>Total SQFT</span>
                 <span>
                     {estimate.totals.totalSqft.toFixed(2)} SQFT
                 </span>
               </div>
+              }
 
             </div>
 

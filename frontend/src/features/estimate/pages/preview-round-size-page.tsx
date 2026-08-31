@@ -16,6 +16,11 @@ import {
 import {
   getSavedRoundEstimates,
 } from "../services/estimate-storage";
+import { toast } from "react-toastify";
+import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
+import { pdf } from "@react-pdf/renderer";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { RoundSizeMeasurePdf } from "../pdf/round-size-measure-pdf";
 
 export function PreviewRoundSizePage() {
   const { id } = useParams();
@@ -72,6 +77,39 @@ export function PreviewRoundSizePage() {
     );
   }
 
+async function handleExport(type: "price" | "measure") {
+  if (!estimate) {
+    toast.error("Estimate not found.");
+    return;
+  }
+
+  try {
+
+    // Decide which PDF to render
+    const blob = type === "price" ?
+                  await pdf(<RoundSizeEstimatePdf estimate={estimate}/>).toBlob() :
+                  await pdf(<RoundSizeMeasurePdf estimate={estimate}/>).toBlob();
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `${estimate.partyName}(${estimate.estimateNumber})-${type}.pdf`;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    toast.success(`${type} PDF exported successfully.`);
+  } catch (error) {
+    console.error("PDF export failed:", error);
+    toast.error("Unable to export PDF.");
+  }
+}
+
+
   return (
     <div className="space-y-6">
 
@@ -119,10 +157,16 @@ export function PreviewRoundSizePage() {
             Print
           </Button>
 
-          <Button>
-            <Download className="mr-2 size-4" />
-            Export
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button ><Download className="mr-2 size-4" /> Export</Button>} />
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => handleExport("measure")}>With measure</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => handleExport("price")}>Both</DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
         </div>
 
