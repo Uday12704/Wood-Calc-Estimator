@@ -31,9 +31,16 @@ export function NewEstimatePage() {
 
       return;
     }
+    if (type === "ROUND_SIZE") {
+      navigate(
+        "/app/estimates/new/round-size",
+      );
+
+      return;
+    }
 
     navigate(
-      "/app/estimates/new/round-size",
+      "/app/estimates/new/custom-estimate",
     );
   }
 

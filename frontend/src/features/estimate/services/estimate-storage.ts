@@ -1,7 +1,8 @@
-import type { SavedEstimate, SavedRoundSizeEstimate } from "../types";
+import type { SavedCustomEstimate, SavedEstimate, SavedRoundSizeEstimate } from "../types";
 
 const STORAGE_KEY_CUT = "wood-calc-cut-estimates";
 const STORAGE_KEY_ROUND = "wood-calc-round-estimates";
+const STORAGE_KEY_CUSTOM = "wood-calc-custom-estimates";
 
 export function getSavedEstimates(): SavedEstimate[] {
   try {
@@ -41,6 +42,25 @@ export function getSavedRoundEstimates(): SavedRoundSizeEstimate[] {
   }
 }
 
+export function getSavedCustomEstimates(): SavedCustomEstimate[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_CUSTOM);
+
+    if (!stored) {
+      return [];
+    }
+
+    return JSON.parse(stored) as SavedCustomEstimate[];
+  } catch (error) {
+    console.error(
+      "Failed to load estimates:",
+      error,
+    );
+
+    return [];
+  }
+}
+
 export function getEstimateById(
   id: string,
 ): SavedEstimate | null {
@@ -60,6 +80,20 @@ export function getRoundEstimateById(
 ): SavedRoundSizeEstimate | null {
   const estimates =
     getSavedRoundEstimates();
+
+  return (
+    estimates.find(
+      (estimate) =>
+        estimate.id === id,
+    ) ?? null
+  );
+}
+
+export function getCustomEstimateById(
+  id: string,
+): SavedCustomEstimate | null {
+  const estimates =
+    getSavedCustomEstimates();
 
   return (
     estimates.find(
@@ -119,6 +153,31 @@ export function saveRoundEstimate(
   );
 }
 
+export function saveCustomEstimate(
+  estimate: SavedCustomEstimate,
+): void {
+  const estimates =
+    getSavedCustomEstimates();
+
+  const existingIndex =
+    estimates.findIndex(
+      (item) =>
+        item.id === estimate.id,
+    );
+
+  if (existingIndex >= 0) {
+    estimates[existingIndex] =
+      estimate;
+  } else {
+    estimates.push(estimate);
+  }
+
+  localStorage.setItem(
+    STORAGE_KEY_CUSTOM,
+    JSON.stringify(estimates),
+  );
+}
+
 export function deleteEstimate(
   id: string,
 ): void {
@@ -159,11 +218,34 @@ export function deleteRoundEstimate(
   );
 }
 
+export function deleteCustomEstimate(
+  id: string,
+): void {
+  const estimates =
+    getSavedCustomEstimates();
+
+  const updatedEstimates =
+    estimates.filter(
+      (estimate) =>
+        estimate.id !== id,
+    );
+
+  localStorage.setItem(
+    STORAGE_KEY_CUSTOM,
+    JSON.stringify(
+      updatedEstimates,
+    ),
+  );
+}
+
 export function clearAllEstimates(): void {
   localStorage.removeItem(
     STORAGE_KEY_CUT,
   );
   localStorage.removeItem(
     STORAGE_KEY_ROUND,
+  );
+  localStorage.removeItem(
+    STORAGE_KEY_CUSTOM,
   );
 }

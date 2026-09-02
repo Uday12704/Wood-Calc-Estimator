@@ -3,6 +3,7 @@ import type { EstimateType } from "../types";
 
 import cutSizeImg from "../../../assets/cut-size.png";
 import roundSizeImg from "../../../assets/round-size.png";
+import customImg from "../../../assets/custom-image.png";
 
 interface EstimateTypeSelectorProps {
   onSelect: (
@@ -25,13 +26,20 @@ const estimateTypes = [
       "Calculate round wood and logs using the required measurements.",
     image: roundSizeImg,
   },
+  {
+    type: "CUSTOM" as const,
+    title: "Custom Estimate",
+    description:
+      "Calculate custom estimates with your specific measurements.",
+    image: customImg,
+  },
 ];
 
 export function EstimateTypeSelector({
   onSelect,
 }: EstimateTypeSelectorProps) {
   return (
-    <div className="grid gap-10 md:grid-cols-2">
+    <div className="grid gap-10 lg:grid-cols-3">
 
       {estimateTypes.map((option) => (
         <EstimateTypeCard

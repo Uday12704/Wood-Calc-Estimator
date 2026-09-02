@@ -389,13 +389,13 @@ export function PreviewCutSizePage() {
                                 </td>
 
                                 <td className="px-3 py-3 text-right">
-                                    ₹{Number(
+                                    {Number(
                                         item.pricePerUnit,
                                     ).toFixed(2)}
                                 </td>
 
                                 <td className="px-3 py-3 text-right font-medium">
-                                    ₹{item.lineTotal.toFixed(
+                                    {item.lineTotal.toFixed(
                                         2,
                                     )}
                                 </td>
@@ -409,6 +409,129 @@ export function PreviewCutSizePage() {
             </div>
 
           </div>
+
+          {/* ADDITIONAL ITEMS */}
+        {estimate.additionalItemsEnabled && 
+          <div className="py-6">
+
+            <h3 className="mb-3 text-base font-semibold">
+              Additional Items
+            </h3>
+
+            <div className="overflow-x-auto">
+
+              <table className="w-full border-collapse text-sm">
+
+                <thead>
+
+                  <tr className="border-b bg-muted/50">
+
+                    <th className="px-3 py-2 text-left">
+                      #
+                    </th>
+
+                    <th className="px-3 py-2 text-left">
+                      Description
+                    </th>
+
+                    <th className="px-3 py-2 text-right">
+                      Qty
+                    </th>
+
+                    <th className="px-3 py-2 text-right">
+                      Rate
+                    </th>
+
+                    <th className="px-3 py-2 text-right">
+                      Amount
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+                    {estimate.additionalItems.map((item, index) => {
+                        return (
+                            <tr key={item.id}
+                                className="border-b"
+                            >
+                                <td className="px-3 py-3">
+                                    {index + 1}
+                                </td>
+
+                                <td className="px-3 py-3">
+                                    {item.description}
+                                </td>
+
+                                <td className="px-3 py-3 text-right">
+                                    {item.quantity}
+                                </td>
+
+                                <td className="px-3 py-3 text-right">
+                                    {Number(
+                                        item.pricePerUnit,
+                                    ).toFixed(2)}
+                                </td>
+
+                                <td className="px-3 py-3 text-right font-medium">
+                                    {item.lineTotal.toFixed(
+                                        2,
+                                    )}
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* ADDITIONAL TOTALS */}
+
+            <div className="ml-auto w-full max-w-sm space-y-2 text-sm py-2">
+
+              <div className="flex justify-between">
+                <span>
+                  Additional Subtotal
+                </span>
+
+                <span className="font-medium">
+                  Rs.{" "}
+                  {estimate.totals.additionalSubtotal.toFixed(2)}
+                </span>
+              </div>
+
+
+              {estimate.additionalItemGstEnabled && (
+                <div className="flex justify-between">
+                  <span>
+                    GST ({estimate.additionalItemGstRate}%)
+                  </span>
+
+                  <span>
+                    Rs.{" "}
+                    {estimate.totals.additionalGstAmount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+
+              <div className="border-t pt-2" />
+
+              <div className="flex justify-between text-base font-semibold">
+                <span>
+                  Additional Total
+                </span>
+
+                <span>
+                  Rs.{" "}
+                  {estimate.totals.additionalTotal.toFixed(2)}
+                </span>
+              </div>
+
+            </div>
+          </div>
+          }
 
           {/* BOTTOM SECTION */}
 
@@ -442,7 +565,7 @@ export function PreviewCutSizePage() {
                         </span>
 
                         <span>
-                          ₹
+                          Rs.{" "}
                           {Number(
                             charge.amount,
                           ).toFixed(2)}
@@ -464,7 +587,7 @@ export function PreviewCutSizePage() {
               <div className="flex justify-between">
                 <span className="font-semibold">Subtotal</span>
                 <span className="font-semibold">
-                  ₹
+                  Rs.{" "}
                   {estimate.totals.subtotal.toFixed(
                     2,
                   )}
@@ -478,7 +601,7 @@ export function PreviewCutSizePage() {
                   </span>
 
                   <span>
-                    ₹
+                    Rs.{" "}
                     {estimate.totals.gstAmount.toFixed(
                       2,
                     )}
@@ -492,7 +615,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  ₹
+                  Rs.{" "}
                   {estimate.totals.totalOtherCharges.toFixed(
                     2,
                   )}
@@ -505,7 +628,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  - ₹
+                  - Rs.{" "}
                   {estimate.totals.discountAmount.toFixed(
                     2,
                   )}
@@ -520,7 +643,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  ₹
+                  Rs.{" "}
                   {estimate.totals.grandTotal.toFixed(
                     2,
                   )}
@@ -533,7 +656,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  ₹
+                  Rs.{" "}
                   {estimate.totals.advancePaid.toFixed(
                     2,
                   )}
@@ -546,7 +669,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  ₹
+                  Rs.{" "}
                   {estimate.totals.balanceDue.toFixed(
                     2,
                   )}

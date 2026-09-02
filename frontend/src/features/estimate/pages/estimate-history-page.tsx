@@ -23,13 +23,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { SavedEstimate, SavedRoundSizeEstimate } from "../types";
+import type { SavedCustomEstimate, SavedEstimate, SavedRoundSizeEstimate } from "../types";
 
 import {
   getSavedEstimates,
   deleteEstimate,
   getSavedRoundEstimates,
   deleteRoundEstimate,
+  getSavedCustomEstimates,
+  deleteCustomEstimate,
 } from "../services/estimate-storage";
 
 import { toast } from "react-toastify";
@@ -39,6 +41,7 @@ import { Badge } from "@/components/ui/badge";
 type EstimateUnion =
   | ({ kind: "CUT" } & SavedEstimate)
   | ({ kind: "ROUND" } & SavedRoundSizeEstimate)
+  | ({ kind: "CUSTOM" } & SavedCustomEstimate);
 
 export function EstimateHistoryPage() {
 
@@ -67,7 +70,10 @@ export function EstimateHistoryPage() {
     const round: EstimateUnion[] = getSavedRoundEstimates().map(
       (e) => ({ ...e, kind: "ROUND" as const })
     );
-    setEstimates([...cut, ...round]);
+    const custom: EstimateUnion[] = getSavedCustomEstimates().map(
+      (e) => ({ ...e, kind: "CUSTOM" as const })
+    );
+    setEstimates([...cut, ...round, ...custom]);
   }, []);
 
   const filteredEstimates =
@@ -88,6 +94,9 @@ export function EstimateHistoryPage() {
               .toLowerCase()
               .includes(searchValue) ||
             estimate.estimateNumber
+              .toLowerCase()
+              .includes(searchValue) ||
+            estimate.reference
               .toLowerCase()
               .includes(searchValue);
 
@@ -149,8 +158,10 @@ export function EstimateHistoryPage() {
 
     if (estimate.kind === "CUT") {
       deleteEstimate(estimate.id);
-    } else {
+    } else if(estimate.kind === "ROUND") {
       deleteRoundEstimate(estimate.id);
+    } else {
+      deleteCustomEstimate(estimate.id);
     }
 
     setEstimates(
@@ -437,7 +448,10 @@ export function EstimateHistoryPage() {
                         {estimate.type ===
                         "CUT_SIZE"
                           ? "Cut Size"
-                          : "Round Size"}
+                          : estimate.type ===
+                        "ROUND_SIZE"
+                          ? "Round Size"
+                          : "Custom"}
                       </td>
 
                       <td className="px-4 py-3 text-right font-medium">
@@ -466,7 +480,9 @@ export function EstimateHistoryPage() {
                               navigate(
                                 estimate.kind === "CUT"
                                 ? `/app/estimates/preview-cut-size/${estimate.id}`
-                                : `/app/estimates/preview-round-size/${estimate.id}`
+                                : estimate.kind === "ROUND" 
+                                ? `/app/estimates/preview-round-size/${estimate.id}`
+                                : `/app/estimates/preview-custom-estimate/${estimate.id}`
                               )
                             }
                           >
@@ -481,7 +497,9 @@ export function EstimateHistoryPage() {
                               navigate(
                                 estimate.kind === "CUT"
                                 ? `/app/estimates/edit-cut-size/${estimate.id}`
-                                : `/app/estimates/edit-round-size/${estimate.id}`
+                                : estimate.kind === "ROUND" 
+                                ? `/app/estimates/edit-round-size/${estimate.id}`
+                                : `/app/estimates/edit-custom-estimate/${estimate.id}`
                               )
                             }
                           >

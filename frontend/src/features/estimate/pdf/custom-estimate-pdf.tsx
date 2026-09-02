@@ -7,10 +7,8 @@ import {
 } from "@react-pdf/renderer";
 
 import type {
-  SavedEstimate,
+  SavedCustomEstimate,
 } from "../types";
-
-import { woodCategories } from "../data/wood-categories";
 
 const styles = StyleSheet.create({
   page: {
@@ -82,21 +80,6 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
   },
 
-  tableTitle: {
-    fontSize: 8,
-    fontWeight: "bold",
-    marginVertical: 5,
-    marginLeft: 2,
-    textTransform: "uppercase",
-  },
-
-  additionalTable: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    marginTop: 10,
-  },
-
   tableHeader: {
     flexDirection: "row",
     backgroundColor: "#21140c",
@@ -107,9 +90,7 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: "row",
     borderTopWidth: 1,
-    borderBottomWidth: 1,
     borderTopColor: "#ddd",
-    borderBottomColor: "#ddd",
   },
 
   cell: {
@@ -131,23 +112,11 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    width: "25%",
-  },
-
-  size: {
-    width: "10%",
-  },
-
-  length: {
-    width: "10%",
+    width: "50%",
   },
 
   qty: {
-    width: "8%",
-  },
-
-  total: {
-    width: "15%",
+    width: "10%",
   },
 
   rate: {
@@ -155,22 +124,6 @@ const styles = StyleSheet.create({
   },
 
   amount: {
-    width: "17%",
-  },
-
-  additionalDescription: {
-    width: "50%",
-  },
-
-  additionalQty: {
-    width: "15%",
-  },
-  
-  additionalRate: {
-    width: "15%",
-  },
-
-  additionalAmount: {
     width: "20%",
   },
 
@@ -200,55 +153,16 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
 
-  additionalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 3,
-  },
-
-  subTotal: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 50,
-    paddingTop: 8,
-    paddingBottom: 5,
-    paddingHorizontal: 5,
-    fontWeight: "bold",
-  },
-
-  additionalTotalSection: {
-    width: "45%",
-    padding: 5,
-    marginTop: 5,
-  },
-
-  additionalTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
-    paddingTop: 6,
-    borderTopWidth: 0.5,
-    borderTopColor: "#222",
-    fontWeight: "bold",
-  },
-
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 5,
     paddingTop: 6,
+    paddingBottom: 3,
     borderTopWidth: 1,
     borderTopColor: "#222",
     fontSize: 10,
     fontWeight: "bold",
-  },
-
-  measurementSection: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-    color: "#555",
   },
 
   otherChargesTitle: {
@@ -283,13 +197,13 @@ const styles = StyleSheet.create({
   },
 });
 
-interface CutSizeEstimatePdfProps {
-  estimate: SavedEstimate;
+interface CustomEstimatePdfProps {
+  estimate: SavedCustomEstimate;
 }
 
-export function CutSizeEstimatePdf({
+export function CustomEstimatePdf({
   estimate,
-}: CutSizeEstimatePdfProps) {
+}: CustomEstimatePdfProps) {
   return (
     <Document>
 
@@ -378,13 +292,8 @@ export function CutSizeEstimatePdf({
         {/* ==============================
             ITEMS TABLE
             ============================== */}
-        
+
         <View style={styles.table}>
-          <View>
-            <Text style={styles.tableTitle}>
-              WOOD ITEMS
-            </Text>
-          </View>
 
           {/* HEADER */}
 
@@ -404,29 +313,10 @@ export function CutSizeEstimatePdf({
               style={[
                 styles.cell,
                 styles.description,
+                styles.cellCenter,
               ]}
             >
               DESCRIPTION
-            </Text>
-
-            <Text
-              style={[
-                styles.cell,
-                styles.size,
-                styles.cellCenter,
-              ]}
-            >
-              SIZE (IN)
-            </Text>
-
-            <Text
-              style={[
-                styles.cell,
-                styles.length,
-                styles.cellCenter,
-              ]}
-            >
-              LENGTH (FT)
             </Text>
 
             <Text
@@ -437,16 +327,6 @@ export function CutSizeEstimatePdf({
               ]}
             >
               QTY
-            </Text>
-
-            <Text
-              style={[
-                styles.cell,
-                styles.total,
-                styles.cellCenter,
-              ]}
-            >
-              TOTAL
             </Text>
 
             <Text
@@ -477,19 +357,6 @@ export function CutSizeEstimatePdf({
           {estimate.items.map(
             (item, index) => {
 
-              const category =
-                woodCategories.find(
-                  (category) =>
-                    category.name ===
-                    item.woodType,
-                );
-
-              const unit =
-                category?.calculationMode ===
-                "SQFT"
-                  ? "SQFT"
-                  : "CFT";
-
               return (
                 <View
                   key={item.id}
@@ -513,28 +380,7 @@ export function CutSizeEstimatePdf({
                       styles.description,
                     ]}
                   >
-                    {item.woodType || "—"}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.cell,
-                      styles.size,
-                      styles.cellCenter,
-                    ]}
-                  >
-                    {item.breadth} x {" "}
-                    {item.height}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.cell,
-                      styles.length,
-                      styles.cellRight,
-                    ]}
-                  >
-                    {item.length}
+                    {item.description || "—"}
                   </Text>
 
                   <Text
@@ -545,17 +391,6 @@ export function CutSizeEstimatePdf({
                     ]}
                   >
                     {item.quantity}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.cell,
-                      styles.total,
-                      styles.cellRight,
-                    ]}
-                  >
-                    {item.total.toFixed(2)}{" "}
-                    {unit}
                   </Text>
 
                   <Text
@@ -584,194 +419,8 @@ export function CutSizeEstimatePdf({
               );
             },
           )}
-          {estimate.additionalItemsEnabled &&
-            <View style={styles.subTotal}>
-              <Text>
-                Subtotal
-              </Text>
-
-              <Text>
-                Rs. {estimate.totals.subtotal.toFixed(2)}
-              </Text>
-            </View>
-          }
 
         </View>
-
-        {/* ==============================
-            ADDITIONAL ITEMS TABLE
-            ============================== */}
-        {estimate.additionalItemsEnabled &&
-
-        <View>
-          <View style={styles.additionalTable}>
-            <Text style={styles.tableTitle}>
-              ADDITIONAL ITEMS
-            </Text>
-
-            {/* HEADER */}
-
-            <View style={styles.tableHeader}>
-
-              <Text
-                style={[
-                  styles.cell,
-                  styles.number,
-                  styles.cellCenter,
-                ]}
-              >
-                #
-              </Text>
-
-              <Text
-                style={[
-                  styles.cell,
-                  styles.additionalDescription,
-                ]}
-              >
-                DESCRIPTION
-              </Text>
-
-              <Text
-                style={[
-                  styles.cell,
-                  styles.additionalQty,
-                  styles.cellCenter,
-                ]}
-              >
-                QTY
-              </Text>
-
-              <Text
-                style={[
-                  styles.cell,
-                  styles.additionalRate,
-                  styles.cellCenter,
-                ]}
-              >
-                RATE
-              </Text>
-
-              <Text
-                style={[
-                  styles.cell,
-                  styles.additionalAmount,
-                  styles.cellCenter,
-                ]}
-              >
-                AMOUNT
-              </Text>
-
-            </View>
-
-
-            {/* ROWS */}
-
-            {estimate.additionalItems.map(
-              (item, index) => {
-
-                return (
-                  <View
-                    key={item.id}
-                    style={styles.tableRow}
-                    wrap={false}
-                  >
-
-                    <Text
-                      style={[
-                        styles.cell,
-                        styles.number,
-                        styles.cellCenter,
-                      ]}
-                    >
-                      {index + 1}
-                    </Text>
-
-                    <Text
-                      style={[
-                        styles.cell,
-                        styles.additionalDescription,
-                      ]}
-                    >
-                      {item.description || "—"}
-                    </Text>
-
-                    <Text
-                      style={[
-                        styles.cell,
-                        styles.additionalQty,
-                        styles.cellRight,
-                      ]}
-                    >
-                      {item.quantity}
-                    </Text>
-
-                    <Text
-                      style={[
-                        styles.cell,
-                        styles.additionalRate,
-                        styles.cellRight,
-                      ]}
-                    >
-                      {Number(
-                        item.pricePerUnit,
-                      ).toFixed(2)}
-                    </Text>
-
-                    <Text
-                      style={[
-                        styles.cell,
-                        styles.additionalAmount,
-                        styles.cellRight,
-                      ]}
-                    >
-                      {item.lineTotal.toFixed(2)}
-                    </Text>
-
-                  </View>
-                );
-              },
-            )}
-          
-            <View style={styles.additionalTotalSection}>
-              {/* Additional Subtotal */}
-              <View style={styles.additionalRow}>
-                <Text>
-                  Additional Subtotal
-                </Text>
-
-                <Text>
-                  Rs. {estimate.totals.additionalSubtotal.toFixed(2)}
-                </Text>
-              </View>
-
-              {/* Additional GST */}
-              {estimate.additionalItemGstEnabled && (
-                <View style={styles.additionalRow}>
-                  <Text>
-                    Additional GST ({estimate.additionalItemGstRate}%)
-                  </Text>
-
-                  <Text>
-                    Rs. {estimate.totals.additionalGstAmount.toFixed(2)}
-                  </Text>
-                </View>
-              )}
-
-              {/* Additional Total */}
-              <View style={styles.additionalTotal}>
-                <Text>
-                  Additional Total
-                </Text>
-
-                <Text>
-                  Rs. {estimate.totals.additionalTotal.toFixed(2)}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      }
 
 
         {/* ==============================
@@ -853,23 +502,6 @@ export function CutSizeEstimatePdf({
 
               </View>
             )}
-            
-            {estimate.additionalItemsEnabled && (
-              <View style={styles.summaryRow}>
-
-                <Text>
-                  Additional Total
-                </Text>
-
-                <Text>
-                  Rs. 
-                  {estimate.totals.additionalTotal.toFixed(
-                    2,
-                  )}
-                </Text>
-
-              </View>
-            )}
 
 
             <View style={styles.summaryRow}>
@@ -911,7 +543,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. {" "}
+                Rs. 
                 {estimate.totals.grandTotal.toFixed(
                   2,
                 )}
@@ -949,47 +581,6 @@ export function CutSizeEstimatePdf({
                 )}
               </Text>
 
-            </View>
-
-            <View
-              style={
-                styles.measurementSection
-              }
-            >   
-
-              {estimate.totals.totalCft > 0 && 
-              <View style={styles.summaryRow}>
-
-                <Text>
-                  Total CFT
-                </Text>
-
-                <Text>
-                  {estimate.totals.totalCft.toFixed(
-                    2,
-                  )}{" "}
-                  CFT
-                </Text>
-
-              </View>
-              }
-
-              {estimate.totals.totalSqft > 0 && 
-              <View style={styles.summaryRow}>
-
-                <Text>
-                  Total SQFT
-                </Text>
-
-                <Text>
-                  {estimate.totals.totalSqft.toFixed(
-                    2,
-                  )}{" "}
-                  SQFT
-                </Text>
-
-              </View>
-              }
             </View>
 
           </View>

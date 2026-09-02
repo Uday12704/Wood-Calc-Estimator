@@ -1,6 +1,7 @@
 export type EstimateType =
   | "CUT_SIZE"
-  | "ROUND_SIZE";
+  | "ROUND_SIZE"
+  | "CUSTOM";
 
 export type EstimateStatus =
   | "ON_HOLD"
@@ -45,10 +46,39 @@ export interface WoodItem {
 
   length: number | "";
   quantity: number | "";
-
+  
   note: string;
-
+  
   total: number;
+  lineTotal: number;
+}
+
+export interface CutSizeAdditionalItem {
+  id: string;
+  description: string;
+  quantity: number | "";
+  pricePerUnit: number | "";
+  note: string;
+  lineTotal: number;
+}
+
+export interface RoundSizeItem {
+  id: string;
+  woodType: string;
+  logNo: string;
+  length: number | "";
+  girth: number | "";
+  cbm: number;
+  cft: number;
+  note: string;
+}
+
+export interface CustomEstimateItem {
+  id: string;
+  description: string;
+  quantity: number | "";
+  pricePerUnit: number | "";
+  note: string;
   lineTotal: number;
 }
 
@@ -73,18 +103,24 @@ export interface SavedEstimate {
 
   type:
     | "CUT_SIZE"
-    | "ROUND_SIZE";
+    | "ROUND_SIZE"
+    | "CUSTOM";
 
   items: WoodItem[];
+
+  additionalItemsEnabled: boolean;
+  additionalItems: CutSizeAdditionalItem[];
+  additionalItemGstEnabled: boolean;
+  additionalItemGstRate: number;
 
   otherCharges: OtherCharge[];
 
   gstEnabled: boolean;
   gstRate: number;
-
+  
   discountType:
-    | "flat"
-    | "percentage";
+  | "flat"
+  | "percentage";
 
   discountValue: number;
 
@@ -95,6 +131,9 @@ export interface SavedEstimate {
   totals: {
     subtotal: number;
     gstAmount: number;
+    additionalSubtotal: number;
+    additionalGstAmount: number;
+    additionalTotal: number;
     totalOtherCharges: number;
     discountAmount: number;
     grandTotal: number;
@@ -107,6 +146,7 @@ export interface SavedEstimate {
   createdAt: string;
   updatedAt: string;
 }
+
 export interface SavedRoundSizeEstimate {
   id: string;
   estimateNumber: string;
@@ -162,13 +202,51 @@ export interface SavedRoundSizeEstimate {
   updatedAt: string;
 }
 
-export interface RoundSizeItem {
+export interface SavedCustomEstimate {
   id: string;
-  woodType: string;
-  logNo: string;
-  length: number | "";
-  girth: number | "";
-  cbm: number;
-  cft: number;
-  note: string;
+  estimateNumber: string;
+  documentTitle: string;
+  date: string;
+  partyName: string;
+  contactNumber: string;
+  reference: string;
+
+  status:
+    | "ON_HOLD"
+    | "CONFIRMED";
+
+  type:
+    | "CUT_SIZE"
+    | "ROUND_SIZE"
+    | "CUSTOM";
+
+  items: CustomEstimateItem[];
+
+  otherCharges: OtherCharge[];
+
+  gstEnabled: boolean;
+  gstRate: number;
+
+  discountType:
+    | "flat"
+    | "percentage";
+
+  discountValue: number;
+
+  advancePaid: number;
+
+  notes: string;
+
+  totals: {
+    subtotal: number;
+    gstAmount: number;
+    totalOtherCharges: number;
+    discountAmount: number;
+    grandTotal: number;
+    advancePaid: number;
+    balanceDue: number;
+  };
+
+  createdAt: string;
+  updatedAt: string;
 }

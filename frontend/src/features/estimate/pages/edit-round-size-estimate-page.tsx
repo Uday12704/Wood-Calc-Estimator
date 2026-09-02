@@ -52,59 +52,48 @@ export function EditRoundSizeEstimatePage() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [estimate, setEstimate] =
-        useState<SavedRoundSizeEstimate | null>(
+    const [estimate, setEstimate] = useState<SavedRoundSizeEstimate | null>(
         null,
         );
 
-    const [isLoading, setIsLoading] =
-        useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [header, setHeader] =
-        useState<EstimateHeader | null>(
+    const [header, setHeader] = useState<EstimateHeader | null>(
         null,
         );
 
-    const [items, setItems] =
-        useState<RoundSizeItem[]>([]);
+    const [items, setItems] = useState<RoundSizeItem[]>([]);
 
-    const [cftEnabled, setCftEnabled] =
-        useState(false);
+    const [cftEnabled, setCftEnabled] = useState(false);
 
-    const [pricePerCbm, setPricePerCbm] =
-        useState<number | "">("");
+    const [pricePerCbm, setPricePerCbm] = useState<number | "">("");
 
-    const [otherCharges, setOtherCharges] =
-        useState<OtherCharge[]>([]);
+    const [otherCharges, setOtherCharges] = useState<OtherCharge[]>([]);
 
-    const [gstEnabled, setGstEnabled] =
-        useState(false);
+    const [gstEnabled, setGstEnabled] = useState(false);
 
-    const [gstRate, setGstRate] =
-        useState(18);
+    const [gstRate, setGstRate] = useState(18);
 
     const [discountType, setDiscountType] =
         useState<
         "flat" | "percentage"
         >("flat");
 
-    const [discountValue, setDiscountValue] =
-        useState(0);
+    const [discountValue, setDiscountValue] = useState(0);
 
-    const [advancePaid, setAdvancePaid] =
-        useState(0);
+    const [advancePaid, setAdvancePaid] = useState(0);
 
-    const [notes, setNotes] =
-        useState("");
+    const [notes, setNotes] = useState("");
+
+    const [shareOpen, setShareOpen] = useState(false);
 
     useEffect(() => {
         if (!id) {
-        setIsLoading(false);
-        return;
+          setIsLoading(false);
+          return;
         }
 
-        const estimates =
-        getSavedRoundEstimates();
+        const estimates = getSavedRoundEstimates();
 
         const found =
         estimates.find(
@@ -112,75 +101,32 @@ export function EditRoundSizeEstimatePage() {
         );
 
         if (!found) {
-        setIsLoading(false);
-        return;
+          setIsLoading(false);
+          return;
         }
 
         setEstimate(found);
 
         setHeader({
-        documentTitle:
-            found.documentTitle,
-
-        estimateNumber:
-            found.estimateNumber,
-
-        date:
-            found.date,
-
-        partyName:
-            found.partyName,
-
-        contactNumber:
-            found.contactNumber,
-
-        reference:
-            found.reference,
-
-        status:
-            found.status,
+          documentTitle: found.documentTitle,
+          estimateNumber: found.estimateNumber,
+          date: found.date,
+          partyName: found.partyName,
+          contactNumber: found.contactNumber,
+          reference: found.reference,
+          status: found.status,
         });
 
-        setItems(
-        found.items,
-        );
-
-        setCftEnabled(
-        found.cftEnabled,
-        );
-
-        setPricePerCbm(
-        found.pricePerCbm,
-        );
-
-        setOtherCharges(
-        found.otherCharges,
-        );
-
-        setGstEnabled(
-        found.gstEnabled,
-        );
-
-        setGstRate(
-        found.gstRate,
-        );
-
-        setDiscountType(
-        found.discountType,
-        );
-
-        setDiscountValue(
-        found.discountValue,
-        );
-
-        setAdvancePaid(
-        found.advancePaid,
-        );
-
-        setNotes(
-        found.notes,
-        );
-
+        setItems(found.items,);
+        setCftEnabled(found.cftEnabled,);
+        setPricePerCbm(found.pricePerCbm,);
+        setOtherCharges(found.otherCharges,);
+        setGstEnabled(found.gstEnabled,);
+        setGstRate(found.gstRate,);
+        setDiscountType(found.discountType,);
+        setDiscountValue(found.discountValue,);
+        setAdvancePaid(found.advancePaid,);
+        setNotes(found.notes,);
         setIsLoading(false);
     }, [id]);
 
@@ -294,15 +240,8 @@ export function EditRoundSizeEstimatePage() {
     ): SavedRoundSizeEstimate => {
         return {
         ...estimate,
-
-        /*
-        * Keep the same ID.
-        */
         id: estimate.id,
 
-        /*
-        * Header
-        */
         estimateNumber:
             header.estimateNumber,
 
@@ -325,18 +264,12 @@ export function EditRoundSizeEstimatePage() {
 
         type: "ROUND_SIZE",
 
-        /*
-        * Round Size data
-        */
         items,
 
         cftEnabled,
 
         pricePerCbm,
 
-        /*
-        * Charges
-        */
         otherCharges,
 
         gstEnabled,
@@ -351,9 +284,6 @@ export function EditRoundSizeEstimatePage() {
 
         notes,
 
-        /*
-        * Recalculated totals
-        */
         totals: {
             subtotal:
             totals.subtotal,
@@ -386,15 +316,9 @@ export function EditRoundSizeEstimatePage() {
             totals.totalCft,
         },
 
-        /*
-        * Keep original creation date.
-        */
         createdAt:
             estimate.createdAt,
 
-        /*
-        * Update modification date.
-        */
         updatedAt:
             new Date().toISOString(),
         };
@@ -455,8 +379,6 @@ export function EditRoundSizeEstimatePage() {
         });
     }
 
-    const [shareOpen, setShareOpen] = useState(false);
-
   return (
     <div className="space-y-6">
 
@@ -494,7 +416,6 @@ export function EditRoundSizeEstimatePage() {
         onChange={setHeader}
       />
 
-
       {/* ITEMS */}
 
       <RoundSizeItemsTable
@@ -530,98 +451,29 @@ export function EditRoundSizeEstimatePage() {
 
       <RoundSizeBottomSection
         charges={otherCharges}
-
-        onAdd={
-          addOtherCharge
-        }
-
-        onUpdate={
-          updateOtherCharge
-        }
-
-        onDelete={
-          deleteOtherCharge
-        }
-
-        gstEnabled={
-          gstEnabled
-        }
-
-        gstRate={
-          gstRate
-        }
-
-        onGstEnabledChange={
-          setGstEnabled
-        }
-
-        onGstRateChange={
-          setGstRate
-        }
-
-        discountType={
-          discountType
-        }
-
-        discountValue={
-          discountValue
-        }
-
-        onDiscountTypeChange={
-          setDiscountType
-        }
-
-        onDiscountValueChange={
-          setDiscountValue
-        }
-
-        advancePaid={
-          advancePaid
-        }
-
-        onAdvancePaidChange={
-          setAdvancePaid
-        }
-
-        subtotal={
-          totals.subtotal
-        }
-
-        gstAmount={
-          totals.gstAmount
-        }
-
-        otherCharges={
-          totals.totalOtherCharges
-        }
-
-        discountAmount={
-          totals.discountAmount
-        }
-
-        grandTotal={
-          totals.grandTotal
-        }
-
-        balanceDue={
-          totals.balanceDue
-        }
-
-        avgGirth={
-          totals.avgGirth
-        }
-
-        totalCbm={
-          totals.totalCbm
-        }
-
-        totalCft={
-          totals.totalCft
-        }
-
-        cftEnabled={
-          cftEnabled
-        }
+        onAdd={ addOtherCharge }
+        onUpdate={ updateOtherCharge }
+        onDelete={ deleteOtherCharge }
+        gstEnabled={ gstEnabled }
+        gstRate={ gstRate }
+        onGstEnabledChange={ setGstEnabled }
+        onGstRateChange={ setGstRate }
+        discountType={ discountType }
+        discountValue={ discountValue }
+        onDiscountTypeChange={ setDiscountType }
+        onDiscountValueChange={ setDiscountValue }
+        advancePaid={ advancePaid }
+        onAdvancePaidChange={ setAdvancePaid }
+        subtotal={ totals.subtotal }
+        gstAmount={ totals.gstAmount }
+        otherCharges={ totals.totalOtherCharges }
+        discountAmount={ totals.discountAmount }
+        grandTotal={ totals.grandTotal }
+        balanceDue={ totals.balanceDue }
+        avgGirth={ totals.avgGirth }
+        totalCbm={ totals.totalCbm }
+        totalCft={ totals.totalCft }
+        cftEnabled={ cftEnabled }
       />
 
 

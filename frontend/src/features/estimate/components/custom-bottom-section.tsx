@@ -1,8 +1,8 @@
 import { OtherCharges } from "./other-charges";
-import { EstimateSummary } from "./cut-size-summary";
 import type { OtherCharge } from "../types";
+import { CustomEstimateSummary } from "./custom-estimate-summary";
 
-interface EstimateBottomSectionProps {
+interface CustomEstimateBottomSectionProps {
   charges: OtherCharge[];
 
   onAdd: () => void;
@@ -44,19 +44,15 @@ interface EstimateBottomSectionProps {
   
   subtotal: number;
   gstAmount: number;
-  additionalItemsEnabled: boolean;
-  additionalTotal: number;
   otherCharges: number;
   discountAmount: number;
   grandTotal: number;
   advancePaid: number;
   balanceDue: number;
-  totalCft: number;
-  totalSqft: number;
 }
 
-export function EstimateBottomSection(
-  props: EstimateBottomSectionProps,
+export function CustomEstimateBottomSection(
+  props: CustomEstimateBottomSectionProps,
 ) {
   return (
     <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)]">
@@ -64,7 +60,7 @@ export function EstimateBottomSection(
         {...props}
       />
 
-      <EstimateSummary
+      <CustomEstimateSummary
         {...props}
       />
     </div>

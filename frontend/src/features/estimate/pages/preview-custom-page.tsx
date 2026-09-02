@@ -7,22 +7,19 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
 } from "@/components/ui/card";
 
 import {
-  getSavedRoundEstimates,
+    getSavedCustomEstimates,
 } from "../services/estimate-storage";
-import { toast } from "react-toastify";
-import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { RoundSizeMeasurePdf } from "../pdf/round-size-measure-pdf";
+import { toast } from "react-toastify";
+import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 
-export function PreviewRoundSizePage() {
+export function PreviewCustomEstimatePage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -32,18 +29,12 @@ export function PreviewRoundSizePage() {
     }
 
     const estimates =
-      getSavedRoundEstimates();
+      getSavedCustomEstimates();
 
-    return estimates.find(
-      (item) => item.id === id,
-    );
-  }, [id]);
-
-  /*
-   * ----------------------------------------
-   * NOT FOUND
-   * ----------------------------------------
-   */
+      return estimates.find(
+        (item) => item.id === id,
+      );
+    }, [id]);
 
   if (!estimate) {
     return (
@@ -77,45 +68,58 @@ export function PreviewRoundSizePage() {
     );
   }
 
-async function handleExport(type: "price" | "measure") {
-  if (!estimate) {
-    toast.error("Estimate not found.");
-    return;
-  }
-
-  try {
-
-    // Decide which PDF to render
-    const blob = type === "price" ?
-                  await pdf(<RoundSizeEstimatePdf estimate={estimate}/>).toBlob() :
-                  await pdf(<RoundSizeMeasurePdf estimate={estimate}/>).toBlob();
+  async function handleExport() {
+    if (!estimate) {
+      toast.error("Estimate not found.");
+      return;
+    }
     
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    try {
+      const blob =
+        await pdf(
+          <CustomEstimatePdf
+            estimate={estimate}
+          />,
+        ).toBlob();
 
-    link.href = url;
-    link.download = `${estimate.partyName}(${estimate.estimateNumber})-${type}.pdf`;
+      const url =
+        URL.createObjectURL(blob);
 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+      const link =
+        document.createElement("a");
 
-    URL.revokeObjectURL(url);
+      link.href = url;
 
-    toast.success(`${type} PDF exported successfully.`);
-  } catch (error) {
-    console.error("PDF export failed:", error);
-    toast.error("Unable to export PDF.");
+      link.download =
+        `${estimate.estimateNumber}.pdf`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+      toast.success(
+        "PDF exported successfully.",
+      );
+    } catch (error) {
+      console.error(
+        "PDF export failed:",
+        error,
+      );
+
+      toast.error(
+        "Unable to export PDF.",
+      );
+    }
   }
-}
-
 
   return (
     <div className="space-y-6">
 
-      {/* ======================================
-          TOP ACTION BAR
-          ====================================== */}
+      {/* TOP ACTION BAR */}
 
       <div className="no-print flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
@@ -132,7 +136,6 @@ async function handleExport(type: "price" | "measure") {
           </Button>
 
           <div>
-
             <h1 className="text-2xl font-semibold">
               Estimate Preview
             </h1>
@@ -140,7 +143,6 @@ async function handleExport(type: "price" | "measure") {
             <p className="text-sm text-muted-foreground">
               {estimate.estimateNumber}
             </p>
-
           </div>
 
         </div>
@@ -157,73 +159,68 @@ async function handleExport(type: "price" | "measure") {
             Print
           </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger render={<Button ><Download className="mr-2 size-4" /> Export</Button>} />
-            <DropdownMenuContent>
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => handleExport("measure")}><Download className="mr-2 size-4" /> Measurement List</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleExport("price")}><Download className="mr-2 size-4" /> Price List</DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+           onClick={handleExport}
+          >
+            <Download className="mr-2 size-4" />
+            Export
+          </Button>
 
         </div>
 
       </div>
 
-
-      {/* ======================================
-          ESTIMATE DOCUMENT
-          ====================================== */}
+      {/* ESTIMATE DOCUMENT */}
 
       <Card className="print-estimate mx-auto max-w-5xl">
 
         <CardContent className="print-page p-8">
 
-          {/* ==================================
-              COMPANY HEADER
-              ================================== */}
+          {/* COMPANY HEADER */}
 
           <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-start sm:justify-between">
 
             <div>
 
-              <h2 className="text-2xl font-bold">
-                Wood Estimator
-              </h2>
+                <div>
+                    <h2 className="text-2xl font-bold">
+                        Wood Estimator
+                    </h2>
 
-              <p className="mt-1 text-sm text-muted-foreground">
-                Wood Estimation & Sales
-              </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Wood Estimation & Sales
+                    </p>
+                </div>
 
             </div>
 
             <div className="text-left sm:text-right">
 
               <h3 className="text-lg font-semibold">
-                {estimate.documentTitle}
+                {
+                  estimate.documentTitle
+                }
               </h3>
 
               <p className="text-sm">
                 No:{" "}
                 <span className="font-medium">
-                  {estimate.estimateNumber}
+                  {
+                    estimate.estimateNumber
+                  }
                 </span>
               </p>
 
               <p className="text-sm">
-                Date: {estimate.date}
+                Date:{" "}
+                {estimate.date}
               </p>
 
             </div>
 
           </div>
 
-
-          {/* ==================================
-              CUSTOMER INFORMATION
-              ================================== */}
+          {/* CUSTOMER INFORMATION */}
 
           <div className="grid gap-6 border-b py-6 sm:grid-cols-2">
 
@@ -234,11 +231,13 @@ async function handleExport(type: "price" | "measure") {
               </p>
 
               <p className="mt-1 font-medium">
-                {estimate.partyName || "—"}
+                {
+                  estimate.partyName ||
+                  "—"
+                }
               </p>
 
             </div>
-
 
             <div>
 
@@ -247,11 +246,13 @@ async function handleExport(type: "price" | "measure") {
               </p>
 
               <p className="mt-1 font-medium">
-                {estimate.contactNumber || "—"}
+                {
+                  estimate.contactNumber ||
+                  "—"
+                }
               </p>
 
             </div>
-
 
             <div>
 
@@ -260,11 +261,13 @@ async function handleExport(type: "price" | "measure") {
               </p>
 
               <p className="mt-1 font-medium">
-                {estimate.reference || "—"}
+                {
+                  estimate.reference ||
+                  "—"
+                }
               </p>
 
             </div>
-
 
             <div>
 
@@ -283,10 +286,7 @@ async function handleExport(type: "price" | "measure") {
 
           </div>
 
-
-          {/* ==================================
-              WOOD ITEMS
-              ================================== */}
+          {/* ITEMS */}
 
           <div className="py-6">
 
@@ -307,87 +307,59 @@ async function handleExport(type: "price" | "measure") {
                     </th>
 
                     <th className="px-3 py-2 text-left">
-                      Wood Type
-                    </th>
-
-                    <th className="px-3 py-2 text-left">
-                      Log No.
+                      Description
                     </th>
 
                     <th className="px-3 py-2 text-right">
-                      Length (m)
+                      Qty
                     </th>
 
                     <th className="px-3 py-2 text-right">
-                      Girth (cm)
+                      Rate
                     </th>
 
                     <th className="px-3 py-2 text-right">
-                      CBM
-                    </th>
-
-                    {estimate.cftEnabled && (
-                      <th className="px-3 py-2 text-right">
-                        CFT
-                      </th>
-                    )}
-
-                    <th className="px-3 py-2 text-left">
-                      Note
+                      Amount
                     </th>
 
                   </tr>
 
                 </thead>
 
-
                 <tbody>
 
-                  {estimate.items.map(
-                    (item, index) => (
-                      <tr
-                        key={item.id}
-                        className="border-b"
-                      >
+                    {estimate.items.map((item, index) => {
 
-                        <td className="px-3 py-3">
-                          {index + 1}
-                        </td>
+                        return (
+                            <tr key={item.id}
+                                className="border-b"
+                            >
+                                <td className="px-3 py-3">
+                                    {index + 1}
+                                </td>
 
-                        <td className="px-3 py-3">
-                          {item.woodType || "—"}
-                        </td>
+                                <td className="px-3 py-3">
+                                    {item.description}
+                                </td>
 
-                        <td className="px-3 py-3">
-                          {item.logNo || "—"}
-                        </td>
+                                <td className="px-3 py-3 text-right">
+                                    {item.quantity}
+                                </td>
 
-                        <td className="px-3 py-3 text-right">
-                          {item.length}
-                        </td>
+                                <td className="px-3 py-3 text-right">
+                                    ₹{Number(
+                                        item.pricePerUnit,
+                                    ).toFixed(2)}
+                                </td>
 
-                        <td className="px-3 py-3 text-right">
-                          {item.girth}
-                        </td>
-
-                        <td className="px-3 py-3 text-right">
-                          {item.cbm.toFixed(3)}
-                        </td>
-
-                        {estimate.cftEnabled && (
-                          <td className="px-3 py-3 text-right">
-                            {item.cft.toFixed(2)}
-                          </td>
-                        )}
-
-                        <td className="px-3 py-3">
-                          {item.note || "—"}
-                        </td>
-
-                      </tr>
-                    ),
-                  )}
-
+                                <td className="px-3 py-3 text-right font-medium">
+                                    ₹{item.lineTotal.toFixed(
+                                        2,
+                                    )}
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
 
               </table>
@@ -396,77 +368,7 @@ async function handleExport(type: "price" | "measure") {
 
           </div>
 
-
-          {/* ==================================
-              ROUND SIZE PRICING
-              ================================== */}
-
-          <div className="border-t pt-6 pb-3">
-
-            <h3 className="mb-3 font-semibold">
-              Round Size Pricing
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-
-              {/* TOTAL CBM */}
-
-              <div>
-
-                <p className="text-xs font-medium uppercase text-muted-foreground">
-                  Total CBM
-                </p>
-
-                <p className="mt-1 font-semibold">
-                  {estimate.totals.totalCbm.toFixed(3)} CBM
-                </p>
-
-              </div>
-
-
-              {/* PRICE */}
-
-              <div>
-
-                <p className="text-xs font-medium uppercase text-muted-foreground">
-                  Price / CBM
-                </p>
-
-                <p className="mt-1 font-semibold">
-                  ₹
-                  {Number(
-                    estimate.pricePerCbm,
-                  ).toFixed(2)}
-                </p>
-
-              </div>
-
-
-              {/* SUBTOTAL */}
-
-              <div>
-
-                <p className="text-xs font-medium uppercase text-muted-foreground">
-                  Subtotal
-                </p>
-
-                <p className="mt-1 font-semibold">
-                  ₹
-                  {estimate.totals.subtotal.toFixed(
-                    2,
-                  )}
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {/* ==================================
-              BOTTOM SECTION
-              ================================== */}
+          {/* BOTTOM SECTION */}
 
           <div className="grid gap-8 border-t pt-6 sm:grid-cols-2">
 
@@ -513,30 +415,22 @@ async function handleExport(type: "price" | "measure") {
 
             </div>
 
-
             {/* SUMMARY */}
 
             <div className="space-y-2 text-sm">
 
               <div className="flex justify-between">
-
-                <span className="font-semibold">
-                  Subtotal
-                </span>
-
+                <span className="font-semibold">Subtotal</span>
                 <span className="font-semibold">
                   ₹
                   {estimate.totals.subtotal.toFixed(
                     2,
                   )}
                 </span>
-
               </div>
-
 
               {estimate.gstEnabled && (
                 <div className="flex justify-between">
-
                   <span>
                     GST ({estimate.gstRate}%)
                   </span>
@@ -547,13 +441,10 @@ async function handleExport(type: "price" | "measure") {
                       2,
                     )}
                   </span>
-
                 </div>
               )}
 
-
               <div className="flex justify-between">
-
                 <span>
                   Other Charges
                 </span>
@@ -564,12 +455,9 @@ async function handleExport(type: "price" | "measure") {
                     2,
                   )}
                 </span>
-
               </div>
 
-
               <div className="flex justify-between">
-
                 <span>
                   Discount
                 </span>
@@ -580,15 +468,11 @@ async function handleExport(type: "price" | "measure") {
                     2,
                   )}
                 </span>
-
               </div>
-
 
               <div className="my-3 border-t" />
 
-
               <div className="flex justify-between text-base font-bold">
-
                 <span>
                   Grand Total
                 </span>
@@ -599,12 +483,9 @@ async function handleExport(type: "price" | "measure") {
                     2,
                   )}
                 </span>
-
               </div>
 
-
               <div className="flex justify-between">
-
                 <span>
                   Advance Paid
                 </span>
@@ -615,12 +496,9 @@ async function handleExport(type: "price" | "measure") {
                     2,
                   )}
                 </span>
-
               </div>
 
-
               <div className="flex justify-between font-semibold">
-
                 <span>
                   Balance Due
                 </span>
@@ -631,89 +509,13 @@ async function handleExport(type: "price" | "measure") {
                     2,
                   )}
                 </span>
-
               </div>
 
             </div>
 
           </div>
 
-
-          {/* ==================================
-              ROUND SIZE SUMMARY DETAILS
-              ================================== */}
-
-          <div className="mt-6 border-t pt-6">
-
-            <h3 className="mb-3 font-semibold">
-              Measurement Summary
-            </h3>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-
-              {/* AVG GIRTH */}
-
-              <div>
-
-                <p className="text-xs font-medium uppercase text-muted-foreground">
-                  Avg Girth
-                </p>
-
-                <p className="mt-1 font-semibold">
-                  {estimate.totals.avgGirth.toFixed(
-                    2,
-                  )}{" "}
-                  cm
-                </p>
-
-              </div>
-
-
-              {/* TOTAL CBM */}
-
-              <div>
-
-                <p className="text-xs font-medium uppercase text-muted-foreground">
-                  Total CBM
-                </p>
-
-                <p className="mt-1 font-semibold">
-                  {estimate.totals.totalCbm.toFixed(
-                    3,
-                  )}{" "}
-                  CBM
-                </p>
-
-              </div>
-
-
-              {/* TOTAL CFT */}
-
-              {estimate.cftEnabled && (
-                <div>
-
-                  <p className="text-xs font-medium uppercase text-muted-foreground">
-                    Total CFT
-                  </p>
-
-                  <p className="mt-1 font-semibold">
-                    {estimate.totals.totalCft.toFixed(
-                      2,
-                    )}{" "}
-                    CFT
-                  </p>
-
-                </div>
-              )}
-
-            </div>
-
-          </div>
-
-
-          {/* ==================================
-              NOTES
-              ================================== */}
+          {/* NOTES */}
 
           {estimate.notes && (
             <div className="mt-8 border-t pt-6">

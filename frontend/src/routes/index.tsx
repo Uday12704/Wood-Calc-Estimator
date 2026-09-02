@@ -21,6 +21,9 @@ import { EditCutSizeEstimatePage } from "@/features/estimate/pages/edit-cut-size
 import { PreviewCutSizePage } from "@/features/estimate/pages/preview-cut-size-page";
 import { PreviewRoundSizePage } from "@/features/estimate/pages/preview-round-size-page";
 import { EditRoundSizeEstimatePage } from "@/features/estimate/pages/edit-round-size-estimate-page";
+import { CustomEstimatePage } from "@/features/estimate/pages/custom-estimate-page";
+import { PreviewCustomEstimatePage } from "@/features/estimate/pages/preview-custom-page";
+import { EditCustomEstimatePage } from "@/features/estimate/pages/edit-custom-estimate-page";
 
 export function AppRoutes() {
   return (
@@ -79,6 +82,11 @@ export function AppRoutes() {
               path="/app/estimates/new/round-size"
               element={<RoundSizeEstimatePage />}
             />
+            
+            <Route
+              path="/app/estimates/new/custom-estimate"
+              element={<CustomEstimatePage />}
+            />
 
             <Route
               path="/app/estimates/history"
@@ -100,6 +108,13 @@ export function AppRoutes() {
                 <PreviewRoundSizePage />
               }
             />
+            
+            <Route
+              path="/app/estimates/preview-custom-estimate/:id"
+              element={
+                <PreviewCustomEstimatePage />
+              }
+            />
 
             <Route
               path="/app/estimates/edit-cut-size/:id"
@@ -112,6 +127,13 @@ export function AppRoutes() {
               path="/app/estimates/edit-round-size/:id"
               element={
                 <EditRoundSizeEstimatePage />
+              }
+            />
+            
+            <Route
+              path="/app/estimates/edit-custom-estimate/:id"
+              element={
+                <EditCustomEstimatePage />
               }
             />
 

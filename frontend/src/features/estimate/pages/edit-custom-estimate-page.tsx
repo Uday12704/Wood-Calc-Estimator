@@ -3,39 +3,36 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { EstimateHeaderForm } from "../components/estimate-header-form";
-import { WoodItemsTable } from "../components/cut-size-items-table";
-import { EstimateBottomSection } from "../components/estimate-bottom-section";
 import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
 
-import { woodCategories } from "../data/wood-categories";
-
 import type {
-  CutSizeAdditionalItem,
+    CustomEstimateItem,
   EstimateHeader,
   OtherCharge,
+  SavedCustomEstimate,
   SavedEstimate,
-  WoodItem,
 } from "../types";
 
 import {
-  getEstimateById,
-  saveEstimate,
+    getCustomEstimateById,
+  saveCustomEstimate,
 } from "../services/estimate-storage";
 
-import { calculateEstimateTotals } from "../utils/cut-size-calculations";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
-import { AdditionalItemsTable } from "../components/cut-size-additional-items-table";
+import { calculateCustomEstimateTotals } from "../utils/custom-estimate-calculations";
+import { CustomItemsTable } from "../components/custom-items-table";
+import { CustomEstimateBottomSection } from "../components/custom-bottom-section";
 
-interface EditCutSizeEstimateFormProps {
-  estimate: SavedEstimate;
+interface EditCustomEstimateFormProps {
+  estimate: SavedCustomEstimate;
 }
 
-function EditCutSizeEstimateForm({
+function EditCustomEstimateForm({
   estimate,
-}: EditCutSizeEstimateFormProps) {
+}: EditCustomEstimateFormProps) {
   const navigate = useNavigate();
 
   /*
@@ -69,12 +66,12 @@ function EditCutSizeEstimateForm({
 
   /*
    * ----------------------------------------
-   * WOOD ITEMS
+   * CUSTOM ITEMS
    * ----------------------------------------
    */
 
   const [items, setItems] =
-    useState<WoodItem[]>(
+    useState<CustomEstimateItem[]>(
       estimate.items,
     );
 
@@ -150,57 +147,20 @@ function EditCutSizeEstimateForm({
    * CALCULATIONS
    * ----------------------------------------
    */
-  const [additionalItemsEnabled, setAdditionalItemsEnabled] = 
-    useState(
-      estimate.additionalItemsEnabled
-    )
-
-  const [additionalItems, setAdditionalItems] =
-    useState<CutSizeAdditionalItem[]>(
-      estimate.additionalItems
-    )
-
-  const [additionalGstEnabled, setAdditionalGstEnabled] = useState(estimate.additionalItemGstEnabled);
-
-  const [additionalGstRate, setAdditionalGstRate] = useState(estimate.additionalItemGstRate);
 
   const totals =
-    calculateEstimateTotals({
+    calculateCustomEstimateTotals({
       items: items.map((item) => {
-        const category =
-          woodCategories.find(
-            (category) =>
-              category.name ===
-              item.woodType,
-          );
-
         return {
           lineTotal:
             item.lineTotal,
-
-          total:
-            item.total,
-
-          calculationMode:
-            category?.calculationMode ??
-            "CFT",
         };
       }),
-      additionalItems:
-        additionalItemsEnabled
-          ? additionalItems
-          : [],
 
       otherCharges,
 
       gstEnabled,
       gstRate,
-
-      additionalGstEnabled:
-        additionalItemsEnabled
-          ? additionalGstEnabled
-          : false,
-      additionalGstRate,
 
       discountType,
       discountValue,
@@ -271,10 +231,9 @@ function EditCutSizeEstimateForm({
     if (
       !items.some(
         (item) =>
-          item.woodType &&
-          item.breadth !== "" &&
-          item.height !== "" &&
-          item.length !== "",
+          item.description &&
+          item.quantity !== "" &&
+          item.pricePerUnit !== ""
       )
     ) {
       toast.error(
@@ -297,7 +256,7 @@ function EditCutSizeEstimateForm({
     status:
       | "ON_HOLD"
       | "CONFIRMED",
-  ): SavedEstimate => {
+  ): SavedCustomEstimate => {
     return {
       ...estimate,
       documentTitle:header.documentTitle,
@@ -308,14 +267,6 @@ function EditCutSizeEstimateForm({
       reference:header.reference,
       status,
       items,
-      additionalItemsEnabled,
-      additionalItems: additionalItemsEnabled
-        ? additionalItems
-        : [],
-
-      additionalItemGstEnabled: additionalItemsEnabled
-        ? additionalGstEnabled
-        : false,
       otherCharges,
       gstEnabled,
       gstRate,
@@ -326,16 +277,11 @@ function EditCutSizeEstimateForm({
       totals: {
         subtotal:totals.subtotal,
         gstAmount:totals.gstAmount,
-        additionalSubtotal: totals.additionalSubtotal,
-        additionalGstAmount: totals.additionalGstAmount,
-        additionalTotal:totals.additionalTotal,
         totalOtherCharges:totals.totalOtherCharges,
         discountAmount:totals.discountAmount,
         grandTotal:totals.grandTotal,
         advancePaid:totals.advancePaid,
         balanceDue:totals.balanceDue,
-        totalCft:totals.totalCft,
-        totalSqft:totals.totalSqft,
       },
 
       updatedAt:
@@ -356,14 +302,14 @@ function EditCutSizeEstimateForm({
     const updatedEstimate =
       buildEstimate("ON_HOLD");
 
-    saveEstimate(updatedEstimate);
+    saveCustomEstimate(updatedEstimate);
 
     toast.success(
       "Estimate updated successfully.",
     );
 
     navigate(
-      `/app/estimates/preview-cut-size/${estimate.id}`,
+      `/app/estimates/preview-custom-estimate/${estimate.id}`,
     );
   };
 
@@ -381,14 +327,14 @@ function EditCutSizeEstimateForm({
     const updatedEstimate =
       buildEstimate("CONFIRMED");
 
-    saveEstimate(updatedEstimate);
+    saveCustomEstimate(updatedEstimate);
 
     toast.success(
       "Estimate marked as confirmed.",
     );
 
     navigate(
-      `/app/estimates/preview-cut-size/${estimate.id}`,
+      `/app/estimates/preview-custom-estimate/${estimate.id}`,
     );
   };
 
@@ -412,7 +358,7 @@ function EditCutSizeEstimateForm({
 
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Edit Cut Size Estimate
+            Edit Custom Estimate
           </h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
@@ -430,48 +376,14 @@ function EditCutSizeEstimateForm({
 
       {/* WOOD ITEMS */}
 
-      <WoodItemsTable
+      <CustomItemsTable
         items={items}
-        categories={woodCategories}
         onChange={setItems}
       />
 
-      <div className="flex items-center gap-2">
-        <input
-          id="additional-items-enabled"
-          type="checkbox"
-          checked={additionalItemsEnabled}
-          onChange={(event) =>
-            setAdditionalItemsEnabled(
-              event.target.checked,
-            )
-          }
-          className="size-4"
-        />
-
-        <label
-          htmlFor="additional-items-enabled"
-          className="text-sm font-medium cursor-pointer"
-        >
-          Enable Additional Items
-        </label>
-      </div>
-
-      {additionalItemsEnabled && (
-        <AdditionalItemsTable
-          items={additionalItems}
-          onChange={setAdditionalItems}
-        
-          additionalGstEnabled={additionalGstEnabled}
-          additionalGstRate={additionalGstRate}
-          onAdditionalGstEnabledChange={setAdditionalGstEnabled}
-          onAdditionalGstRateChange={setAdditionalGstRate}
-        />
-      )}
-
       {/* BOTTOM SECTION */}
 
-      <EstimateBottomSection
+      <CustomEstimateBottomSection
         charges={otherCharges}
         onAdd={addOtherCharge}
         onUpdate={updateOtherCharge}
@@ -502,8 +414,6 @@ function EditCutSizeEstimateForm({
 
         subtotal={totals.subtotal}
         gstAmount={totals.gstAmount}
-         additionalItemsEnabled={additionalItemsEnabled}
-        additionalTotal={totals.additionalTotal}
         otherCharges={
           totals.totalOtherCharges
         }
@@ -512,8 +422,6 @@ function EditCutSizeEstimateForm({
         }
         grandTotal={totals.grandTotal}
         balanceDue={totals.balanceDue}
-        totalCft={totals.totalCft}
-        totalSqft={totals.totalSqft}
       />
 
       {/* NOTES */}
@@ -554,12 +462,12 @@ function EditCutSizeEstimateForm({
   );
 }
 
-export function EditCutSizeEstimatePage() {
+export function EditCustomEstimatePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const [estimate, setEstimate] =
-    useState<SavedEstimate | null>(null);
+    useState<SavedCustomEstimate | null>(null);
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -580,7 +488,7 @@ export function EditCutSizeEstimatePage() {
     }
 
     const savedEstimate =
-      getEstimateById(id);
+      getCustomEstimateById(id);
 
     if (!savedEstimate) {
       toast.error("Estimate not found.");
@@ -590,9 +498,9 @@ export function EditCutSizeEstimatePage() {
       return;
     }
 
-    if (savedEstimate.type !== "CUT_SIZE") {
+    if (savedEstimate.type !== "CUSTOM") {
       toast.error(
-        "This estimate is not a cut-size estimate.",
+        "This estimate is not a custom estimate.",
       );
 
       navigate("/app/estimates/history", {
@@ -627,7 +535,7 @@ export function EditCutSizeEstimatePage() {
   }
 
   return (
-    <EditCutSizeEstimateForm
+    <EditCustomEstimateForm
       estimate={estimate}
     />
   );

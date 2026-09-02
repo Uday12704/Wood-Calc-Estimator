@@ -4,7 +4,6 @@ import {
   Download,
   FileText,
   Send,
-  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ import { toast } from "react-toastify";
 import { pdf } from "@react-pdf/renderer";
 
 import type {
+  SavedCustomEstimate,
   SavedEstimate,
   SavedRoundSizeEstimate,
 } from "../types";
@@ -28,10 +28,12 @@ import type {
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
 import { woodCategories } from "../data/wood-categories";
+import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 
 type EstimateUnion =
   | SavedEstimate
-  | SavedRoundSizeEstimate;
+  | SavedRoundSizeEstimate
+  | SavedCustomEstimate;
 
 interface ShareEstimateDialogProps {
   open: boolean;
@@ -50,9 +52,6 @@ export function ShareEstimateDialog({
   if (!estimate) {
     return null;
   }
-
-  const isRoundSize =
-    estimate.type === "ROUND_SIZE";
 
   /*
    * ----------------------------------------
@@ -102,16 +101,18 @@ export function ShareEstimateDialog({
     );
 
     lines.push(
-      isRoundSize
+      estimate.type === "ROUND_SIZE"
         ? "ROUND SIZE ITEMS"
-        : "WOOD ITEMS",
+        : estimate.type === "CUT_SIZE"
+        ? "CUT SIZE ITEMS"
+        : "CUSTOM ITEMS",
     );
 
     lines.push(
       "------------------------------",
     );
 
-    if (isRoundSize) {
+    if (estimate.type === "ROUND_SIZE") {
       const roundEstimate =
         estimate as SavedRoundSizeEstimate;
 
@@ -154,7 +155,8 @@ export function ShareEstimateDialog({
           roundEstimate.pricePerCbm,
         ).toFixed(2)}`,
       );
-    } else {
+
+    } else if(estimate.type === "CUT_SIZE") {
       const cutEstimate =
         estimate as SavedEstimate;
 
@@ -188,6 +190,26 @@ export function ShareEstimateDialog({
             } | ${
               item.total.toFixed(2)
             } ${unit} | Rs. ${
+              item.lineTotal.toFixed(2)
+            }`,
+          );
+        },
+      );
+    }
+    else{
+      const customEstimate = estimate as SavedCustomEstimate;
+
+      customEstimate.items.forEach(
+        (item, index) => {
+
+          lines.push(
+            `${index + 1}. ${
+              item.description || `Item ${index + 1}`
+            } | Qty ${
+              item.quantity
+            } | Rs. ${
+              item.pricePerUnit
+            } | Rs. ${
               item.lineTotal.toFixed(2)
             }`,
           );
@@ -297,7 +319,12 @@ export function ShareEstimateDialog({
    */
 
   async function createPdfBlob() {
-    if (isRoundSize) {
+
+    if(!estimate){
+        return null;
+    }
+
+    if (estimate.type === "ROUND_SIZE") {
       return pdf(
         <RoundSizeEstimatePdf
           estimate={
@@ -307,10 +334,20 @@ export function ShareEstimateDialog({
       ).toBlob();
     }
 
+    if(estimate.type === "CUT_SIZE"){
+      return pdf(
+        <CutSizeEstimatePdf
+          estimate={
+            estimate as SavedEstimate
+          }
+        />,
+      ).toBlob();
+    }
+    
     return pdf(
-      <CutSizeEstimatePdf
+      <CustomEstimatePdf
         estimate={
-          estimate as SavedEstimate
+          estimate as SavedCustomEstimate
         }
       />,
     ).toBlob();
@@ -331,7 +368,7 @@ export function ShareEstimateDialog({
       setIsSharing(true);
 
       const blob =
-        await createPdfBlob();
+        await createPdfBlob() || new Blob();
 
       const url =
         URL.createObjectURL(blob);
@@ -383,7 +420,7 @@ export function ShareEstimateDialog({
       setIsSharing(true);
 
       const blob =
-        await createPdfBlob();
+        await createPdfBlob() || new Blob();
 
       const file = new File(
         [blob],

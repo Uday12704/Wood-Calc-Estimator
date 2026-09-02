@@ -1,12 +1,10 @@
 import { formatCurrency } from "@/lib/formatters";
 
-interface EstimateSummaryProps {
+interface CustomEstimateSummaryProps {
   subtotal: number;
   gstEnabled: boolean;
   gstRate: number;
   gstAmount: number;
-  additionalItemsEnabled: boolean;
-  additionalTotal: number;
   otherCharges: number;
   discountAmount: number;
   discountType: "flat" | "percentage";
@@ -14,18 +12,13 @@ interface EstimateSummaryProps {
   grandTotal: number;
   advancePaid: number;
   balanceDue: number;
-
-  totalCft: number;
-  totalSqft: number;
 }
 
-export function EstimateSummary({
+export function CustomEstimateSummary({
   subtotal,
   gstEnabled,
   gstRate,
   gstAmount,
-  additionalItemsEnabled,
-  additionalTotal,
   otherCharges,
   discountAmount,
   discountType,
@@ -33,9 +26,7 @@ export function EstimateSummary({
   grandTotal,
   advancePaid,
   balanceDue,
-  totalCft,
-  totalSqft,
-}: EstimateSummaryProps) {
+}: CustomEstimateSummaryProps) {
   return (
     <div className="rounded-xl border bg-card p-5">
       <h3 className="text-sm font-semibold uppercase tracking-wide">
@@ -79,20 +70,6 @@ export function EstimateSummary({
             </span>
           </div>
         </div>
-        )}
-
-        {/* ADDITIONAL ITEMS TOTAL */}
-
-        {additionalItemsEnabled && (
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">
-              Additional Items Total
-            </span>
-
-            <span>
-              {formatCurrency(additionalTotal)}
-            </span>
-          </div>
         )}
 
         {/* OTHER CHARGES */}
@@ -167,34 +144,6 @@ export function EstimateSummary({
             {formatCurrency(balanceDue)}
           </span>
         </div>
-
-        {/* CFT */}
-
-        {totalCft > 0 && (
-          <div className="flex justify-between pt-2 text-xs">
-            <span className="text-muted-foreground">
-              Total CFT
-            </span>
-
-            <span>
-              {totalCft.toFixed(2)}
-            </span>
-          </div>
-        )}
-
-        {/* SQFT */}
-
-        {totalSqft > 0 && (
-          <div className="flex justify-between pt-2 text-xs">
-            <span className="text-muted-foreground">
-              Total SQFT
-            </span>
-
-            <span>
-              {totalSqft.toFixed(2)}
-            </span>
-          </div>
-        )}
 
       </div>
     </div>

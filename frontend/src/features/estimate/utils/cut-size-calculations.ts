@@ -11,6 +11,13 @@ export interface CalculateEstimateParams {
     calculationMode: CalculationMode;
   }[];
 
+  additionalItems: {
+    lineTotal: number;
+  }[];
+
+  additionalGstEnabled: boolean;
+  additionalGstRate: number;
+
   otherCharges: {
     amount: number;
   }[];
@@ -26,9 +33,12 @@ export interface CalculateEstimateParams {
 
 export function calculateEstimateTotals({
   items,
+  additionalItems,
   otherCharges,
   gstEnabled,
   gstRate,
+  additionalGstEnabled,
+  additionalGstRate,
   discountType,
   discountValue,
   advancePaid,
@@ -40,6 +50,12 @@ export function calculateEstimateTotals({
    */
 
   const subtotal = items.reduce(
+    (sum, item) =>
+      sum + item.lineTotal,
+    0,
+  );
+
+  const additionalSubtotal = additionalItems.reduce(
     (sum, item) =>
       sum + item.lineTotal,
     0,
@@ -116,6 +132,13 @@ export function calculateEstimateTotals({
     ? (subtotal * gstRate) / 100
     : 0;
 
+  const additionalGstAmount =
+    additionalGstEnabled
+    ? (additionalSubtotal * additionalGstRate) / 100
+    : 0;
+
+  const additionalTotal = additionalSubtotal + additionalGstAmount;
+
   /*
    * ----------------------------------------
    * DISCOUNT
@@ -156,12 +179,13 @@ export function calculateEstimateTotals({
    */
 
   const grandTotal = Math.max(
-    0,
-    subtotal +
-      gstAmount +
-      totalOtherCharges -
-      discountAmount,
-  );
+  0,
+  subtotal +
+    gstAmount +
+    additionalTotal +
+    totalOtherCharges -
+    discountAmount,
+);
 
   /*
    * ----------------------------------------
@@ -192,6 +216,12 @@ export function calculateEstimateTotals({
     subtotal,
 
     gstAmount,
+
+    additionalSubtotal,
+
+    additionalGstAmount,
+
+    additionalTotal,
 
     totalOtherCharges,
 
