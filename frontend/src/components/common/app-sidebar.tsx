@@ -186,7 +186,7 @@ export function AppSidebar() {
       <SidebarFooter>
         {/* FOOTER */}
         {/* Subscription */}
-        <div className="rounded-lg border bg-card p-3 group-data-[collapsible=icon]:hidden">
+        <div className="rounded-lg border bg-sidebar-accent p-3 group-data-[collapsible=icon]:hidden">
 
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium">

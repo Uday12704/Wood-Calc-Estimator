@@ -409,49 +409,23 @@ export function RoundSizeItemsTable({
                     {/* WOOD TYPE */}
 
                     <td className="px-2 py-2">
-
-                        <select
+                      <Input
                         ref={(element) =>
-                            setInputRef(
+                          setInputRef(
                             `${item.id}-woodType`,
                             element,
-                            )
+                          )
                         }
+                        type="text"
                         value={item.woodType}
                         onChange={(event) =>
-                            updateItem(
+                          updateItem(
                             item.id,
                             "woodType",
                             event.target.value,
-                            )
+                          )
                         }
-                        onKeyDown={(event) =>
-                            handleKeyDown(
-                            event,
-                            item.id,
-                            "woodType",
-                            )
-                        }
-                        className="h-9 w-full rounded-md border bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                        >
-
-                        <option value="">
-                            Select wood
-                        </option>
-
-                        {categories.map(
-                            (category) => (
-                            <option
-                                key={category.id}
-                                value={category.name}
-                            >
-                                {category.name}
-                            </option>
-                            ),
-                        )}
-
-                        </select>
-
+                      />
                     </td>
 
                     <td className="px-2 py-2">

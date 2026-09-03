@@ -159,7 +159,7 @@ async function handleExport(type: "price" | "measure") {
 
           <DropdownMenu>
             <DropdownMenuTrigger render={<Button ><Download className="mr-2 size-4" /> Export</Button>} />
-            <DropdownMenuContent>
+            <DropdownMenuContent className="w-35">
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => handleExport("measure")}><Download className="mr-2 size-4" /> Measurement List</DropdownMenuItem>
                 <DropdownMenuSeparator />

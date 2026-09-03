@@ -2,15 +2,14 @@ import { useState } from "react";
 
 import { EstimateHeaderForm, } from "../components/estimate-header-form";
 
-import type { CustomEstimateItem, EstimateHeader, OtherCharge, SavedCustomEstimate, SavedEstimate, } from "../types";
+import type { CustomEstimateItem, EstimateHeader, OtherCharge, SavedCustomEstimate } from "../types";
 
 import { generateEstimateNumber, } from "../utils/estimate-number";
 
 import { getTodayDate, } from "../utils/date";
-import { EstimateBottomSection } from "../components/estimate-bottom-section";
 import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
-import { saveCustomEstimate, saveEstimate } from "../services/estimate-storage";
+import { saveCustomEstimate } from "../services/estimate-storage";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
