@@ -62,11 +62,6 @@ const navigationGroups: NavigationGroup[] = [
         url: "/app/estimates/history",
         icon: History,
       },
-      {
-        title: "Confirmed Orders",
-        url: "/app/estimates/confirmed",
-        icon: ClipboardCheck,
-      },
     ],
   },
 
@@ -81,7 +76,7 @@ const navigationGroups: NavigationGroup[] = [
       {
         title: "Delivery Checklist",
         url: "/app/delivery-checklist",
-        icon: Truck,
+        icon: ClipboardCheck,
       },
     ],
   },
