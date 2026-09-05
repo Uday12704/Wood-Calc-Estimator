@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { AdditionalItemsTable } from "../components/cut-size-additional-items-table";
+import { pdf } from "@react-pdf/renderer";
+import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 
 export function CutSizeEstimatePage() {
   const navigate = useNavigate();
@@ -261,6 +263,59 @@ export function CutSizeEstimatePage() {
     }
 
     const [shareOpen, setShareOpen] = useState(false);
+
+    async function handleExport() {
+      const estimate = buildEstimate(header.status);
+        if (!estimate) {
+          toast.error("Estimate not found.");
+          return;
+        }
+
+        if(!validateEstimate()){
+          return;
+        }
+        
+        try {
+          const blob =
+            await pdf(
+              <CutSizeEstimatePdf
+                estimate={estimate}
+              />,
+            ).toBlob();
+    
+          const url =
+            URL.createObjectURL(blob);
+    
+          const link =
+            document.createElement("a");
+    
+          link.href = url;
+    
+          link.download =
+            `${estimate.estimateNumber}.pdf`;
+    
+          document.body.appendChild(link);
+    
+          link.click();
+    
+          link.remove();
+    
+          URL.revokeObjectURL(url);
+    
+          toast.success(
+            "PDF exported successfully.",
+          );
+        } catch (error) {
+          console.error(
+            "PDF export failed:",
+            error,
+          );
+    
+          toast.error(
+            "Unable to export PDF.",
+          );
+        }
+      }
     
   return (
     <div className="space-y-6">
@@ -400,9 +455,9 @@ export function CutSizeEstimatePage() {
         onShare={() => {
           setShareOpen(true);
         }}
-        onPrintExport={() => {
-          console.log("Print / Export");
-        }}
+        onPrintExport={
+          handleExport
+        }
       />
 
       <ShareEstimateDialog

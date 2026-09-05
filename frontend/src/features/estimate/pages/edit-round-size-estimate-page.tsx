@@ -47,6 +47,8 @@ import type {
   SavedRoundSizeEstimate,
 } from "../types";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
+import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
+import { pdf } from "@react-pdf/renderer";
 
 export function EditRoundSizeEstimatePage() {
     const { id } = useParams();
@@ -379,6 +381,54 @@ export function EditRoundSizeEstimatePage() {
         });
     }
 
+    async function handleExport() {
+        if (!estimate) {
+          toast.error("Estimate not found.");
+          return;
+        }
+        
+        try {
+          const blob =
+            await pdf(
+              <RoundSizeEstimatePdf
+                estimate={estimate}
+              />,
+            ).toBlob();
+    
+          const url =
+            URL.createObjectURL(blob);
+    
+          const link =
+            document.createElement("a");
+    
+          link.href = url;
+    
+          link.download =
+            `${estimate.estimateNumber}.pdf`;
+    
+          document.body.appendChild(link);
+    
+          link.click();
+    
+          link.remove();
+    
+          URL.revokeObjectURL(url);
+    
+          toast.success(
+            "PDF exported successfully.",
+          );
+        } catch (error) {
+          console.error(
+            "PDF export failed:",
+            error,
+          );
+    
+          toast.error(
+            "Unable to export PDF.",
+          );
+        }
+      }
+
   return (
     <div className="space-y-6">
 
@@ -547,11 +597,9 @@ export function EditRoundSizeEstimatePage() {
           setShareOpen(true);
         }}
 
-        onPrintExport={() => {
-          console.log(
-            "Print / Export",
-          );
-        }}
+        onPrintExport={
+          handleExport
+        }
       />
 
       <ShareEstimateDialog

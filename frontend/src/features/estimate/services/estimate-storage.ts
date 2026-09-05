@@ -166,7 +166,7 @@ export function saveCustomEstimate(
     );
 
   if (existingIndex >= 0) {
-    estimates[existingIndex] =
+    estimates[existingIndex]  =
       estimate;
   } else {
     estimates.push(estimate);

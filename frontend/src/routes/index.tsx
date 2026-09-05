@@ -24,6 +24,8 @@ import { EditRoundSizeEstimatePage } from "@/features/estimate/pages/edit-round-
 import { CustomEstimatePage } from "@/features/estimate/pages/custom-estimate-page";
 import { PreviewCustomEstimatePage } from "@/features/estimate/pages/preview-custom-page";
 import { EditCustomEstimatePage } from "@/features/estimate/pages/edit-custom-estimate-page";
+import { DeliveryChecklistPage } from "@/features/delivery-checklist/pages/delivery-checklist-page";
+import { DeliveryChecklistDetailPage } from "@/features/delivery-checklist/pages/delivery-checklist-detail-page";
 
 export function AppRoutes() {
   return (
@@ -135,6 +137,16 @@ export function AppRoutes() {
               element={
                 <EditCustomEstimatePage />
               }
+            />
+
+            <Route
+              path="/app/delivery-checklist"
+              element={<DeliveryChecklistPage />}
+            />
+
+            <Route
+              path="/app/delivery-checklist/:type/:id"
+              element={<DeliveryChecklistDetailPage />}
             />
 
           </Route>

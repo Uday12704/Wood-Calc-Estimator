@@ -543,7 +543,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs. {" "}
                 {estimate.totals.grandTotal.toFixed(
                   2,
                 )}

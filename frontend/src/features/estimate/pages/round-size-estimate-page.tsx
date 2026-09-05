@@ -29,6 +29,8 @@ import { EstimateActions } from "../components/estimate-actions";
 import { saveRoundEstimate } from "../services/estimate-storage";
 import { useNavigate } from "react-router-dom";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
+import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
+import { pdf } from "@react-pdf/renderer";
 
 export function RoundSizeEstimatePage() {
   const navigate = useNavigate();
@@ -222,6 +224,59 @@ export function RoundSizeEstimatePage() {
     }
 
     const [shareOpen, setShareOpen] = useState(false);
+
+    async function handleExport() {
+      const estimate = buildEstimate(header.status);
+        if (!estimate) {
+          toast.error("Estimate not found.");
+          return;
+        }
+
+        if(!validateEstimate()){
+          return;
+        }
+        
+        try {
+          const blob =
+            await pdf(
+              <RoundSizeEstimatePdf
+                estimate={estimate}
+              />,
+            ).toBlob();
+    
+          const url =
+            URL.createObjectURL(blob);
+    
+          const link =
+            document.createElement("a");
+    
+          link.href = url;
+    
+          link.download =
+            `${estimate.estimateNumber}.pdf`;
+    
+          document.body.appendChild(link);
+    
+          link.click();
+    
+          link.remove();
+    
+          URL.revokeObjectURL(url);
+    
+          toast.success(
+            "PDF exported successfully.",
+          );
+        } catch (error) {
+          console.error(
+            "PDF export failed:",
+            error,
+          );
+    
+          toast.error(
+            "Unable to export PDF.",
+          );
+        }
+      }
   return (
     <div className="space-y-6">
 
@@ -341,9 +396,9 @@ export function RoundSizeEstimatePage() {
         onShare={() => {
           setShareOpen(true);
         }}
-        onPrintExport={() => {
-          console.log("Print / Export");
-        }}
+        onPrintExport={
+          handleExport
+        }
       />
 
       <ShareEstimateDialog

@@ -101,10 +101,7 @@ export interface SavedEstimate {
     | "ON_HOLD"
     | "CONFIRMED";
 
-  type:
-    | "CUT_SIZE"
-    | "ROUND_SIZE"
-    | "CUSTOM";
+  type: "CUT_SIZE";
 
   items: WoodItem[];
 
@@ -160,9 +157,7 @@ export interface SavedRoundSizeEstimate {
     | "ON_HOLD"
     | "CONFIRMED";
 
-  type:
-    | "CUT_SIZE"
-    | "ROUND_SIZE";
+  type: "ROUND_SIZE";
 
   items: RoundSizeItem[];
 
@@ -215,10 +210,7 @@ export interface SavedCustomEstimate {
     | "ON_HOLD"
     | "CONFIRMED";
 
-  type:
-    | "CUT_SIZE"
-    | "ROUND_SIZE"
-    | "CUSTOM";
+  type: "CUSTOM";
 
   items: CustomEstimateItem[];
 

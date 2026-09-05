@@ -16,6 +16,8 @@ import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { calculateCustomEstimateTotals } from "../utils/custom-estimate-calculations";
 import { CustomItemsTable } from "../components/custom-items-table";
 import { CustomEstimateBottomSection } from "../components/custom-bottom-section";
+import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
+import { pdf } from "@react-pdf/renderer";
 
 export function CustomEstimatePage() {
   const navigate = useNavigate();
@@ -194,6 +196,59 @@ export function CustomEstimatePage() {
     function updateStatus(newStatus: EstimateHeader["status"]) {
       setHeader((prev) => ({ ...prev, status: newStatus }));
     }
+
+    async function handleExport() {
+      const estimate = buildEstimate(header.status);
+        if (!estimate) {
+          toast.error("Estimate not found.");
+          return;
+        }
+
+        if(!validateEstimate()){
+          return;
+        }
+        
+        try {
+          const blob =
+            await pdf(
+              <CustomEstimatePdf
+                estimate={estimate}
+              />,
+            ).toBlob();
+    
+          const url =
+            URL.createObjectURL(blob);
+    
+          const link =
+            document.createElement("a");
+    
+          link.href = url;
+    
+          link.download =
+            `${estimate.estimateNumber}.pdf`;
+    
+          document.body.appendChild(link);
+    
+          link.click();
+    
+          link.remove();
+    
+          URL.revokeObjectURL(url);
+    
+          toast.success(
+            "PDF exported successfully.",
+          );
+        } catch (error) {
+          console.error(
+            "PDF export failed:",
+            error,
+          );
+    
+          toast.error(
+            "Unable to export PDF.",
+          );
+        }
+      }
     
   return (
     <div className="space-y-6">
@@ -295,9 +350,9 @@ export function CustomEstimatePage() {
         onShare={() => {
           setShareOpen(true);
         }}
-        onPrintExport={() => {
-          console.log("Print / Export");
-        }}
+        onPrintExport={
+          handleExport
+        }
       />
 
       <ShareEstimateDialog

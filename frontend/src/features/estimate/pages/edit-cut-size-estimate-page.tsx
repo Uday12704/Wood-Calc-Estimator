@@ -28,6 +28,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { AdditionalItemsTable } from "../components/cut-size-additional-items-table";
+import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
+import { pdf } from "@react-pdf/renderer";
 
 interface EditCutSizeEstimateFormProps {
   estimate: SavedEstimate;
@@ -392,6 +394,54 @@ function EditCutSizeEstimateForm({
     );
   };
 
+  async function handleExport() {
+      if (!estimate) {
+        toast.error("Estimate not found.");
+        return;
+      }
+      
+      try {
+        const blob =
+          await pdf(
+            <CutSizeEstimatePdf
+              estimate={estimate}
+            />,
+          ).toBlob();
+  
+        const url =
+          URL.createObjectURL(blob);
+  
+        const link =
+          document.createElement("a");
+  
+        link.href = url;
+  
+        link.download =
+          `${estimate.estimateNumber}.pdf`;
+  
+        document.body.appendChild(link);
+  
+        link.click();
+  
+        link.remove();
+  
+        URL.revokeObjectURL(url);
+  
+        toast.success(
+          "PDF exported successfully.",
+        );
+      } catch (error) {
+        console.error(
+          "PDF export failed:",
+          error,
+        );
+  
+        toast.error(
+          "Unable to export PDF.",
+        );
+      }
+    }
+
   const [shareOpen, setShareOpen] = useState(false);
 
     return (
@@ -535,11 +585,9 @@ function EditCutSizeEstimateForm({
         onShare={() => {
           setShareOpen(true);
         }}
-        onPrintExport={() => {
-          console.log(
-            "Print / Export",
-          );
-        }}
+        onPrintExport={
+          handleExport
+        }
       />
 
       <ShareEstimateDialog
