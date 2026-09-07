@@ -1,22 +1,51 @@
-import type { AuthUser } from "./types";
+import type {
+  AppProfile,
+  SubscriptionAccount,
+} from "./types";
 
-export interface MockUser extends AuthUser {
-  password: string;
-}
-
-export const mockUsers: MockUser[] = [
+export const mockAccounts: SubscriptionAccount[] = [
   {
-    id: "user-001",
-    name: "Demo User",
+    id: "account-001",
     email: "user@woodcalc.com",
     password: "user123",
-    role: "USER",
+    platformRole: "SUBSCRIBER",
+    active: true,
+    createdAt: "2026-01-01T00:00:00.000Z",
   },
+
   {
-    id: "admin-001",
-    name: "Wood Calc Admin",
+    id: "account-admin-001",
     email: "admin@woodcalc.com",
     password: "admin123",
-    role: "ADMIN",
+    platformRole: "ADMIN",
+    active: true,
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+];
+
+export const mockProfiles: AppProfile[] = [
+  {
+    id: "profile-001",
+    accountId: "account-001",
+    name: "Uday",
+    role: "OWNER",
+    active: true,
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+  {
+    id: "profile-002",
+    accountId: "account-001",
+    name: "Darshan",
+    role: "USER",
+    active: true,
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+  {
+    id: "profile-003",
+    accountId: "account-001",
+    name: "User 3",
+    role: "USER",
+    active: true,
+    createdAt: "2026-01-01T00:00:00.000Z",
   },
 ];

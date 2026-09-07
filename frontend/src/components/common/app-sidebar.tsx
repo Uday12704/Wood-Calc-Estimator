@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   LifeBuoy,
   Settings,
-  Truck,
   Users,
 } from "lucide-react";
 

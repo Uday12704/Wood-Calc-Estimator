@@ -26,6 +26,8 @@ import { PreviewCustomEstimatePage } from "@/features/estimate/pages/preview-cus
 import { EditCustomEstimatePage } from "@/features/estimate/pages/edit-custom-estimate-page";
 import { DeliveryChecklistPage } from "@/features/delivery-checklist/pages/delivery-checklist-page";
 import { DeliveryChecklistDetailPage } from "@/features/delivery-checklist/pages/delivery-checklist-detail-page";
+import { SettingsPage } from "@/features/settings/pages/settings-page";
+import { ProfileSelectionPage } from "@/features/auth/pages/profile-selection-page";
 
 export function AppRoutes() {
   return (
@@ -43,6 +45,11 @@ export function AppRoutes() {
       />
 
       <Route
+        path="/select-profile"
+        element={<ProfileSelectionPage />}
+      />
+
+      <Route
         path="/unauthorized"
         element={<UnauthorizedPage />}
       />
@@ -56,7 +63,7 @@ export function AppRoutes() {
         <Route
           element={
             <RoleRoute
-              allowedRoles={["USER", "ADMIN"]}
+              allowedRoles={["SUBSCRIBER", "ADMIN"]}
             />
           }
         >
@@ -147,6 +154,11 @@ export function AppRoutes() {
             <Route
               path="/app/delivery-checklist/:type/:id"
               element={<DeliveryChecklistDetailPage />}
+            />
+
+            <Route
+              path="/app/settings"
+              element={<SettingsPage />}
             />
 
           </Route>

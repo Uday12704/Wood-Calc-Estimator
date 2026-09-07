@@ -41,12 +41,20 @@ export function LoginPage() {
     setError(null);
 
     try {
-      await login(credentials);
+      const authenticatedUser =
+        await login(credentials);
 
-      const authenticatedUser = await login(credentials);
+      // Multiple subscriber profiles.
+      // Stay on the login flow until a profile is selected.
+      if (!authenticatedUser) {
+        navigate("/select-profile", {
+          replace: true,
+        });
+        return;
+      }
 
       const destination =
-        authenticatedUser.role === "ADMIN"
+        authenticatedUser.platformRole === "ADMIN"
           ? "/admin/dashboard"
           : "/app/dashboard";
 

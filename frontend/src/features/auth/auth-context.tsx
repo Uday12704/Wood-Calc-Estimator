@@ -1,22 +1,33 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
 import type {
+  AppProfile,
   AuthUser,
   LoginCredentials,
+  SubscriptionAccount,
 } from "./types";
-import { mockUsers } from "./mock-users";
+import { clearPendingAccountId, clearSession, getAccounts, getPendingAccountId, getProfiles, getStoredSession, savePendingAccountId, saveSession } from "./auth-storage";
 
 interface AuthContextValue {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<AuthUser>;
+
+  login: (
+    credentials: LoginCredentials,
+  ) => Promise<AuthUser | null>;
+
+  selectProfile: (
+    profileId: string,
+  ) => AuthUser;
+
   logout: () => void;
 }
 
@@ -32,15 +43,94 @@ interface AuthProviderProps {
 export function AuthProvider({
   children,
 }: AuthProviderProps) {
-  const [user, setUser] =
-    useState<AuthUser | null>(null);
+  
+  const [user, setUser] = useState<AuthUser | null>(null);
 
-  const [isLoading, setIsLoading] =
-    useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const session = getStoredSession();
+
+    if (!session) {
+      setIsLoading(false);
+      return;
+    }
+
+    const account = getAccounts().find(
+      (item) =>
+        item.id === session.accountId &&
+        item.active,
+    );
+
+    if (!account) {
+      clearSession();
+      setIsLoading(false);
+      return;
+    }
+
+    // Admin accounts don't have a real subscriber profile.
+    // We create the same synthetic admin profile used during login.
+    if (account.platformRole === "ADMIN") {
+      const adminProfile: AppProfile = {
+        id: `admin-profile-${account.id}`,
+        accountId: account.id,
+        name: "Administrator",
+        role: "OWNER",
+        active: true,
+        createdAt: account.createdAt,
+      };
+
+      setUser(
+        createAuthUser(
+          account,
+          adminProfile,
+        ),
+      );
+
+      setIsLoading(false);
+      return;
+    }
+
+    const profile = getProfiles().find(
+      (item) =>
+        item.id === session.profileId &&
+        item.accountId === account.id &&
+        item.active,
+    );
+
+    if (!profile) {
+      clearSession();
+      setIsLoading(false);
+      return;
+    }
+
+    setUser(
+      createAuthUser(
+        account,
+        profile,
+      ),
+    );
+
+    setIsLoading(false);
+  }, []);
+
+  function createAuthUser(
+    account: SubscriptionAccount,
+    profile: AppProfile,
+  ): AuthUser {
+    return {
+      accountId: account.id,
+      profileId: profile.id,
+      name: profile.name,
+      email: account.email,
+      platformRole: account.platformRole,
+      profileRole: profile.role,
+    };
+  }
 
   async function login(
   credentials: LoginCredentials,
-) {
+): Promise<AuthUser | null> {
   setIsLoading(true);
 
   try {
@@ -51,42 +141,167 @@ export function AuthProvider({
     const normalizedEmail =
       credentials.email.trim().toLowerCase();
 
-    const mockUser = mockUsers.find(
-      (user) =>
-        user.email === normalizedEmail &&
-        user.password === credentials.password,
+    const accounts = getAccounts();
+
+    const account = accounts.find(
+      (item) =>
+        item.email.toLowerCase() ===
+          normalizedEmail &&
+        item.password ===
+          credentials.password &&
+        item.active,
     );
 
-    if (!mockUser) {
+    if (!account) {
       throw new Error(
         "Invalid email or password.",
       );
     }
 
-    const authenticatedUser: AuthUser = {
-      id: mockUser.id,
-      name: mockUser.name,
-      email: mockUser.email,
-      role: mockUser.role,
-    };
+    // ----------------------------------
+    // ADMIN
+    // ----------------------------------
 
-    setUser(authenticatedUser);
-    return authenticatedUser
-  } finally {
-    setIsLoading(false);
+    if (
+      account.platformRole === "ADMIN"
+    ) {
+      const adminProfile: AppProfile = {
+        id: `admin-profile-${account.id}`,
+        accountId: account.id,
+        name: "Administrator",
+        role: "OWNER",
+        active: true,
+        createdAt:
+          new Date().toISOString(),
+      };
+
+      const authenticatedUser =
+        createAuthUser(
+          account,
+          adminProfile,
+        );
+
+      setUser(authenticatedUser);
+
+      saveSession({
+        accountId: account.id,
+        profileId: adminProfile.id,
+      });
+
+      return authenticatedUser;
+    }
+
+    // ----------------------------------
+    // SUBSCRIBER
+    // ----------------------------------
+
+    const profiles = getProfiles().filter(
+        (profile) =>
+          profile.accountId === account.id &&
+          profile.active,
+      );
+
+      if (profiles.length === 0) {
+        throw new Error(
+          "No active user profiles are available for this account.",
+        );
+      }
+
+      // One profile → login directly
+      if (profiles.length === 1) {
+        const authenticatedUser =
+          createAuthUser(
+            account,
+            profiles[0],
+          );
+
+        setUser(authenticatedUser);
+
+        saveSession({
+          accountId: account.id,
+          profileId: profiles[0].id,
+        });
+
+        return authenticatedUser;
+      }
+
+      // Multiple profiles → UI will ask
+      // the user to select a profile.
+      savePendingAccountId(account.id);
+
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
   }
-}
+
+  function selectProfile(
+      profileId: string,
+    ): AuthUser {
+      const accountId =
+        getPendingAccountId() ??
+        getStoredSession()?.accountId;
+
+      if (!accountId) {
+        throw new Error(
+          "No subscription account is waiting for profile selection.",
+        );
+      }
+
+      const account = getAccounts().find(
+        (item) =>
+          item.id === accountId &&
+          item.active,
+      );
+
+      if (!account) {
+        throw new Error(
+          "Subscription account not found.",
+        );
+      }
+
+      const profile = getProfiles().find(
+        (item) =>
+          item.id === profileId &&
+          item.accountId === account.id &&
+          item.active,
+      );
+
+      if (!profile) {
+        throw new Error(
+          "Selected user profile is not available.",
+        );
+      }
+
+      const authenticatedUser =
+        createAuthUser(account, profile);
+
+      setUser(authenticatedUser);
+
+      saveSession({
+        accountId: account.id,
+        profileId: profile.id,
+      });
+
+      clearPendingAccountId();
+
+      return authenticatedUser;
+    }
 
   function logout() {
+    clearSession();
+    clearPendingAccountId();
     setUser(null);
   }
 
   const value = useMemo(
     () => ({
       user,
-      isAuthenticated: user !== null,
+      isAuthenticated:
+        user !== null,
       isLoading,
       login,
+      selectProfile,
       logout,
     }),
     [user, isLoading],

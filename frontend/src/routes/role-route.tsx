@@ -4,15 +4,20 @@ import {
 } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/auth-context";
-import type { UserRole } from "@/features/auth/types";
+import type { PlatformRole } from "@/features/auth/types";
 
 interface RoleRouteProps {
-  allowedRoles: UserRole[];
+  allowedRoles: PlatformRole[];
 }
 
-export function RoleRoute({allowedRoles, }: RoleRouteProps) {
-
-  const { user, isAuthenticated, isLoading } = useAuth();
+export function RoleRoute({
+  allowedRoles,
+}: RoleRouteProps) {
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+  } = useAuth();
 
   if (isLoading) {
     return (
@@ -33,7 +38,11 @@ export function RoleRoute({allowedRoles, }: RoleRouteProps) {
     );
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (
+    !allowedRoles.includes(
+      user.platformRole,
+    )
+  ) {
     return (
       <Navigate
         to="/unauthorized"

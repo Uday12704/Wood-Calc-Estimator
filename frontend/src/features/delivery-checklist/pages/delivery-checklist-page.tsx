@@ -114,7 +114,7 @@ export function DeliveryChecklistPage() {
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Delivery Checklists
+          <span className="flex items-center gap-3 text-wood-primary"><ClipboardCheck />Delivery Checklists</span>
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
@@ -188,7 +188,7 @@ export function DeliveryChecklistPage() {
             <div className="flex items-end">
                 <Button
                 type="button"
-                variant="outline"
+                variant="destructive"
                 className="h-10"
                 onClick={() => {
                     setSearch("");

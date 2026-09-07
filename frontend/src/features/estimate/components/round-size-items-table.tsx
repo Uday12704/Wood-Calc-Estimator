@@ -49,7 +49,6 @@ function createEmptyRoundSizeItem(): RoundSizeItem {
 
 export function RoundSizeItemsTable({
   items,
-  categories,
   cftEnabled,
   onCftEnabledChange,
   onChange,
