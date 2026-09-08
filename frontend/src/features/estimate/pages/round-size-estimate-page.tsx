@@ -31,8 +31,10 @@ import { useNavigate } from "react-router-dom";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function RoundSizeEstimatePage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
@@ -156,6 +158,7 @@ export function RoundSizeEstimatePage() {
         new Date().toISOString();
 
       return {
+        accountId: user!.accountId,
         id: estimateId,
         estimateNumber:header.estimateNumber,
         documentTitle:header.documentTitle,
@@ -372,7 +375,7 @@ export function RoundSizeEstimatePage() {
 
             updateStatus("ON_HOLD");
 
-            saveRoundEstimate(estimate);
+            saveRoundEstimate(user!.accountId, estimate);
             toast.success("Estimate saved as draft.");
             navigate(
               `/app/estimates/history`,
@@ -387,7 +390,7 @@ export function RoundSizeEstimatePage() {
 
             updateStatus("CONFIRMED");
 
-            saveRoundEstimate(estimate);
+            saveRoundEstimate(user!.accountId, estimate);
             toast.success("Estimate marked as confirmed.");
             navigate(
               `/app/estimates/history`,

@@ -22,8 +22,10 @@ import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { AdditionalItemsTable } from "../components/cut-size-additional-items-table";
 import { pdf } from "@react-pdf/renderer";
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function CutSizeEstimatePage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
@@ -183,6 +185,7 @@ export function CutSizeEstimatePage() {
         new Date().toISOString();
 
       return {
+        accountId: user!.accountId,
         id: estimateId,
         estimateNumber:header.estimateNumber,
         documentTitle:header.documentTitle,
@@ -431,7 +434,7 @@ export function CutSizeEstimatePage() {
 
           updateStatus("ON_HOLD");
 
-          saveEstimate(estimate);
+          saveEstimate(user!.accountId, estimate);
           toast.success("Estimate saved as draft.");
           navigate(
             `/app/estimates/history`,
@@ -446,7 +449,7 @@ export function CutSizeEstimatePage() {
 
           updateStatus("CONFIRMED");
 
-          saveEstimate(estimate);
+          saveEstimate(user!.accountId, estimate);
           toast.success("Estimate marked as confirmed.");
           navigate(
             `/app/estimates/history`,

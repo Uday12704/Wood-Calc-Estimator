@@ -13,28 +13,28 @@ import {
 } from "@/components/ui/card";
 
 import {
-    getSavedCustomEstimates,
+  getCustomEstimateById,
 } from "../services/estimate-storage";
 import { pdf } from "@react-pdf/renderer";
 import { toast } from "react-toastify";
 import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function PreviewCustomEstimatePage() {
+  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
   const estimate = useMemo(() => {
-    if (!id) {
+    if (!id || !user?.accountId) {
       return null;
     }
 
-    const estimates =
-      getSavedCustomEstimates();
-
-      return estimates.find(
-        (item) => item.id === id,
-      );
-    }, [id]);
+    return getCustomEstimateById(
+      user.accountId,
+      id,
+    );
+  }, [id, user?.accountId]);
 
   if (!estimate) {
     return (

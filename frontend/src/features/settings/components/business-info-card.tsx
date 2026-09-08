@@ -18,19 +18,33 @@ import {
 } from "../services/settings-storage";
 
 import type { BusinessSettings } from "../types";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function BusinessInfoCard() {
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [form, setForm] = useState<BusinessSettings>(() =>
-    getBusinessSettings(),
+    user?.accountId
+      ? getBusinessSettings(user.accountId)
+      : {
+          businessName: "",
+          phone: "",
+          address: "",
+          gstin: "",
+          logo: "",
+        },
   );
 
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setForm(getBusinessSettings());
-  }, []);
+    if (!user?.accountId) {
+      return;
+    }
+
+    setForm(getBusinessSettings(user.accountId));
+  }, [user?.accountId]);
 
   function updateField(
     field: keyof BusinessSettings,
@@ -108,7 +122,12 @@ export function BusinessInfoCard() {
     setIsSaving(true);
 
     try {
-      saveBusinessSettings({
+      if (!user?.accountId) {
+        toast.error("Unable to identify the subscriber account.");
+        return;
+      }
+
+      saveBusinessSettings(user.accountId, {
         ...form,
         businessName,
         phone: form.phone.trim(),

@@ -11,6 +11,7 @@ export interface DeliveryItemStatus {
 }
 
 export interface DeliveryChecklist {
+  accountId: string;
   estimateId: string;
   items: DeliveryItemStatus[];
   additionalItems: DeliveryItemStatus[];

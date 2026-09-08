@@ -18,8 +18,10 @@ import { CustomItemsTable } from "../components/custom-items-table";
 import { CustomEstimateBottomSection } from "../components/custom-bottom-section";
 import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function CustomEstimatePage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
@@ -136,6 +138,7 @@ export function CustomEstimatePage() {
         new Date().toISOString();
 
       return {
+        accountId: user!.accountId,
         id: estimateId,
         estimateNumber:header.estimateNumber,
         documentTitle:header.documentTitle,
@@ -326,7 +329,7 @@ export function CustomEstimatePage() {
 
           updateStatus("ON_HOLD");
 
-          saveCustomEstimate(estimate);
+          saveCustomEstimate(user!.accountId, estimate);
           toast.success("Estimate saved as draft.");
           navigate(
             `/app/estimates/history`,
@@ -341,7 +344,7 @@ export function CustomEstimatePage() {
 
           updateStatus("CONFIRMED");
 
-          saveCustomEstimate(estimate);
+          saveCustomEstimate(user!.accountId, estimate);
           toast.success("Estimate marked as confirmed.");
           navigate(
             `/app/estimates/history`,

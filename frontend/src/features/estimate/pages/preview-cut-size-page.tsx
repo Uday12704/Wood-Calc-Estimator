@@ -13,29 +13,29 @@ import {
 } from "@/components/ui/card";
 
 import {
-  getSavedEstimates,
+  getEstimateById,
 } from "../services/estimate-storage";
 import { woodCategories } from "../data/wood-categories";
 import { pdf } from "@react-pdf/renderer";
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { toast } from "react-toastify";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function PreviewCutSizePage() {
+  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
   const estimate = useMemo(() => {
-    if (!id) {
+    if (!id || !user?.accountId) {
       return null;
     }
 
-    const estimates =
-      getSavedEstimates();
-
-      return estimates.find(
-        (item) => item.id === id,
-      );
-    }, [id]);
+    return getEstimateById(
+      user.accountId,
+      id,
+    );
+  }, [id, user?.accountId]);
 
   if (!estimate) {
     return (

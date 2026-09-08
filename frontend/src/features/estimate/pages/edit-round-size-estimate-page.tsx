@@ -32,7 +32,7 @@ import {
 import { woodCategories } from "../data/wood-categories";
 
 import {
-  getSavedRoundEstimates,
+  getRoundEstimateById,
   saveRoundEstimate,
 } from "../services/estimate-storage";
 
@@ -49,9 +49,11 @@ import type {
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function EditRoundSizeEstimatePage() {
     const { id } = useParams();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [estimate, setEstimate] = useState<SavedRoundSizeEstimate | null>(
@@ -90,47 +92,63 @@ export function EditRoundSizeEstimatePage() {
     const [shareOpen, setShareOpen] = useState(false);
 
     useEffect(() => {
-        if (!id) {
-          setIsLoading(false);
-          return;
-        }
+      if (!user?.accountId) {
+        return;
+      }
 
-        const estimates = getSavedRoundEstimates();
-
-        const found =
-        estimates.find(
-            (item) => item.id === id,
-        );
-
-        if (!found) {
-          setIsLoading(false);
-          return;
-        }
-
-        setEstimate(found);
-
-        setHeader({
-          documentTitle: found.documentTitle,
-          estimateNumber: found.estimateNumber,
-          date: found.date,
-          partyName: found.partyName,
-          contactNumber: found.contactNumber,
-          reference: found.reference,
-          status: found.status,
-        });
-
-        setItems(found.items,);
-        setCftEnabled(found.cftEnabled,);
-        setPricePerCbm(found.pricePerCbm,);
-        setOtherCharges(found.otherCharges,);
-        setGstEnabled(found.gstEnabled,);
-        setGstRate(found.gstRate,);
-        setDiscountType(found.discountType,);
-        setDiscountValue(found.discountValue,);
-        setAdvancePaid(found.advancePaid,);
-        setNotes(found.notes,);
+      if (!id) {
+        toast.error("Estimate not found.");
         setIsLoading(false);
-    }, [id]);
+        return;
+      }
+
+      const found = getRoundEstimateById(
+        user.accountId,
+        id,
+      );
+
+      if (!found) {
+        toast.error("Estimate not found.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (found.type !== "ROUND_SIZE") {
+        toast.error(
+          "This estimate is not a round-size estimate.",
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      setEstimate(found);
+
+      setHeader({
+        documentTitle: found.documentTitle,
+        estimateNumber: found.estimateNumber,
+        date: found.date,
+        partyName: found.partyName,
+        contactNumber: found.contactNumber,
+        reference: found.reference,
+        status: found.status,
+      });
+
+      setItems(found.items);
+      setCftEnabled(found.cftEnabled);
+      setPricePerCbm(found.pricePerCbm);
+      setOtherCharges(found.otherCharges);
+      setGstEnabled(found.gstEnabled);
+      setGstRate(found.gstRate);
+      setDiscountType(found.discountType);
+      setDiscountValue(found.discountValue);
+      setAdvancePaid(found.advancePaid);
+      setNotes(found.notes);
+
+      setIsLoading(false);
+    }, [
+      id,
+      user?.accountId,
+    ]);
 
     if (isLoading) {
         return (
@@ -550,6 +568,7 @@ export function EditRoundSizeEstimatePage() {
             );
 
           saveRoundEstimate(
+            user!.accountId,
             updatedEstimate,
           );
 
@@ -577,6 +596,7 @@ export function EditRoundSizeEstimatePage() {
             );
 
           saveRoundEstimate(
+            user!.accountId,
             updatedEstimate,
           );
 

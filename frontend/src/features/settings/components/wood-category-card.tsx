@@ -27,6 +27,7 @@ import type {
   CalculationMode,
   WoodCategory,
 } from "../types";
+import { useAuth } from "@/features/auth/auth-context";
 
 interface CategoryForm {
   name: string;
@@ -39,6 +40,7 @@ const EMPTY_FORM: CategoryForm = {
 };
 
 export function WoodCategoryCard() {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<
     WoodCategory[]
   >([]);
@@ -50,8 +52,14 @@ export function WoodCategoryCard() {
     useState<string | null>(null);
 
   useEffect(() => {
-    setCategories(getWoodCategories());
-  }, []);
+    if (!user?.accountId) {
+      return;
+    }
+
+    setCategories(
+      getWoodCategories(user.accountId),
+    );
+  }, [user?.accountId]);
 
   function resetForm() {
     setForm(EMPTY_FORM);
@@ -100,8 +108,16 @@ export function WoodCategoryCard() {
       newCategory,
     ];
 
+    if (!user?.accountId) {
+      toast.error("Unable to identify the subscriber account.");
+      return;
+    }
+
     setCategories(updatedCategories);
-    saveWoodCategories(updatedCategories);
+    saveWoodCategories(
+      user.accountId,
+      updatedCategories,
+    );
 
     toast.success("Wood category added successfully.");
 
@@ -155,8 +171,16 @@ export function WoodCategoryCard() {
           : category,
     );
 
+    if (!user?.accountId) {
+      toast.error("Unable to identify the subscriber account.");
+      return;
+    }
+
     setCategories(updatedCategories);
-    saveWoodCategories(updatedCategories);
+    saveWoodCategories(
+      user.accountId,
+      updatedCategories,
+    );
 
     toast.success(
       "Wood category updated successfully.",
@@ -178,8 +202,17 @@ export function WoodCategoryCard() {
       (item) => item.id !== category.id,
     );
 
+    if (!user?.accountId) {
+      toast.error("Unable to identify the subscriber account.");
+      return;
+    }
+
     setCategories(updatedCategories);
-    saveWoodCategories(updatedCategories);
+
+    saveWoodCategories(
+      user.accountId,
+      updatedCategories,
+    );
 
     if (editingId === category.id) {
       resetForm();

@@ -26,6 +26,7 @@ import { CustomItemsTable } from "../components/custom-items-table";
 import { CustomEstimateBottomSection } from "../components/custom-bottom-section";
 import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
+import { useAuth } from "@/features/auth/auth-context";
 
 interface EditCustomEstimateFormProps {
   estimate: SavedCustomEstimate;
@@ -34,6 +35,7 @@ interface EditCustomEstimateFormProps {
 function EditCustomEstimateForm({
   estimate,
 }: EditCustomEstimateFormProps) {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   /*
@@ -303,7 +305,7 @@ function EditCustomEstimateForm({
     const updatedEstimate =
       buildEstimate("ON_HOLD");
 
-    saveCustomEstimate(updatedEstimate);
+    saveCustomEstimate(user!.accountId, updatedEstimate);
 
     toast.success(
       "Estimate updated successfully.",
@@ -328,7 +330,7 @@ function EditCustomEstimateForm({
     const updatedEstimate =
       buildEstimate("CONFIRMED");
 
-    saveCustomEstimate(updatedEstimate);
+    saveCustomEstimate(user!.accountId, updatedEstimate);
 
     toast.success(
       "Estimate marked as confirmed.",
@@ -510,6 +512,7 @@ function EditCustomEstimateForm({
 }
 
 export function EditCustomEstimatePage() {
+  const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -526,6 +529,10 @@ export function EditCustomEstimatePage() {
    */
 
   useEffect(() => {
+    if (!user?.accountId) {
+      return;
+    }
+
     if (!id) {
       toast.error("Estimate not found.");
       navigate("/app/estimates/history", {
@@ -535,7 +542,7 @@ export function EditCustomEstimatePage() {
     }
 
     const savedEstimate =
-      getCustomEstimateById(id);
+      getCustomEstimateById(user.accountId, id);
 
     if (!savedEstimate) {
       toast.error("Estimate not found.");
@@ -559,7 +566,7 @@ export function EditCustomEstimatePage() {
 
     setEstimate(savedEstimate);
     setIsLoading(false);
-  }, [id, navigate]);
+  }, [id, navigate, user?.accountId,]);
 
   /*
    * ----------------------------------------

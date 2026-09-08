@@ -14,30 +14,30 @@ import {
 } from "@/components/ui/card";
 
 import {
-  getSavedRoundEstimates,
+  getRoundEstimateById,
 } from "../services/estimate-storage";
 import { toast } from "react-toastify";
 import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RoundSizeMeasurePdf } from "../pdf/round-size-measure-pdf";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function PreviewRoundSizePage() {
+  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
   const estimate = useMemo(() => {
-    if (!id) {
+    if (!id || !user?.accountId) {
       return null;
     }
 
-    const estimates =
-      getSavedRoundEstimates();
-
-    return estimates.find(
-      (item) => item.id === id,
+    return getRoundEstimateById(
+      user.accountId,
+      id,
     );
-  }, [id]);
+  }, [id, user?.accountId]);
 
   /*
    * ----------------------------------------

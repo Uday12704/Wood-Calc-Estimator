@@ -1,250 +1,329 @@
-import type { SavedCustomEstimate, SavedEstimate, SavedRoundSizeEstimate } from "../types";
+import type {
+  SavedCustomEstimate,
+  SavedEstimate,
+  SavedRoundSizeEstimate,
+} from "../types";
 
 const STORAGE_KEY_CUT = "wood-calc-cut-estimates";
 const STORAGE_KEY_ROUND = "wood-calc-round-estimates";
 const STORAGE_KEY_CUSTOM = "wood-calc-custom-estimates";
 
-export function getSavedEstimates(): SavedEstimate[] {
+/* -------------------------------------------------------------------------- */
+/* Helpers                                                                    */
+/* -------------------------------------------------------------------------- */
+
+function loadFromStorage<T>(key: string): T[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY_CUT);
+    const stored = localStorage.getItem(key);
 
     if (!stored) {
       return [];
     }
 
-    return JSON.parse(stored) as SavedEstimate[];
+    return JSON.parse(stored) as T[];
   } catch (error) {
-    console.error(
-      "Failed to load estimates:",
-      error,
-    );
-
+    console.error(`Failed to load data from ${key}:`, error);
     return [];
   }
 }
 
-export function getSavedRoundEstimates(): SavedRoundSizeEstimate[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY_ROUND);
-
-    if (!stored) {
-      return [];
-    }
-
-    return JSON.parse(stored) as SavedRoundSizeEstimate[];
-  } catch (error) {
-    console.error(
-      "Failed to load estimates:",
-      error,
-    );
-
-    return [];
-  }
+function saveToStorage<T>(key: string, data: T[]): void {
+  localStorage.setItem(key, JSON.stringify(data));
 }
 
-export function getSavedCustomEstimates(): SavedCustomEstimate[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY_CUSTOM);
+/* -------------------------------------------------------------------------- */
+/* Cut Size Estimates                                                         */
+/* -------------------------------------------------------------------------- */
 
-    if (!stored) {
-      return [];
-    }
+export function getSavedEstimates(
+  accountId: string,
+): SavedEstimate[] {
+  const estimates =
+    loadFromStorage<SavedEstimate>(STORAGE_KEY_CUT);
 
-    return JSON.parse(stored) as SavedCustomEstimate[];
-  } catch (error) {
-    console.error(
-      "Failed to load estimates:",
-      error,
-    );
-
-    return [];
-  }
+  return estimates.filter(
+    (estimate) =>
+      estimate.accountId === accountId,
+  );
 }
 
 export function getEstimateById(
+  accountId: string,
   id: string,
 ): SavedEstimate | null {
   const estimates =
-    getSavedEstimates();
+    getSavedEstimates(accountId);
 
   return (
     estimates.find(
       (estimate) =>
-        estimate.id === id,
-    ) ?? null
-  );
-}
-
-export function getRoundEstimateById(
-  id: string,
-): SavedRoundSizeEstimate | null {
-  const estimates =
-    getSavedRoundEstimates();
-
-  return (
-    estimates.find(
-      (estimate) =>
-        estimate.id === id,
-    ) ?? null
-  );
-}
-
-export function getCustomEstimateById(
-  id: string,
-): SavedCustomEstimate | null {
-  const estimates =
-    getSavedCustomEstimates();
-
-  return (
-    estimates.find(
-      (estimate) =>
-        estimate.id === id,
+        estimate.id === id &&
+        estimate.accountId === accountId,
     ) ?? null
   );
 }
 
 export function saveEstimate(
+  accountId: string,
   estimate: SavedEstimate,
 ): void {
   const estimates =
-    getSavedEstimates();
+    loadFromStorage<SavedEstimate>(
+      STORAGE_KEY_CUT,
+    );
+
+  const estimateWithAccount: SavedEstimate = {
+    ...estimate,
+    accountId,
+  };
 
   const existingIndex =
     estimates.findIndex(
       (item) =>
-        item.id === estimate.id,
+        item.id === estimate.id &&
+        item.accountId === accountId,
     );
 
   if (existingIndex >= 0) {
     estimates[existingIndex] =
-      estimate;
+      estimateWithAccount;
   } else {
-    estimates.push(estimate);
+    estimates.push(
+      estimateWithAccount,
+    );
   }
 
-  localStorage.setItem(
+  saveToStorage(
     STORAGE_KEY_CUT,
-    JSON.stringify(estimates),
-  );
-}
-
-export function saveRoundEstimate(
-  estimate: SavedRoundSizeEstimate,
-): void {
-  const estimates =
-    getSavedRoundEstimates();
-
-  const existingIndex =
-    estimates.findIndex(
-      (item) =>
-        item.id === estimate.id,
-    );
-
-  if (existingIndex >= 0) {
-    estimates[existingIndex] =
-      estimate;
-  } else {
-    estimates.push(estimate);
-  }
-
-  localStorage.setItem(
-    STORAGE_KEY_ROUND,
-    JSON.stringify(estimates),
-  );
-}
-
-export function saveCustomEstimate(
-  estimate: SavedCustomEstimate,
-): void {
-  const estimates =
-    getSavedCustomEstimates();
-
-  const existingIndex =
-    estimates.findIndex(
-      (item) =>
-        item.id === estimate.id,
-    );
-
-  if (existingIndex >= 0) {
-    estimates[existingIndex]  =
-      estimate;
-  } else {
-    estimates.push(estimate);
-  }
-
-  localStorage.setItem(
-    STORAGE_KEY_CUSTOM,
-    JSON.stringify(estimates),
+    estimates,
   );
 }
 
 export function deleteEstimate(
+  accountId: string,
   id: string,
 ): void {
   const estimates =
-    getSavedEstimates();
+    loadFromStorage<SavedEstimate>(
+      STORAGE_KEY_CUT,
+    );
 
   const updatedEstimates =
     estimates.filter(
       (estimate) =>
-        estimate.id !== id,
+        !(
+          estimate.id === id &&
+          estimate.accountId === accountId
+        ),
     );
 
-  localStorage.setItem(
+  saveToStorage(
     STORAGE_KEY_CUT,
-    JSON.stringify(
-      updatedEstimates,
-    ),
+    updatedEstimates,
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Round Size Estimates                                                       */
+/* -------------------------------------------------------------------------- */
+
+export function getSavedRoundEstimates(
+  accountId: string,
+): SavedRoundSizeEstimate[] {
+  const estimates =
+    loadFromStorage<SavedRoundSizeEstimate>(
+      STORAGE_KEY_ROUND,
+    );
+
+  return estimates.filter(
+    (estimate) =>
+      estimate.accountId === accountId,
+  );
+}
+
+export function getRoundEstimateById(
+  accountId: string,
+  id: string,
+): SavedRoundSizeEstimate | null {
+  const estimates =
+    getSavedRoundEstimates(accountId);
+
+  return (
+    estimates.find(
+      (estimate) =>
+        estimate.id === id &&
+        estimate.accountId === accountId,
+    ) ?? null
+  );
+}
+
+export function saveRoundEstimate(
+  accountId: string,
+  estimate: SavedRoundSizeEstimate,
+): void {
+  const estimates =
+    loadFromStorage<SavedRoundSizeEstimate>(
+      STORAGE_KEY_ROUND,
+    );
+
+  const estimateWithAccount: SavedRoundSizeEstimate = {
+    ...estimate,
+    accountId,
+  };
+
+  const existingIndex =
+    estimates.findIndex(
+      (item) =>
+        item.id === estimate.id &&
+        item.accountId === accountId,
+    );
+
+  if (existingIndex >= 0) {
+    estimates[existingIndex] =
+      estimateWithAccount;
+  } else {
+    estimates.push(
+      estimateWithAccount,
+    );
+  }
+
+  saveToStorage(
+    STORAGE_KEY_ROUND,
+    estimates,
   );
 }
 
 export function deleteRoundEstimate(
+  accountId: string,
   id: string,
 ): void {
   const estimates =
-    getSavedRoundEstimates();
+    loadFromStorage<SavedRoundSizeEstimate>(
+      STORAGE_KEY_ROUND,
+    );
 
   const updatedEstimates =
     estimates.filter(
       (estimate) =>
-        estimate.id !== id,
+        !(
+          estimate.id === id &&
+          estimate.accountId === accountId
+        ),
     );
 
-  localStorage.setItem(
+  saveToStorage(
     STORAGE_KEY_ROUND,
-    JSON.stringify(
-      updatedEstimates,
-    ),
+    updatedEstimates,
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom Estimates                                                           */
+/* -------------------------------------------------------------------------- */
+
+export function getSavedCustomEstimates(
+  accountId: string,
+): SavedCustomEstimate[] {
+  const estimates =
+    loadFromStorage<SavedCustomEstimate>(
+      STORAGE_KEY_CUSTOM,
+    );
+
+  return estimates.filter(
+    (estimate) =>
+      estimate.accountId === accountId,
+  );
+}
+
+export function getCustomEstimateById(
+  accountId: string,
+  id: string,
+): SavedCustomEstimate | null {
+  const estimates =
+    getSavedCustomEstimates(accountId);
+
+  return (
+    estimates.find(
+      (estimate) =>
+        estimate.id === id &&
+        estimate.accountId === accountId,
+    ) ?? null
+  );
+}
+
+export function saveCustomEstimate(
+  accountId: string,
+  estimate: SavedCustomEstimate,
+): void {
+  const estimates =
+    loadFromStorage<SavedCustomEstimate>(
+      STORAGE_KEY_CUSTOM,
+    );
+
+  const estimateWithAccount: SavedCustomEstimate = {
+    ...estimate,
+    accountId,
+  };
+
+  const existingIndex =
+    estimates.findIndex(
+      (item) =>
+        item.id === estimate.id &&
+        item.accountId === accountId,
+    );
+
+  if (existingIndex >= 0) {
+    estimates[existingIndex] =
+      estimateWithAccount;
+  } else {
+    estimates.push(
+      estimateWithAccount,
+    );
+  }
+
+  saveToStorage(
+    STORAGE_KEY_CUSTOM,
+    estimates,
   );
 }
 
 export function deleteCustomEstimate(
+  accountId: string,
   id: string,
 ): void {
   const estimates =
-    getSavedCustomEstimates();
+    loadFromStorage<SavedCustomEstimate>(
+      STORAGE_KEY_CUSTOM,
+    );
 
   const updatedEstimates =
     estimates.filter(
       (estimate) =>
-        estimate.id !== id,
+        !(
+          estimate.id === id &&
+          estimate.accountId === accountId
+        ),
     );
 
-  localStorage.setItem(
+  saveToStorage(
     STORAGE_KEY_CUSTOM,
-    JSON.stringify(
-      updatedEstimates,
-    ),
+    updatedEstimates,
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Clear                                                                      */
+/* -------------------------------------------------------------------------- */
 
 export function clearAllEstimates(): void {
   localStorage.removeItem(
     STORAGE_KEY_CUT,
   );
+
   localStorage.removeItem(
     STORAGE_KEY_ROUND,
   );
+
   localStorage.removeItem(
     STORAGE_KEY_CUSTOM,
   );

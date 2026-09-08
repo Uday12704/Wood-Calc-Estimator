@@ -30,6 +30,7 @@ import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { AdditionalItemsTable } from "../components/cut-size-additional-items-table";
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
+import { useAuth } from "@/features/auth/auth-context";
 
 interface EditCutSizeEstimateFormProps {
   estimate: SavedEstimate;
@@ -38,6 +39,7 @@ interface EditCutSizeEstimateFormProps {
 function EditCutSizeEstimateForm({
   estimate,
 }: EditCutSizeEstimateFormProps) {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   /*
@@ -358,7 +360,7 @@ function EditCutSizeEstimateForm({
     const updatedEstimate =
       buildEstimate("ON_HOLD");
 
-    saveEstimate(updatedEstimate);
+    saveEstimate(user!.accountId, updatedEstimate);
 
     toast.success(
       "Estimate updated successfully.",
@@ -383,7 +385,7 @@ function EditCutSizeEstimateForm({
     const updatedEstimate =
       buildEstimate("CONFIRMED");
 
-    saveEstimate(updatedEstimate);
+    saveEstimate(user!.accountId, updatedEstimate);
 
     toast.success(
       "Estimate marked as confirmed.",
@@ -604,6 +606,7 @@ function EditCutSizeEstimateForm({
 
 export function EditCutSizeEstimatePage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [estimate, setEstimate] =
@@ -619,6 +622,10 @@ export function EditCutSizeEstimatePage() {
    */
 
   useEffect(() => {
+    if (!user?.accountId) {
+      return;
+    }
+
     if (!id) {
       toast.error("Estimate not found.");
       navigate("/app/estimates/history", {
@@ -628,7 +635,10 @@ export function EditCutSizeEstimatePage() {
     }
 
     const savedEstimate =
-      getEstimateById(id);
+      getEstimateById(
+        user.accountId,
+        id,
+      );
 
     if (!savedEstimate) {
       toast.error("Estimate not found.");
@@ -652,7 +662,11 @@ export function EditCutSizeEstimatePage() {
 
     setEstimate(savedEstimate);
     setIsLoading(false);
-  }, [id, navigate]);
+  }, [
+    id,
+    navigate,
+    user?.accountId,
+  ]);
 
   /*
    * ----------------------------------------

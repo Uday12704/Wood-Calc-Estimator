@@ -7,7 +7,7 @@ import type {
 
 const STORAGE_KEY = "wood-calc-settings";
 
-const DEFAULT_SETTINGS: SettingsData = {
+const DEFAULT_SETTINGS: Omit<SettingsData, "accountId"> = {
   business: {
     businessName: "PRAGATHI TIMBER",
     phone: "",
@@ -25,46 +25,34 @@ const DEFAULT_SETTINGS: SettingsData = {
   },
 };
 
-function getSettings(): SettingsData {
-  const stored = localStorage.getItem(
-    STORAGE_KEY,
-  );
+/**
+ * Get all account settings stored in localStorage.
+ */
+function getAllSettings(): SettingsData[] {
+  const stored = localStorage.getItem(STORAGE_KEY);
 
   if (!stored) {
-    return DEFAULT_SETTINGS;
+    return [];
   }
 
   try {
-    const parsed = JSON.parse(
-      stored,
-    ) as Partial<SettingsData>;
+    const parsed = JSON.parse(stored);
 
-    return {
-      ...DEFAULT_SETTINGS,
+    if (Array.isArray(parsed)) {
+      return parsed as SettingsData[];
+    }
 
-      ...parsed,
-
-      business: {
-        ...DEFAULT_SETTINGS.business,
-        ...parsed.business,
-      },
-
-      woodCategories:
-        parsed.woodCategories ??
-        DEFAULT_SETTINGS.woodCategories,
-
-      print: {
-        ...DEFAULT_SETTINGS.print,
-        ...parsed.print,
-      },
-    };
+    return [];
   } catch {
-    return DEFAULT_SETTINGS;
+    return [];
   }
 }
 
-function saveSettings(
-  settings: SettingsData,
+/**
+ * Save all account settings.
+ */
+function saveAllSettings(
+  settings: SettingsData[],
 ): void {
   localStorage.setItem(
     STORAGE_KEY,
@@ -72,20 +60,91 @@ function saveSettings(
   );
 }
 
+/**
+ * Get settings for a specific subscriber account.
+ */
+function getSettings(
+  accountId: string,
+): SettingsData {
+  const allSettings = getAllSettings();
+
+  const existingSettings = allSettings.find(
+    (settings) =>
+      settings.accountId === accountId,
+  );
+
+  if (existingSettings) {
+    return {
+      accountId,
+
+      business: {
+        ...DEFAULT_SETTINGS.business,
+        ...existingSettings.business,
+      },
+
+      woodCategories:
+        existingSettings.woodCategories ??
+        DEFAULT_SETTINGS.woodCategories,
+
+      print: {
+        ...DEFAULT_SETTINGS.print,
+        ...existingSettings.print,
+      },
+    };
+  }
+
+  return {
+    accountId,
+    ...DEFAULT_SETTINGS,
+  };
+}
+
+/**
+ * Save settings for a specific subscriber account.
+ */
+function saveSettings(
+  accountId: string,
+  settings: SettingsData,
+): void {
+  const allSettings = getAllSettings();
+
+  const settingsWithAccount: SettingsData = {
+    ...settings,
+    accountId,
+  };
+
+  const existingIndex = allSettings.findIndex(
+    (item) =>
+      item.accountId === accountId,
+  );
+
+  if (existingIndex >= 0) {
+    allSettings[existingIndex] =
+      settingsWithAccount;
+  } else {
+    allSettings.push(settingsWithAccount);
+  }
+
+  saveAllSettings(allSettings);
+}
+
 /* ---------------------------------- */
 /* Business Settings */
 /* ---------------------------------- */
 
-export function getBusinessSettings(): BusinessSettings {
-  return getSettings().business;
+export function getBusinessSettings(
+  accountId: string,
+): BusinessSettings {
+  return getSettings(accountId).business;
 }
 
 export function saveBusinessSettings(
+  accountId: string,
   business: BusinessSettings,
 ): void {
-  const settings = getSettings();
+  const settings = getSettings(accountId);
 
-  saveSettings({
+  saveSettings(accountId, {
     ...settings,
     business,
   });
@@ -95,16 +154,19 @@ export function saveBusinessSettings(
 /* Wood Categories */
 /* ---------------------------------- */
 
-export function getWoodCategories(): WoodCategory[] {
-  return getSettings().woodCategories;
+export function getWoodCategories(
+  accountId: string,
+): WoodCategory[] {
+  return getSettings(accountId).woodCategories;
 }
 
 export function saveWoodCategories(
+  accountId: string,
   woodCategories: WoodCategory[],
 ): void {
-  const settings = getSettings();
+  const settings = getSettings(accountId);
 
-  saveSettings({
+  saveSettings(accountId, {
     ...settings,
     woodCategories,
   });
@@ -114,16 +176,19 @@ export function saveWoodCategories(
 /* Print Settings */
 /* ---------------------------------- */
 
-export function getPrintSettings(): PrintSettings {
-  return getSettings().print;
+export function getPrintSettings(
+  accountId: string,
+): PrintSettings {
+  return getSettings(accountId).print;
 }
 
 export function savePrintSettings(
+  accountId: string,
   print: PrintSettings,
 ): void {
-  const settings = getSettings();
+  const settings = getSettings(accountId);
 
-  saveSettings({
+  saveSettings(accountId, {
     ...settings,
     print,
   });

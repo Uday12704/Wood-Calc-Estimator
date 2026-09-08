@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { pdf } from "@react-pdf/renderer";
 import { DeliveryChecklistPdf } from "../utils/delivery-checklist-pdf";
 import { toast } from "react-toastify";
+import { useAuth } from "@/features/auth/auth-context";
 
 
 type DeliveryEstimate =
@@ -31,6 +32,7 @@ type DeliveryEstimate =
   | SavedCustomEstimate;
 
 export function DeliveryChecklistDetailPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const { type, id } = useParams<{
@@ -39,38 +41,41 @@ export function DeliveryChecklistDetailPage() {
   }>();
 
   const estimate = useMemo<DeliveryEstimate | null>(() => {
-    if (!id) {
+    if (!id || !user?.accountId) {
       return null;
     }
 
     switch (type) {
       case "cut-size":
-        return getSavedEstimates().find(
+        return getSavedEstimates(user.accountId).find(
           (estimate) => estimate.id === id,
         ) ?? null;
 
       case "round-size":
-        return getSavedRoundEstimates().find(
+        return getSavedRoundEstimates(user.accountId).find(
           (estimate) => estimate.id === id,
         ) ?? null;
 
       case "custom":
-        return getSavedCustomEstimates().find(
+        return getSavedCustomEstimates(user.accountId).find(
           (estimate) => estimate.id === id,
         ) ?? null;
 
       default:
         return null;
     }
-  }, [type, id]);
+  }, [type, id, user?.accountId]);
 
   const initialChecklist = useMemo<DeliveryChecklist | null>(() => {
-    if (!estimate) {
+    if (!estimate || !user?.accountId) {
       return null;
     }
 
     const existingChecklist =
-      getDeliveryChecklistByEstimateId(estimate.id);
+      getDeliveryChecklistByEstimateId(
+        user.accountId,
+        estimate.id,
+      );
 
     if (existingChecklist) {
       return existingChecklist;
@@ -96,12 +101,13 @@ export function DeliveryChecklistDetailPage() {
     }
 
     return {
+      accountId: user.accountId,
       estimateId: estimate.id,
       items,
       additionalItems,
       updatedAt: new Date().toISOString(),
     };
-  }, [estimate]);
+  }, [estimate, user?.accountId]);
 
   const [checklist, setChecklist] =
     useState<DeliveryChecklist | null>(
@@ -201,7 +207,10 @@ export function DeliveryChecklistDetailPage() {
     };
 
     setChecklist(updatedChecklist);
-    saveDeliveryChecklist(updatedChecklist);
+    saveDeliveryChecklist(
+      user!.accountId,
+      updatedChecklist,
+    );
   }
 
   async function handleDownloadPdf() {

@@ -23,18 +23,24 @@ import type {
   PrintLayout,
   PrintSettings,
 } from "../types";
+import { useAuth } from "@/features/auth/auth-context";
 
 export function PrintSettingsCard() {
+  const { user } = useAuth();
   const [settings, setSettings] =
     useState<PrintSettings>(() =>
-      getPrintSettings(),
+      getPrintSettings(user!.accountId),
     );
 
   const [isSaving, setIsSaving] =
     useState(false);
 
   useEffect(() => {
-    setSettings(getPrintSettings());
+    if (!user?.accountId) {
+      return;
+    }
+
+    setSettings(getPrintSettings(user.accountId));
   }, []);
 
   function setLayout(
@@ -50,7 +56,10 @@ export function PrintSettingsCard() {
     setIsSaving(true);
 
     try {
-      savePrintSettings(settings);
+      if (!user?.accountId) {
+        return;
+      }
+      savePrintSettings(user.accountId, settings);
 
       toast.success(
         "Print settings saved successfully.",

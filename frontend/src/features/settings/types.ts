@@ -27,6 +27,7 @@ export interface PrintSettings {
 }
 
 export interface SettingsData {
+  accountId: string;
   business: BusinessSettings;
   woodCategories: WoodCategory[];
   print: PrintSettings;

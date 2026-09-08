@@ -37,6 +37,7 @@ import {
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/features/auth/auth-context";
 
 type EstimateUnion =
   | ({ kind: "CUT" } & SavedEstimate)
@@ -44,7 +45,7 @@ type EstimateUnion =
   | ({ kind: "CUSTOM" } & SavedCustomEstimate);
 
 export function EstimateHistoryPage() {
-
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [estimates, setEstimates] =
     useState<EstimateUnion[]>([]);
@@ -64,17 +65,41 @@ export function EstimateHistoryPage() {
     >("ALL");
 
   useEffect(() => {
-    const cut: EstimateUnion[] = getSavedEstimates().map(
-      (e) => ({ ...e, kind: "CUT" as const })
-    );
-    const round: EstimateUnion[] = getSavedRoundEstimates().map(
-      (e) => ({ ...e, kind: "ROUND" as const })
-    );
-    const custom: EstimateUnion[] = getSavedCustomEstimates().map(
-      (e) => ({ ...e, kind: "CUSTOM" as const })
-    );
-    setEstimates([...cut, ...round, ...custom]);
-  }, []);
+    if (!user?.accountId) {
+      setEstimates([]);
+      return;
+    }
+
+    const cut: EstimateUnion[] =
+      getSavedEstimates(user.accountId).map(
+        (e) => ({
+          ...e,
+          kind: "CUT" as const,
+        }),
+      );
+
+    const round: EstimateUnion[] =
+      getSavedRoundEstimates(user.accountId).map(
+        (e) => ({
+          ...e,
+          kind: "ROUND" as const,
+        }),
+      );
+
+    const custom: EstimateUnion[] =
+      getSavedCustomEstimates(user.accountId).map(
+        (e) => ({
+          ...e,
+          kind: "CUSTOM" as const,
+        }),
+      );
+
+    setEstimates([
+      ...cut,
+      ...round,
+      ...custom,
+    ]);
+  }, [user?.accountId]);
 
   const filteredEstimates =
     useMemo(() => {
@@ -156,13 +181,27 @@ export function EstimateHistoryPage() {
       return;
     }
 
-    if (estimate.kind === "CUT") {
-      deleteEstimate(estimate.id);
-    } else if(estimate.kind === "ROUND") {
-      deleteRoundEstimate(estimate.id);
-    } else {
-      deleteCustomEstimate(estimate.id);
-    }
+    if (!user?.accountId) {
+  toast.error("Unable to identify the current account.");
+  return;
+}
+
+  if (estimate.kind === "CUT") {
+    deleteEstimate(
+      user.accountId,
+      estimate.id,
+    );
+  } else if (estimate.kind === "ROUND") {
+    deleteRoundEstimate(
+      user.accountId,
+      estimate.id,
+    );
+  } else {
+    deleteCustomEstimate(
+      user.accountId,
+      estimate.id,
+    );
+  }
 
     setEstimates(
       (current) =>

@@ -13,6 +13,7 @@ import { getSavedCustomEstimates, getSavedEstimates, getSavedRoundEstimates } fr
 import { getDeliveryProgress } from "../services/delivery-checklist-storage";
 import { Badge } from "@/components/ui/badge";
 import type { DeliveryEstimate } from "../types";
+import { useAuth } from "@/features/auth/auth-context";
 
 
 function getTotalDeliveryItems(
@@ -37,6 +38,7 @@ function getTotalDeliveryItems(
 }
 
 export function DeliveryChecklistPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
@@ -44,34 +46,38 @@ export function DeliveryChecklistPage() {
   const [toDate, setToDate] = useState("");
 
   const estimates = useMemo<DeliveryEstimate[]>(() => {
+    if (!user?.accountId) {
+        return [];
+    }
+
     const cutEstimates =
-      getSavedEstimates().filter(
+        getSavedEstimates(user.accountId).filter(
         (estimate) =>
-          estimate.status === "CONFIRMED",
-      );
+            estimate.status === "CONFIRMED",
+        );
 
     const roundEstimates =
-      getSavedRoundEstimates().filter(
+        getSavedRoundEstimates(user.accountId).filter(
         (estimate) =>
-          estimate.status === "CONFIRMED",
-      );
+            estimate.status === "CONFIRMED",
+        );
 
     const customEstimates =
-      getSavedCustomEstimates().filter(
+        getSavedCustomEstimates(user.accountId).filter(
         (estimate) =>
-          estimate.status === "CONFIRMED",
-      );
+            estimate.status === "CONFIRMED",
+        );
 
     return [
-      ...cutEstimates,
-      ...roundEstimates,
-      ...customEstimates,
+        ...cutEstimates,
+        ...roundEstimates,
+        ...customEstimates,
     ].sort(
-      (a, b) =>
+        (a, b) =>
         new Date(b.updatedAt).getTime() -
         new Date(a.updatedAt).getTime(),
     );
-  }, []);
+    }, [user?.accountId]);
 
   const filteredEstimates = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -272,6 +278,7 @@ export function DeliveryChecklistPage() {
             const totalItems = getTotalDeliveryItems(estimate);
 
             const progress = getDeliveryProgress(
+                user!.accountId,
                 estimate.id,
                 totalItems,
             );
