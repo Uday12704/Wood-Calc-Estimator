@@ -1,6 +1,6 @@
 import type {
   BusinessSettings,
-  PrintSettings,
+  SecuritySettings,
   SettingsData,
   WoodCategory,
 } from "../types";
@@ -18,10 +18,11 @@ const DEFAULT_SETTINGS: Omit<SettingsData, "accountId"> = {
 
   woodCategories: [],
 
-  print: {
-    defaultLayout: "A4",
-    showGstRow: true,
-    showDiscountRow: true,
+  security: {
+    pinEnabled: false,
+    profilePins: {},
+    recoveryEmail: "",
+    recoveryEmailVerified: false,
   },
 };
 
@@ -86,9 +87,12 @@ function getSettings(
         existingSettings.woodCategories ??
         DEFAULT_SETTINGS.woodCategories,
 
-      print: {
-        ...DEFAULT_SETTINGS.print,
-        ...existingSettings.print,
+      security: {
+        ...DEFAULT_SETTINGS.security,
+        ...existingSettings.security,
+        profilePins:
+          existingSettings.security?.profilePins ??
+          DEFAULT_SETTINGS.security.profilePins,
       },
     };
   }
@@ -173,23 +177,23 @@ export function saveWoodCategories(
 }
 
 /* ---------------------------------- */
-/* Print Settings */
+/* Security Settings */
 /* ---------------------------------- */
 
-export function getPrintSettings(
+export function getSecuritySettings(
   accountId: string,
-): PrintSettings {
-  return getSettings(accountId).print;
+): SecuritySettings {
+  return getSettings(accountId).security;
 }
 
-export function savePrintSettings(
+export function saveSecuritySettings(
   accountId: string,
-  print: PrintSettings,
+  security: SecuritySettings,
 ): void {
   const settings = getSettings(accountId);
 
   saveSettings(accountId, {
     ...settings,
-    print,
+    security,
   });
 }

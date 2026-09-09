@@ -14,6 +14,7 @@ import type {
   SubscriptionAccount,
 } from "./types";
 import { clearPendingAccountId, clearSession, getAccounts, getPendingAccountId, getProfiles, getStoredSession, savePendingAccountId, saveSession } from "./auth-storage";
+import { getSecuritySettings } from "../settings/services/settings-storage";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -26,6 +27,7 @@ interface AuthContextValue {
 
   selectProfile: (
     profileId: string,
+    pin?: string,
   ) => AuthUser;
 
   logout: () => void;
@@ -236,43 +238,50 @@ export function AuthProvider({
   }
 
   function selectProfile(
-      profileId: string,
-    ): AuthUser {
-      const accountId =
-        getPendingAccountId() ??
-        getStoredSession()?.accountId;
+    profileId: string,
+    pin?: string,
+  ): AuthUser {
+    const accountId =
+      user?.accountId ??
+      getPendingAccountId() ??
+      getStoredSession()?.accountId;
 
-      if (!accountId) {
-        throw new Error(
-          "No subscription account is waiting for profile selection.",
-        );
-      }
-
-      const account = getAccounts().find(
-        (item) =>
-          item.id === accountId &&
-          item.active,
+    if (!accountId) {
+      throw new Error(
+        "No subscription account is waiting for profile selection.",
       );
+    }
 
-      if (!account) {
-        throw new Error(
-          "Subscription account not found.",
-        );
-      }
+    const account = getAccounts().find(
+      (item) =>
+        item.id === accountId &&
+        item.active,
+    );
 
-      const profile = getProfiles().find(
-        (item) =>
-          item.id === profileId &&
-          item.accountId === account.id &&
-          item.active,
+    if (!account) {
+      throw new Error(
+        "Subscription account not found.",
       );
+    }
 
-      if (!profile) {
-        throw new Error(
-          "Selected user profile is not available.",
-        );
-      }
+    const profile = getProfiles().find(
+      (item) =>
+        item.id === profileId &&
+        item.accountId === account.id &&
+        item.active,
+    );
 
+    if (!profile) {
+      throw new Error(
+        "Selected user profile is not available.",
+      );
+    }
+
+    /* ---------------------------------- */
+    /* ADMIN */
+    /* ---------------------------------- */
+
+    if (account.platformRole === "ADMIN") {
       const authenticatedUser =
         createAuthUser(account, profile);
 
@@ -287,6 +296,57 @@ export function AuthProvider({
 
       return authenticatedUser;
     }
+
+    /* ---------------------------------- */
+    /* PROFILE PIN */
+    /* ---------------------------------- */
+
+    const securitySettings =
+      getSecuritySettings(account.id);
+
+    if (securitySettings.pinEnabled) {
+      const expectedPin =
+        securitySettings.profilePins[
+          profile.id
+        ];
+
+      if (!expectedPin) {
+        throw new Error(
+          "A PIN has not been configured for this profile.",
+        );
+      }
+
+      if (!pin) {
+        throw new Error(
+          "PIN_REQUIRED",
+        );
+      }
+
+      if (pin !== expectedPin) {
+        throw new Error(
+          "Incorrect PIN.",
+        );
+      }
+    }
+
+    /* ---------------------------------- */
+    /* CREATE SESSION */
+    /* ---------------------------------- */
+
+    const authenticatedUser =
+      createAuthUser(account, profile);
+
+    setUser(authenticatedUser);
+
+    saveSession({
+      accountId: account.id,
+      profileId: profile.id,
+    });
+
+    clearPendingAccountId();
+
+    return authenticatedUser;
+  }
 
   function logout() {
     clearSession();

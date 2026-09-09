@@ -159,6 +159,7 @@ export function RoundSizeEstimatePage() {
 
       return {
         accountId: user!.accountId,
+        createdBy: user!.name,
         id: estimateId,
         estimateNumber:header.estimateNumber,
         documentTitle:header.documentTitle,

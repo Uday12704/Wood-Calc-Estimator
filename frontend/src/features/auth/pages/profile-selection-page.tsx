@@ -17,6 +17,9 @@ import {
   getProfiles,
   clearPendingAccountId,
 } from "../auth-storage";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { Input } from "@/components/ui/input";
 
 export function ProfileSelectionPage() {
   const {
@@ -27,6 +30,10 @@ export function ProfileSelectionPage() {
   } = useAuth();
 
   const navigate = useNavigate();
+  const [pinProfileId, setPinProfileId] =
+    useState<string | null>(null);
+
+  const [pin, setPin] = useState("");
 
   if (isLoading) {
     return (
@@ -85,10 +92,17 @@ export function ProfileSelectionPage() {
 
   function handleProfileSelect(
     profileId: string,
+    providedPin?: string,
   ) {
     try {
       const selectedUser =
-        selectProfile(profileId);
+        selectProfile(
+          profileId,
+          providedPin,
+        );
+
+      setPinProfileId(null);
+      setPin("");
 
       if (
         selectedUser.platformRole === "ADMIN"
@@ -102,9 +116,31 @@ export function ProfileSelectionPage() {
         });
       }
     } catch (error) {
-      console.error(
-        "Profile selection failed:",
-        error,
+      if (
+        error instanceof Error &&
+        error.message === "PIN_REQUIRED"
+      ) {
+        setPinProfileId(profileId);
+        setPin("");
+        return;
+      }
+
+      if (
+        error instanceof Error &&
+        error.message === "Incorrect PIN."
+      ) {
+        toast.error("Incorrect PIN.");
+        setPin("");
+        return;
+      }
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.error(
+        "Profile selection failed.",
       );
     }
   }
@@ -158,6 +194,77 @@ export function ProfileSelectionPage() {
               </button>
             ))}
           </div>
+
+          {pinProfileId && (
+            <div className="rounded-xl border bg-muted/30 p-5">
+              <div className="mb-4">
+                <h3 className="font-semibold">
+                  Enter Profile PIN
+                </h3>
+
+                <p className="text-sm text-muted-foreground">
+                  Enter the 4-digit PIN to continue to{" "}
+                  {
+                    profiles.find(
+                      (profile) =>
+                        profile.id === pinProfileId,
+                    )?.name
+                  }.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(event) =>
+                    setPin(
+                      event.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 4),
+                    )
+                  }
+                  placeholder="Enter 4-digit PIN"
+                  autoFocus
+                  className="sm:max-w-xs"
+                />
+
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (pin.length !== 4) {
+                      toast.error(
+                        "Please enter a 4-digit PIN.",
+                      );
+                      return;
+                    }
+
+                    handleProfileSelect(
+                      pinProfileId,
+                      pin,
+                    );
+                  }}
+                  className="cursor-pointer"
+                >
+                  Continue
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setPinProfileId(null);
+                    setPin("");
+                  }}
+                  className="cursor-pointer"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-center border-t pt-4">
             <Button

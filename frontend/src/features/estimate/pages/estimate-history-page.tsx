@@ -5,6 +5,7 @@ import {
   Pencil,
   Trash2,
   RotateCcw,
+  History,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -259,8 +260,8 @@ export function EstimateHistoryPage() {
       {/* PAGE HEADER */}
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Estimate History
+        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2 text-wood-primary">
+          <History />Estimate History
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
@@ -402,6 +403,10 @@ export function EstimateHistoryPage() {
                   <th className="px-4 py-3 text-left font-medium">
                     Estimate No.
                   </th>
+                  
+                  <th className="px-4 py-3 text-left font-medium">
+                    Created By
+                  </th>
 
                   <th className="px-4 py-3 text-left font-medium">
                     Date
@@ -427,7 +432,7 @@ export function EstimateHistoryPage() {
                     Balance
                   </th>
 
-                  <th className="px-4 py-3 text-right font-medium">
+                  <th className="px-4 py-3 text-center font-medium">
                     Actions
                   </th>
 
@@ -450,6 +455,10 @@ export function EstimateHistoryPage() {
                         {
                           estimate.estimateNumber
                         }
+                      </td>
+
+                      <td className="px-4 py-3">
+                        {estimate.createdBy}
                       </td>
 
                       <td className="px-4 py-3">

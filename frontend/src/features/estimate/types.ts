@@ -90,6 +90,7 @@ export interface OtherCharge {
 
 export interface SavedEstimate {
   accountId: string;
+  createdBy: string;
   id: string;
   estimateNumber: string;
   documentTitle: string;
@@ -147,6 +148,7 @@ export interface SavedEstimate {
 
 export interface SavedRoundSizeEstimate {
   accountId: string;
+  createdBy: string;
   id: string;
   estimateNumber: string;
   documentTitle: string;
@@ -201,6 +203,7 @@ export interface SavedRoundSizeEstimate {
 
 export interface SavedCustomEstimate {
   accountId: string;
+  createdBy: string;
   id: string;
   estimateNumber: string;
   documentTitle: string;

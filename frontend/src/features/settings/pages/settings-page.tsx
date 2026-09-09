@@ -5,7 +5,6 @@ import {
 import { BusinessInfoCard } from "../components/business-info-card";
 import { WoodCategoryCard } from "../components/wood-category-card";
 import { UserManagementCard } from "../components/user-management-card";
-import { PrintSettingsCard } from "../components/print-settings-card";
 import { ChangePasswordCard } from "../components/change-password-card";
 
 export function SettingsPage() {
@@ -35,10 +34,6 @@ export function SettingsPage() {
       {/* USER MANAGEMENT */}
 
       <UserManagementCard />
-
-      {/* PRINT SETTINGS */}
-
-      <PrintSettingsCard />
 
       {/* CHANGE PASSWORD */}
 

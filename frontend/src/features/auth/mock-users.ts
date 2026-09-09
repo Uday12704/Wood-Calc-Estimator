@@ -67,7 +67,7 @@ export const mockProfiles: AppProfile[] = [
   {
     id: "profile-002",
     accountId: "account-002",
-    name: "Daeshan 2",
+    name: "Darshan 2",
     role: "USER",
     active: true,
     createdAt: "2026-01-01T00:00:00.000Z",

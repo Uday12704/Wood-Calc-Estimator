@@ -186,6 +186,7 @@ export function CutSizeEstimatePage() {
 
       return {
         accountId: user!.accountId,
+        createdBy: user!.name,
         id: estimateId,
         estimateNumber:header.estimateNumber,
         documentTitle:header.documentTitle,
