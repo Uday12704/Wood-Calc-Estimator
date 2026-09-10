@@ -438,6 +438,7 @@ export function AppNavbar() {
           <DropdownMenuContent
             align="end"
             sideOffset={8}
+            className="w-35"
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel>
@@ -607,13 +608,18 @@ export function AppNavbar() {
                   }}
                 />
 
-                <button
-                  type="button"
-                  className="text-sm text-primary hover:underline"
-                  onClick={handleForgotPin}
-                >
-                  Forgot PIN?
-                </button>
+                {getProfiles().find(
+                  (profile) =>
+                    profile.id === selectedProfileId,
+                )?.role === "OWNER" && (
+                  <button
+                    type="button"
+                    className="text-sm text-primary hover:underline"
+                    onClick={handleForgotPin}
+                  >
+                    Forgot PIN?
+                  </button>
+                )}
               </div>
 
               <div className="flex justify-end gap-2">
