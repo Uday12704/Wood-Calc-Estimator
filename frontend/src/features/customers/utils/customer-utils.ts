@@ -295,7 +295,7 @@ export function getProfileEstimateSummaries(
 
           profileName:
             profileEstimates[0]
-              ?.profileName ??
+              ?.profileId ??
             "Unknown Profile",
 
           totalEstimates:
