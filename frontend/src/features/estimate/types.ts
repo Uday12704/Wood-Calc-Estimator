@@ -77,6 +77,7 @@ export interface CustomEstimateItem {
   id: string;
   description: string;
   quantity: number | "";
+  unit: string;
   pricePerUnit: number | "";
   note: string;
   lineTotal: number;

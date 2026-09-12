@@ -26,8 +26,9 @@ function createEmptyItem(): CustomEstimateItem {
   return {
     id: crypto.randomUUID(),
     description: "",
-    pricePerUnit: "",
     quantity: 1,
+    unit: "",
+    pricePerUnit: "",
     note: "",
     lineTotal: 0,
   };
@@ -122,7 +123,7 @@ export function CustomItemsTable({
     */
     if (
       event.key === "Tab" &&
-      field === "quantity"
+      field === "pricePerUnit"
     ) {
       event.preventDefault();
 
@@ -134,10 +135,10 @@ export function CustomItemsTable({
         currentIndex ===
         items.length - 1
       ) {
-        /* const currentItem =
+         const currentItem =
           items[currentIndex];
 
-        const calculation =
+        /*const calculation =
           calculateCustomItem({
             quantity: currentItem.quantity,
             pricePerUnit: currentItem.pricePerUnit,
@@ -145,11 +146,10 @@ export function CustomItemsTable({
 
         const newItem: CustomEstimateItem = {
           id: crypto.randomUUID(),
-
           description: "",
-          pricePerUnit: "",
-
           quantity: 1,
+          unit: currentItem.unit,
+          pricePerUnit: "",
           note: "",
           lineTotal: 0,
         };
@@ -205,7 +205,7 @@ export function CustomItemsTable({
     */
     if (
       field === "note" ||
-      field === "quantity"
+      field === "pricePerUnit"
     ) {
       if (
         currentIndex ===
@@ -303,11 +303,15 @@ export function CustomItemsTable({
               </th>
 
               <th className="border-b px-3 py-3 text-left text-xs font-semibold">
-                PRICE / UNIT
+                QTY
               </th>
 
               <th className="border-b px-3 py-3 text-left text-xs font-semibold">
-                QTY
+                UNIT
+              </th>
+              
+              <th className="border-b px-3 py-3 text-left text-xs font-semibold">
+                PRICE / UNIT
               </th>
 
               <th className="min-w-[150px] border-b px-3 py-3 text-left text-xs font-semibold">
@@ -375,6 +379,70 @@ export function CustomItemsTable({
                       />
                     </td>
 
+                    {/* QUANTITY */}
+
+                    <td className="px-2 py-2">
+
+                      <Input
+                        ref={(element) =>
+                          setInputRef(
+                            `${item.id}-quantity`,
+                            element,
+                          )
+                        }
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={
+                          item.quantity
+                        }
+                        onChange={(event) =>
+                          updateItem(
+                            item.id,
+                            "quantity",
+                            event.target
+                              .value === ""
+                              ? ""
+                              : Number(
+                                  event.target
+                                    .value,
+                                ),
+                          )
+                        }
+                        onKeyDown={(event) =>
+                          handleKeyDown(
+                            event,
+                            item.id,
+                            "quantity",
+                          )
+                        }
+                        className="h-9 min-w-[70px]"
+                      />
+
+                    </td>
+
+                    {/* UNIT */}
+
+                    <td className="px-2 py-2">
+                      <Input
+                        ref={(element) =>
+                          setInputRef(
+                            `${item.id}-unit`,
+                            element,
+                          )
+                        }
+                        type="text"
+                        value={item.unit}
+                        onChange={(event) =>
+                          updateItem(
+                            item.id,
+                            "unit",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </td>
+
                     {/* PRICE */}
 
                     <td className="px-2 py-2">
@@ -420,47 +488,6 @@ export function CustomItemsTable({
 
                     </td>
 
-                    {/* QUANTITY */}
-
-                    <td className="px-2 py-2">
-
-                      <Input
-                        ref={(element) =>
-                          setInputRef(
-                            `${item.id}-quantity`,
-                            element,
-                          )
-                        }
-                        type="number"
-                        min="1"
-                        step="1"
-                        value={
-                          item.quantity
-                        }
-                        onChange={(event) =>
-                          updateItem(
-                            item.id,
-                            "quantity",
-                            event.target
-                              .value === ""
-                              ? ""
-                              : Number(
-                                  event.target
-                                    .value,
-                                ),
-                          )
-                        }
-                        onKeyDown={(event) =>
-                          handleKeyDown(
-                            event,
-                            item.id,
-                            "quantity",
-                          )
-                        }
-                        className="h-9 min-w-[70px]"
-                      />
-
-                    </td>
 
                     {/* NOTES */}
 

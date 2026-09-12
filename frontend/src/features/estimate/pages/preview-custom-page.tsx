@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Download,
-  Printer,
+  Share2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,16 @@ import { pdf } from "@react-pdf/renderer";
 import { toast } from "react-toastify";
 import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 import { useAuth } from "@/features/auth/auth-context";
+import { formatCurrency } from "@/lib/formatters";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 export function PreviewCustomEstimatePage() {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const [shareOpen, setShareOpen] = useState(false);
+
 
   const estimate = useMemo(() => {
     if (!id || !user?.accountId) {
@@ -152,15 +157,17 @@ export function PreviewCustomEstimatePage() {
           <Button
             variant="outline"
             onClick={() =>
-              window.print()
+              setShareOpen(true)
             }
+            className="cursor-pointer"
           >
-            <Printer className="mr-2 size-4" />
-            Print
+            <Share2 className="mr-2 size-4" />
+            Share
           </Button>
 
           <Button
            onClick={handleExport}
+           className="cursor-pointer"
           >
             <Download className="mr-2 size-4" />
             Export
@@ -315,6 +322,10 @@ export function PreviewCustomEstimatePage() {
                     </th>
 
                     <th className="px-3 py-2 text-right">
+                      Unit
+                    </th>
+
+                    <th className="px-3 py-2 text-right">
                       Rate
                     </th>
 
@@ -347,13 +358,17 @@ export function PreviewCustomEstimatePage() {
                                 </td>
 
                                 <td className="px-3 py-3 text-right">
-                                    ₹{Number(
+                                    {item.unit}
+                                </td>
+
+                                <td className="px-3 py-3 text-right">
+                                    {Number(
                                         item.pricePerUnit,
                                     ).toFixed(2)}
                                 </td>
 
                                 <td className="px-3 py-3 text-right font-medium">
-                                    ₹{item.lineTotal.toFixed(
+                                    {item.lineTotal.toFixed(
                                         2,
                                     )}
                                 </td>
@@ -400,10 +415,7 @@ export function PreviewCustomEstimatePage() {
                         </span>
 
                         <span>
-                          ₹
-                          {Number(
-                            charge.amount,
-                          ).toFixed(2)}
+                          {formatCurrency(charge.amount)}
                         </span>
 
                       </div>
@@ -422,10 +434,7 @@ export function PreviewCustomEstimatePage() {
               <div className="flex justify-between">
                 <span className="font-semibold">Subtotal</span>
                 <span className="font-semibold">
-                  ₹
-                  {estimate.totals.subtotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.subtotal)}
                 </span>
               </div>
 
@@ -436,10 +445,7 @@ export function PreviewCustomEstimatePage() {
                   </span>
 
                   <span>
-                    ₹
-                    {estimate.totals.gstAmount.toFixed(
-                      2,
-                    )}
+                   {formatCurrency(estimate.totals.gstAmount)}
                   </span>
                 </div>
               )}
@@ -450,10 +456,7 @@ export function PreviewCustomEstimatePage() {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.totalOtherCharges.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.totalOtherCharges)}
                 </span>
               </div>
 
@@ -463,10 +466,7 @@ export function PreviewCustomEstimatePage() {
                 </span>
 
                 <span>
-                  - ₹
-                  {estimate.totals.discountAmount.toFixed(
-                    2,
-                  )}
+                  - {formatCurrency(estimate.totals.discountAmount)}
                 </span>
               </div>
 
@@ -478,10 +478,7 @@ export function PreviewCustomEstimatePage() {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.grandTotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.grandTotal)}
                 </span>
               </div>
 
@@ -491,10 +488,7 @@ export function PreviewCustomEstimatePage() {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.advancePaid.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.advancePaid)}
                 </span>
               </div>
 
@@ -504,10 +498,7 @@ export function PreviewCustomEstimatePage() {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.balanceDue.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.balanceDue)}
                 </span>
               </div>
 
@@ -534,7 +525,12 @@ export function PreviewCustomEstimatePage() {
         </CardContent>
 
       </Card>
-
+      
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={estimate}
+      />
     </div>
   );
 }

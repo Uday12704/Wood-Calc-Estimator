@@ -40,8 +40,9 @@ export function CustomEstimatePage() {
       {
         id: crypto.randomUUID(),
         description: "",
-        pricePerUnit: "",
         quantity: 1,
+        unit: "",
+        pricePerUnit: "",
         note: "",
         lineTotal: 0,
       },

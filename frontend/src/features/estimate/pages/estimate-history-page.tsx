@@ -503,14 +503,14 @@ export function EstimateHistoryPage() {
                       </td>
 
                       <td className="px-4 py-3 text-right font-medium">
-                        ₹
+                        ₹{" "}
                         {estimate.totals.grandTotal.toFixed(
                           2,
                         )}
                       </td>
 
                       <td className="px-4 py-3 text-right">
-                        ₹
+                        ₹{" "}
                         {estimate.totals.balanceDue.toFixed(
                           2,
                         )}

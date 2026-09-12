@@ -112,10 +112,14 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    width: "50%",
+    width: "40%",
   },
 
   qty: {
+    width: "10%",
+  },
+
+  unit: {
     width: "10%",
   },
 
@@ -330,6 +334,16 @@ export function CustomEstimatePdf({
             >
               QTY
             </Text>
+            
+            <Text
+              style={[
+                styles.cell,
+                styles.unit,
+                styles.cellCenter,
+              ]}
+            >
+              UNIT
+            </Text>
 
             <Text
               style={[
@@ -389,10 +403,20 @@ export function CustomEstimatePdf({
                     style={[
                       styles.cell,
                       styles.qty,
-                      styles.cellRight,
+                      styles.cellCenter,
                     ]}
                   >
                     {item.quantity}
+                  </Text>
+
+                  <Text
+                    style={[
+                      styles.cell,
+                      styles.unit,
+                      styles.cellCenter,
+                    ]}
+                  >
+                    {item.unit}
                   </Text>
 
                   <Text
@@ -545,7 +569,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                Rs. {" "}
+                Rs.{" "}
                 {estimate.totals.grandTotal.toFixed(
                   2,
                 )}
