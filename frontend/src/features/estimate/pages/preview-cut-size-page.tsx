@@ -609,6 +609,21 @@ export function PreviewCutSizePage() {
                 </div>
               )}
 
+              {estimate.additionalItemGstEnabled && (
+                <div className="flex justify-between">
+                  <span>
+                    Additional Total
+                  </span>
+
+                  <span>
+                    Rs.{" "}
+                    {estimate.totals.additionalTotal.toFixed(
+                      2,
+                    )}
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <span>
                   Other Charges
