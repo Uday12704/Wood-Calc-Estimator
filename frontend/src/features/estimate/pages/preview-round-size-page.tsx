@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Download,
-  Printer,
+  Share2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,13 @@ import { pdf } from "@react-pdf/renderer";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RoundSizeMeasurePdf } from "../pdf/round-size-measure-pdf";
 import { useAuth } from "@/features/auth/auth-context";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 export function PreviewRoundSizePage() {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
+  const [shareOpen, setShareOpen] = useState(false);
 
   const estimate = useMemo(() => {
     if (!id || !user?.accountId) {
@@ -150,20 +152,23 @@ async function handleExport(type: "price" | "measure") {
           <Button
             variant="outline"
             onClick={() =>
-              window.print()
+              setShareOpen(true)
             }
+            className="cursor-pointer"
           >
-            <Printer className="mr-2 size-4" />
-            Print
+            <Share2 className="mr-2 size-4" />
+            Share
           </Button>
 
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button ><Download className="mr-2 size-4" /> Export</Button>} />
+            <DropdownMenuTrigger render={<Button ><Download className="mr-2 size-4" /> Export</Button>} className="cursor-pointer" />
             <DropdownMenuContent className="w-35">
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => handleExport("measure")}><Download className="mr-2 size-4" /> Measurement List</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport("measure")}
+                  className="cursor-pointer"><Download className="mr-2 size-4" /> Measurement List</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleExport("price")}><Download className="mr-2 size-4" /> Price List</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport("price")}
+                  className="cursor-pointer"><Download className="mr-2 size-4" /> Price List</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -732,7 +737,11 @@ async function handleExport(type: "price" | "measure") {
         </CardContent>
 
       </Card>
-
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={estimate}
+      />
     </div>
   );
 }

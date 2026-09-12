@@ -39,6 +39,21 @@ export default function Customers() {
   const [profileStatus, setProfileStatus] =
     useState<"ALL" | "ON_HOLD" | "CONFIRMED">("ALL");
 
+  const [customerSearch, setCustomerSearch] =
+    useState("");
+
+  const [customerEstimateSearch, setCustomerEstimateSearch] =
+    useState("");
+
+  const [customerEstimateDateFrom, setCustomerEstimateDateFrom] =
+    useState("");
+
+  const [customerEstimateDateTo, setCustomerEstimateDateTo] =
+    useState("");
+
+  const [customerEstimateStatus, setCustomerEstimateStatus] =
+    useState<"ALL" | "ON_HOLD" | "CONFIRMED">("ALL");
+
   const customerSummaries = useMemo(() => {
     if (!user) {
       return [];
@@ -46,6 +61,27 @@ export default function Customers() {
 
     return getCustomerSummaries(user.accountId);
   }, [user]);
+
+  const filteredCustomers = useMemo(() => {
+    const search = customerSearch
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
+        return customerSummaries;
+    }
+
+    return customerSummaries.filter(
+        (customer) =>
+        customer.name
+            .toLowerCase()
+            .includes(search) ||
+        customer.phone.includes(search) ||
+        customer.reference
+            .toLowerCase()
+            .includes(search),
+    );
+    }, [customerSummaries, customerSearch]);
 
   const profileSummaries = useMemo(() => {
     if (!user) {
@@ -69,6 +105,63 @@ export default function Customers() {
         ) ?? null
     );
     }, [customerSummaries, selectedCustomerPhone]);
+
+  const filteredCustomerEstimates = useMemo(() => {
+    if (!selectedCustomer) {
+        return [];
+    }
+
+    const search = customerEstimateSearch
+        .trim()
+        .toLowerCase();
+
+    return selectedCustomer.estimates.filter(
+        (estimate) => {
+        const matchesSearch =
+            !search ||
+            estimate.estimateNumber
+            .toLowerCase()
+            .includes(search) ||
+            estimate.partyName
+            .toLowerCase()
+            .includes(search) ||
+            estimate.contactNumber
+            .toLowerCase()
+            .includes(search) ||
+            estimate.reference
+            .toLowerCase()
+            .includes(search) ||
+            estimate.profileName
+            .toLowerCase()
+            .includes(search);
+
+        const matchesStatus =
+            customerEstimateStatus === "ALL" ||
+            estimate.status === customerEstimateStatus;
+
+        const matchesFrom =
+            !customerEstimateDateFrom ||
+            estimate.date >= customerEstimateDateFrom;
+
+        const matchesTo =
+            !customerEstimateDateTo ||
+            estimate.date <= customerEstimateDateTo;
+
+        return (
+            matchesSearch &&
+            matchesStatus &&
+            matchesFrom &&
+            matchesTo
+        );
+        },
+    );
+    }, [
+    selectedCustomer,
+    customerEstimateSearch,
+    customerEstimateDateFrom,
+    customerEstimateDateTo,
+    customerEstimateStatus,
+    ]);
 
   const selectedProfile = useMemo(() => {
     if (!selectedProfileId) {
@@ -147,7 +240,7 @@ export default function Customers() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight flex gap-2 items-center text-wood-secondary">
+        <h1 className="text-2xl font-semibold tracking-tight flex gap-2 items-center text-wood-primary">
           <Users /> Customers
         </h1>
 
@@ -198,9 +291,14 @@ export default function Customers() {
                 type="button"
                 variant="ghost"
                 className="gap-2 px-0"
-                onClick={() =>
-                    setSelectedCustomerPhone(null)
-                }
+                onClick={() => {
+                    setSelectedCustomerPhone(null);
+
+                    setCustomerEstimateSearch("");
+                    setCustomerEstimateDateFrom("");
+                    setCustomerEstimateDateTo("");
+                    setCustomerEstimateStatus("ALL");
+                }}
                 >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Customers
@@ -270,28 +368,136 @@ export default function Customers() {
                 </div>
                 </div>
 
-                {/* Customer Estimates */}
-                <div className="space-y-3">
+              {/* Customer Estimates */}
+              <div className="space-y-4">
+
+                {/* Filters */}
+                <div className="rounded-xl border bg-card p-4">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                        <div className="space-y-2 lg:col-span-2">
+                            <label className="text-sm font-medium">
+                            Search
+                            </label>
+
+                            <input
+                            type="text"
+                            value={customerEstimateSearch}
+                            onChange={(event) =>
+                                setCustomerEstimateSearch(
+                                event.target.value,
+                                )
+                            }
+                            placeholder="Estimate no, reference, profile..."
+                            className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                            From
+                            </label>
+
+                            <input
+                            type="date"
+                            value={customerEstimateDateFrom}
+                            onChange={(event) =>
+                                setCustomerEstimateDateFrom(
+                                event.target.value,
+                                )
+                            }
+                            className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                            To
+                            </label>
+
+                            <input
+                            type="date"
+                            value={customerEstimateDateTo}
+                            onChange={(event) =>
+                                setCustomerEstimateDateTo(
+                                event.target.value,
+                                )
+                            }
+                            className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                            Status
+                            </label>
+
+                            <select
+                            value={customerEstimateStatus}
+                            onChange={(event) =>
+                                setCustomerEstimateStatus(
+                                event.target.value as
+                                    | "ALL"
+                                    | "ON_HOLD"
+                                    | "CONFIRMED",
+                                )
+                            }
+                            className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                            >
+                            <option value="ALL">
+                                All Statuses
+                            </option>
+
+                            <option value="CONFIRMED">
+                                Confirmed
+                            </option>
+
+                            <option value="ON_HOLD">
+                                On Hold
+                            </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 flex justify-end">
+                    <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => {
+                            setCustomerEstimateSearch("");
+                            setCustomerEstimateDateFrom("");
+                            setCustomerEstimateDateTo("");
+                            setCustomerEstimateStatus("ALL");
+                        }}
+                        >
+                        Clear <X />
+                    </Button>
+                </div>
+              </div>
+
                 <div>
                     <h3 className="text-lg font-semibold">
                     Estimates
                     </h3>
-
                     <p className="text-sm text-muted-foreground">
-                    All estimates for this customer.
+                        Showing {filteredCustomerEstimates.length} of{" "}
+                        {selectedCustomer.estimates.length} estimates.
                     </p>
                 </div>
 
-                {selectedCustomer.estimates.length ===
-                0 ? (
+                {filteredCustomerEstimates.length === 0
+                 ? (
                     <div className="rounded-lg border border-dashed p-8 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        No estimates found.
-                    </p>
+                        <p className="font-medium">
+                            No estimates found
+                        </p>
+
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            Try changing the search or filters.
+                        </p>
                     </div>
                 ) : (
                     <div className="space-y-3">
-                    {selectedCustomer.estimates.map(
+                    {filteredCustomerEstimates.map(
                         (estimate) => (
                         <div
                         key={estimate.id}
@@ -408,14 +614,39 @@ export default function Customers() {
             </>
             ) : (
             <>
-                <div>
-                <h2 className="text-lg font-semibold">
-                    Customers
-                </h2>
+                <div className="space-y-4">
+                    <div>
+                        <h2 className="text-lg font-semibold">
+                        Customers
+                        </h2>
 
-                <p className="text-sm text-muted-foreground">
-                    Customers are grouped by phone number.
-                </p>
+                        <p className="text-sm text-muted-foreground">
+                        Customers are grouped by phone number.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <input
+                        type="text"
+                        value={customerSearch}
+                        onChange={(event) =>
+                            setCustomerSearch(event.target.value)
+                        }
+                        placeholder="Search customer, phone, or reference..."
+                        className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        />
+
+                        {customerSearch && (
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={() => setCustomerSearch("")}
+                            className="cursor-pointer"
+                        >
+                             <X />
+                        </Button>
+                        )}
+                    </div>
                 </div>
 
                 {customerSummaries.length === 0 ? (
@@ -431,9 +662,23 @@ export default function Customers() {
                     create estimates.
                     </p>
                 </div>
+                ) :
+                filteredCustomers.length === 0 ? (
+                <div className="rounded-lg border border-dashed p-8 text-center">
+                    <Users className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+
+                    <h3 className="font-medium">
+                    No customers yet
+                    </h3>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                    Customers will appear here after you
+                    create estimates.
+                    </p>
+                </div>
                 ) : (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {customerSummaries.map((customer) => (
+                    {filteredCustomers.map((customer) => (
                     <div
                         key={customer.phone}
                         className="rounded-xl border bg-card p-5 shadow-sm"
@@ -596,8 +841,8 @@ export default function Customers() {
                 </div>
 
                 {/* Filters */}
-                <div className="rounded-xl border bg-card p-4">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+                <div className="rounded-xl border bg-card p-4 space-y-2">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                         {/* Search */}
                         <div className="space-y-2 lg:col-span-2">
                             <label className="text-sm font-medium">
@@ -684,23 +929,22 @@ export default function Customers() {
                                 </option>
                             </select>
                         </div>
-
-                        {/* Clear */}
-                        <div className="flex items-end">
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                className="w-30 cursor-pointer border-red-500/50"
-                                onClick={() => {
-                                setProfileSearch("");
-                                setProfileDateFrom("");
-                                setProfileDateTo("");
-                                setProfileStatus("ALL");
-                                }}
-                            >
-                                Clear <X />
-                            </Button>
-                        </div>
+                    </div>
+                    {/* Clear */}
+                    <div className="flex justify-end">
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            className="cursor-pointer border-red-500/50"
+                            onClick={() => {
+                            setProfileSearch("");
+                            setProfileDateFrom("");
+                            setProfileDateTo("");
+                            setProfileStatus("ALL");
+                            }}
+                        >
+                            Clear <X />
+                        </Button>
                     </div>
                 </div>
 

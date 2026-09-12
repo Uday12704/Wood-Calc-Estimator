@@ -24,20 +24,27 @@ type AnySavedEstimate =
   | SavedRoundSizeEstimate
   | SavedCustomEstimate;
 
-/* -------------------------------------------------------------------------- */
-/* Helpers                                                                    */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Removes spaces, brackets, dashes and other formatting
- * from a phone number so estimates can be grouped
- * consistently.
- */
 export function normalizePhoneNumber(
   phone: string,
 ): string {
-  return phone.replace(/\D/g, "");
-}
+    const digits = phone.replace(/\D/g, "");
+
+    // Normalize Indian numbers so:
+    // +91 98765 43210
+    // 91 98765 43210
+    // 09876543210
+    // 9876543210
+    // can represent the same customer.
+    if (digits.length === 12 && digits.startsWith("91")) {
+      return digits.slice(2);
+    }
+
+    if (digits.length === 11 && digits.startsWith("0")) {
+      return digits.slice(1);
+    }
+
+    return digits;
+  }
 
 /**
  * Converts an estimate into the common structure

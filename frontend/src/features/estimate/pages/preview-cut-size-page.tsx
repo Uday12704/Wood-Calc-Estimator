@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Download,
-  Printer,
+  Share2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,13 @@ import { pdf } from "@react-pdf/renderer";
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { toast } from "react-toastify";
 import { useAuth } from "@/features/auth/auth-context";
+import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 
 export function PreviewCutSizePage() {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
+  const [shareOpen, setShareOpen] = useState(false);
 
   const estimate = useMemo(() => {
     if (!id || !user?.accountId) {
@@ -153,15 +155,17 @@ export function PreviewCutSizePage() {
           <Button
             variant="outline"
             onClick={() =>
-              window.print()
+              setShareOpen(true)
             }
+            className="cursor-pointer"
           >
-            <Printer className="mr-2 size-4" />
-            Print
+            <Share2 className="mr-2 size-4" />
+            Share
           </Button>
 
           <Button
            onClick={handleExport}
+           className="cursor-pointer"
           >
             <Download className="mr-2 size-4" />
             Export
@@ -732,7 +736,11 @@ export function PreviewCutSizePage() {
         </CardContent>
 
       </Card>
-
+      <ShareEstimateDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        estimate={estimate}
+      />
     </div>
   );
 }
