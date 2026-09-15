@@ -367,6 +367,22 @@ export function RoundSizeEstimatePage() {
       />
             
       <EstimateActions
+        onSave={() => {
+          if (!validateEstimate()) {
+            return;
+          }
+          const estimate =
+            buildEstimate(header.status);
+
+            updateStatus(header.status);
+
+            saveRoundEstimate(user!.accountId, estimate);
+            toast.success("Estimate saved.");
+            navigate(
+              `/app/estimates/history`,
+            );
+        }}
+
         onSaveDraft={() => {
           if (!validateEstimate()) {
             return;
@@ -382,6 +398,7 @@ export function RoundSizeEstimatePage() {
               `/app/estimates/history`,
             );
         }}
+
         onConfirm={() => {
           if (!validateEstimate()) {
             return;
@@ -397,9 +414,11 @@ export function RoundSizeEstimatePage() {
               `/app/estimates/history`,
             );
         }}
+
         onShare={() => {
           setShareOpen(true);
         }}
+        
         onPrintExport={
           handleExport
         }

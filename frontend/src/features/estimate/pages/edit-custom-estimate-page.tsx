@@ -291,6 +291,25 @@ function EditCustomEstimateForm({
         new Date().toISOString(),
     };
   };
+
+  const handleSave = () => {
+    if (!validateEstimate()) {
+      return;
+    }
+
+    const updatedEstimate =
+      buildEstimate(header.status);
+
+      saveCustomEstimate(user!.accountId, updatedEstimate);
+      
+      toast.success(
+        "Estimate updated successfully.",
+      );
+      
+      navigate(
+        `/app/estimates/preview-custom-estimate/${estimate.id}`,
+      );
+    };
     /*
    * ----------------------------------------
    * SAVE DRAFT
@@ -485,6 +504,9 @@ function EditCustomEstimateForm({
       {/* ACTIONS */}
 
       <EstimateActions
+        onSave={
+          handleSave
+        }
         onSaveDraft={
           handleSaveDraft
         }

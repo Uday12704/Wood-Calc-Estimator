@@ -556,6 +556,21 @@ export function EditRoundSizeEstimatePage() {
       {/* ACTIONS */}
 
       <EstimateActions
+        onSave={() => {
+          if (!validateEstimate()) {
+            return;
+          }
+          const estimate =
+            buildUpdatedEstimate(header.status);
+
+            updateStatus(header.status);
+
+            saveRoundEstimate(user!.accountId, estimate);
+            toast.success("Estimate saved.");
+            navigate(
+              `/app/estimates/preview-round-size/${estimate.id}`,
+            );
+        }}
 
         onSaveDraft={() => {
           if (!validateEstimate()) {

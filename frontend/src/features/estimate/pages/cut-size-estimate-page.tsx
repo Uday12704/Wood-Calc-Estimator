@@ -426,6 +426,22 @@ export function CutSizeEstimatePage() {
       />
       
       <EstimateActions
+        onSave={() => {
+          if (!validateEstimate()) {
+            return;
+          }
+          const estimate =
+            buildEstimate(header.status);
+
+            updateStatus(header.status);
+
+            saveEstimate(user!.accountId, estimate);
+            toast.success("Estimate saved.");
+            navigate(
+              `/app/estimates/history`,
+            );
+        }}
+
         onSaveDraft={() => {
           if (!validateEstimate()) {
             return;

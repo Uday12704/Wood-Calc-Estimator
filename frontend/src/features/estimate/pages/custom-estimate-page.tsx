@@ -322,6 +322,21 @@ export function CustomEstimatePage() {
       />
       
       <EstimateActions
+        onSave={() => {
+          if (!validateEstimate()) {
+            return;
+          }
+          const estimate =
+            buildEstimate(header.status);
+
+            updateStatus(header.status);
+
+            saveCustomEstimate(user!.accountId, estimate);
+            toast.success("Estimate saved.");
+            navigate(
+              `/app/estimates/history`,
+            );
+        }}
         onSaveDraft={() => {
           if (!validateEstimate()) {
             return;

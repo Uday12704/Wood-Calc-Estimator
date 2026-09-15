@@ -51,7 +51,7 @@ export function WoodItemsTable({
   onChange,
 }: WoodItemsTableProps) {
   const inputRefs =
-    useRef<Record<string, HTMLInputElement | null>>(
+    useRef<Record<string, HTMLInputElement | HTMLSelectElement | null>>(
       {},
     );
 
@@ -143,6 +143,83 @@ export function WoodItemsTable({
     itemId: string,
     field: keyof WoodItem,
   ) {
+    /*
+   * Prevent Arrow Up/Down from changing number inputs
+   */
+  if (
+    (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+    ["breadth", "height", "length", "quantity", "pricePerUnit"].includes(field)
+  ) {
+    event.preventDefault();
+    return;
+  }
+
+  /*
+ * SHIFT + TAB
+ *
+ * Move to the previous input field.
+ */
+  if (
+    event.key === "Tab" &&
+    event.shiftKey
+  ) {
+    event.preventDefault();
+
+    const currentIndex = items.findIndex(
+      (item) => item.id === itemId,
+    );
+
+    /*
+    * Field order from first to last.
+    */
+    const fieldOrder: (
+      keyof WoodItem
+    )[] = [
+      "breadth",
+      "height",
+      "woodType",
+      "pricePerUnit",
+      "length",
+      "quantity",
+      "note",
+    ];
+
+    const fieldIndex =
+      fieldOrder.indexOf(field);
+
+    /*
+    * If there is a previous field in
+    * the same row, focus it.
+    */
+    if (fieldIndex > 0) {
+      const previousField =
+        fieldOrder[fieldIndex - 1];
+
+      inputRefs.current[
+        `${itemId}-${previousField}`
+      ]?.focus();
+
+      return;
+    }
+
+    /*
+    * We are at the first field of the row.
+    * Move to the last field of the previous row.
+    */
+    if (currentIndex > 0) {
+      const previousItem =
+        items[currentIndex - 1];
+
+      const previousField =
+        fieldOrder[fieldOrder.length - 1];
+
+      inputRefs.current[
+        `${previousItem.id}-${previousField}`
+      ]?.focus();
+
+      return;
+    }
+  }
     /*
     * TAB
     *
@@ -315,7 +392,7 @@ export function WoodItemsTable({
 
   function setInputRef(
     id: string,
-    element: HTMLInputElement | null,
+    element: HTMLInputElement | HTMLSelectElement | null,
   ) {
     inputRefs.current[id] = element;
   }
@@ -522,6 +599,12 @@ export function WoodItemsTable({
                     <td className="px-2 py-2">
 
                       <select
+                        ref={(element) =>
+                          setInputRef(
+                            `${item.id}-woodType`,
+                            element,
+                          )
+                        }
                         value={item.woodType}
                         onChange={(event) =>
                           updateItem(

@@ -346,12 +346,31 @@ function EditCutSizeEstimateForm({
         new Date().toISOString(),
     };
   };
+  
+  const handleSave = () => {
+    if (!validateEstimate()) {
+      return;
+    }
+
+    const updatedEstimate =
+      buildEstimate(header.status);
+
+      saveEstimate(user!.accountId, updatedEstimate);
+      
+      toast.success(
+        "Estimate updated successfully.",
+      );
+      
+      navigate(
+        `/app/estimates/preview-cut-size/${estimate.id}`,
+      );
+    };
+    
     /*
    * ----------------------------------------
    * SAVE DRAFT
    * ----------------------------------------
    */
-
   const handleSaveDraft = () => {
     if (!validateEstimate()) {
       return;
@@ -578,6 +597,9 @@ function EditCutSizeEstimateForm({
       {/* ACTIONS */}
 
       <EstimateActions
+        onSave={
+          handleSave
+        }
         onSaveDraft={
           handleSaveDraft
         }

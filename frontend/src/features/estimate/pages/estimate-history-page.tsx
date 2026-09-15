@@ -6,6 +6,7 @@ import {
   Trash2,
   RotateCcw,
   History,
+  Copy,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,12 +34,17 @@ import {
   deleteRoundEstimate,
   getSavedCustomEstimates,
   deleteCustomEstimate,
+  saveEstimate,
+  saveRoundEstimate,
+  saveCustomEstimate,
 } from "../services/estimate-storage";
 
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/features/auth/auth-context";
+import { generateEstimateNumber } from "../utils/estimate-number";
+import { getTodayDate } from "../utils/date";
 
 type EstimateUnion =
   | ({ kind: "CUT" } & SavedEstimate)
@@ -95,11 +101,19 @@ export function EstimateHistoryPage() {
         }),
       );
 
-    setEstimates([
+    const allEstimates = [
       ...cut,
       ...round,
       ...custom,
-    ]);
+    ];
+
+    allEstimates.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime(),
+    );
+
+    setEstimates(allEstimates);
   }, [user?.accountId]);
 
   const filteredEstimates =
@@ -154,7 +168,11 @@ export function EstimateHistoryPage() {
             matchesToDate
           );
         },
-      );
+      ).sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime(),
+        );
     }, [
       estimates,
       search,
@@ -218,41 +236,99 @@ export function EstimateHistoryPage() {
     );
   }
 
-  // function handleCopy(
-  //   estimate: SavedEstimate,
-  // ) {
-  //   const copiedEstimate: SavedEstimate = {
-  //     ...estimate,
+  function handleCopy(
+    estimate: EstimateUnion,
+  ) {
+    if (estimate.kind === "CUT") {
+    const copiedEstimate: SavedEstimate = {
+      ...estimate,
 
-  //     id: crypto.randomUUID(),
+      id: crypto.randomUUID(),
+      estimateNumber: generateEstimateNumber(),
+      date: getTodayDate(),
 
-  //     estimateNumber:
-  //       `${estimate.estimateNumber}-COPY`,
+      status: "ON_HOLD",
 
-  //     status: "ON_HOLD",
+      createdBy: user?.name ?? estimate.createdBy,
 
-  //     createdAt:
-  //       new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-  //     updatedAt:
-  //       new Date().toISOString(),
-  //   };
+    saveEstimate(
+      estimate.accountId,
+      copiedEstimate,
+    );
 
-  //   saveEstimate(
-  //     copiedEstimate,
-  //   );
+    setEstimates((current) => [
+      {
+        ...copiedEstimate,
+        kind: "CUT",
+      },
+      ...current,
+    ]);
+  } else if (estimate.kind === "ROUND") {
+    const copiedEstimate: SavedRoundSizeEstimate = {
+      ...estimate,
 
-  //   setEstimates(
-  //     (current) => [
-  //       copiedEstimate,
-  //       ...current,
-  //     ],
-  //   );
+      id: crypto.randomUUID(),
+      estimateNumber: generateEstimateNumber(),
+      date: getTodayDate(),
 
-  //   toast.success(
-  //     "Estimate copied successfully.",
-  //   );
-  // }
+      status: "ON_HOLD",
+
+      createdBy: user?.name ?? estimate.createdBy,
+
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveRoundEstimate(
+      estimate.accountId,
+      copiedEstimate,
+    );
+
+    setEstimates((current) => [
+      {
+        ...copiedEstimate,
+        kind: "ROUND",
+      },
+      ...current,
+    ]);
+  } else {
+    const copiedEstimate: SavedCustomEstimate = {
+      ...estimate,
+
+      id: crypto.randomUUID(),
+      estimateNumber: generateEstimateNumber(),
+      date: getTodayDate(),
+
+      status: "ON_HOLD",
+
+      createdBy: user?.name ?? estimate.createdBy,
+
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveCustomEstimate(
+      estimate.accountId,
+      copiedEstimate,
+    );
+
+    setEstimates((current) => [
+      {
+        ...copiedEstimate,
+        kind: "CUSTOM",
+      },
+      ...current,
+    ]);
+  }
+
+    toast.success(
+      "Estimate copied successfully.",
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -552,6 +628,19 @@ export function EstimateHistoryPage() {
                             }
                           >
                             <Pencil className="size-4" />
+                          </Button>
+
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            title="Copy"
+                            onClick={() =>
+                              handleCopy(
+                                estimate,
+                              )
+                            }
+                          >
+                            <Copy className="size-4" />
                           </Button>
 
                           <Button

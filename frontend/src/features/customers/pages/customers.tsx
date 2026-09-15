@@ -561,10 +561,14 @@ export default function Customers() {
                                     : "On Hold"}
                                 </Badge>
                                 </div>
-
-                                <p className="text-sm text-muted-foreground">
-                                {estimate.date}
-                                </p>
+                                <div className="flex gap-5">
+                                    <p className="text-sm text-muted-foreground">
+                                        Ref: {estimate.reference}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Date: {formatDate(estimate.date)}
+                                    </p>
+                                </div>
 
                                 <p className="text-sm text-muted-foreground">
                                 Created by:{" "}
@@ -1052,13 +1056,17 @@ export default function Customers() {
                                 
                                 </div>
 
-                                <p className="text-sm">
-                                {estimate.partyName ||
-                                    "Unnamed Customer"}
-                                </p>
+                                <div className="flex gap-5">
+                                    <p className="text-sm text-muted-foreground">
+                                        {estimate.partyName || "Unnamed"}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Ref: {estimate.reference}
+                                    </p>
+                                </div>
 
                                 <p className="text-sm text-muted-foreground">
-                                {formatDate(estimate.date)}
+                                Date: {formatDate(estimate.date)}
                                 </p>
 
                                 <p className="text-sm text-muted-foreground">

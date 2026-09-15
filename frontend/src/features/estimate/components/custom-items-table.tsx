@@ -115,6 +115,13 @@ export function CustomItemsTable({
     itemId: string,
     field: keyof CustomEstimateItem,
   ) {
+    if (
+      (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+      ["quantity", "pricePerUnit"].includes(field)
+    ) {
+      event.preventDefault();
+      return;
+    }
     /*
     * TAB
     *
@@ -233,8 +240,9 @@ export function CustomItemsTable({
       keyof CustomEstimateItem
     )[] = [
       "description",
-      "pricePerUnit",
       "quantity",
+      "unit",
+      "pricePerUnit",
       "note",
       "lineTotal",
     ];

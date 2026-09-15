@@ -200,6 +200,13 @@ export function RoundSizeItemsTable({
         | "girth"
         | "note",
     ) {
+        if (
+            (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+            ["logNo", "length", "girth"].includes(field)
+        ) {
+            event.preventDefault();
+            return;
+        }
         /*
         * TAB FROM GIRTH
         * -----------------------------

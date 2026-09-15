@@ -133,6 +133,14 @@ export function AdditionalItemsTable({
       | "pricePerUnit"
       | "quantity",
   ) {
+    if (
+      (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+      ["quantity", "pricePerUnit"].includes(field)
+    ) {
+      event.preventDefault();
+      return;
+    }
+
     if (event.key !== "Enter") {
       return;
     }

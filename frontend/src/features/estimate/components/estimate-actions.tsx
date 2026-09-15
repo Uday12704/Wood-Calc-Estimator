@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface EstimateActionsProps {
+  onSave: () => void;
   onSaveDraft: () => void;
   onConfirm: () => void;
   onShare: () => void;
@@ -16,6 +17,7 @@ interface EstimateActionsProps {
 }
 
 export function EstimateActions({
+  onSave,
   onSaveDraft,
   onConfirm,
   onShare,
@@ -28,6 +30,17 @@ export function EstimateActions({
       {/* LEFT */}
 
       <div className="flex flex-col gap-2 sm:flex-row">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onSave}
+          disabled={isSaving}
+          className="cursor-pointer"
+        >
+          <Save className="mr-2 size-4" />
+          Save
+        </Button>
+
         <Button
           type="button"
           variant="outline"
