@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { calculateCft } from "@/features/calculator/utils/calculator-utils";
 
 export default function CftCalculator() {
   const [breadth, setBreadth] = useState("");
@@ -10,36 +11,12 @@ export default function CftCalculator() {
   const [quantity, setQuantity] = useState("1");
 
   const totalCft = useMemo(() => {
-    const breadthValue = Number(breadth);
-    const heightValue = Number(height);
-    const lengthValue = Number(length);
-    const quantityValue = Number(quantity);
-
-    if (
-      !Number.isFinite(breadthValue) ||
-      !Number.isFinite(heightValue) ||
-      !Number.isFinite(lengthValue) ||
-      !Number.isFinite(quantityValue)
-    ) {
-      return 0;
-    }
-
-    if (
-      breadthValue <= 0 ||
-      heightValue <= 0 ||
-      lengthValue <= 0 ||
-      quantityValue <= 0
-    ) {
-      return 0;
-    }
-
-    return (
-      (breadthValue *
-        heightValue *
-        lengthValue *
-        quantityValue) /
-      144
-    );
+    return calculateCft({
+      breadth: Number(breadth),
+      height: Number(height),
+      length: Number(length),
+      quantity: Number(quantity),
+    });
   }, [
     breadth,
     height,
@@ -56,7 +33,6 @@ export default function CftCalculator() {
 
   return (
     <div className="space-y-5">
-      {/* DESCRIPTION */}
       <div>
         <h3 className="text-sm font-semibold">
           Cut Size CFT
@@ -68,7 +44,6 @@ export default function CftCalculator() {
         </p>
       </div>
 
-      {/* BREADTH */}
       <div className="space-y-2">
         <label
           htmlFor="cft-breadth"
@@ -92,7 +67,6 @@ export default function CftCalculator() {
         />
       </div>
 
-      {/* HEIGHT */}
       <div className="space-y-2">
         <label
           htmlFor="cft-height"
@@ -116,7 +90,6 @@ export default function CftCalculator() {
         />
       </div>
 
-      {/* LENGTH */}
       <div className="space-y-2">
         <label
           htmlFor="cft-length"
@@ -140,7 +113,6 @@ export default function CftCalculator() {
         />
       </div>
 
-      {/* QUANTITY */}
       <div className="space-y-2">
         <label
           htmlFor="cft-quantity"
@@ -164,7 +136,6 @@ export default function CftCalculator() {
         />
       </div>
 
-      {/* RESULT */}
       <div className="rounded-xl border bg-orange-100/30 p-5">
         <p className="text-sm text-muted-foreground">
           Total CFT
@@ -180,7 +151,6 @@ export default function CftCalculator() {
         </p>
       </div>
 
-      {/* ACTIONS */}
       <Button
         type="button"
         className="w-full bg-wood-primary cursor-pointer"

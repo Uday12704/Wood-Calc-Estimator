@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Delete } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { evaluateExpression, replaceTrailingOperator } from "@/features/calculator/utils/calculator-utils";
 
 interface HistoryItem {
   expression: string;
@@ -16,27 +17,12 @@ export default function NumericCalculator() {
   );
 
   function appendValue(value: string) {
-    setExpression((current) => {
-        const operators = ["+", "-", "x", "÷"];
-
-        const lastCharacter =
-        current.slice(-1);
-
-        // If the new value is an operator
-        if (operators.includes(value)) {
-        // If the expression already ends with
-        // an operator, replace it.
-        if (
-            operators.includes(lastCharacter)
-        ) {
-            return (
-            current.slice(0, -1) + value
-            );
-        }
-        }
-
-        return current + value;
-    });
+    setExpression((current) =>
+        replaceTrailingOperator(
+        current,
+        value,
+        ),
+    );
 
     setResult("");
     }
@@ -53,197 +39,26 @@ export default function NumericCalculator() {
 
   function calculate() {
     if (!expression.trim()) {
-      return;
+        return;
     }
 
     try {
-      const sanitized = expression
-        .replace(/x/g, "*")
-        .replace(/÷/g, "/")
-        .replace(/-/g, "-")
-        .replace(/%/g, "/100");
+        const calculation =
+        evaluateExpression(expression);
 
-      if (
-        !/^[0-9+\-*/().\s]+$/.test(
-          sanitized,
-        )
-      ) {
-        throw new Error("Invalid expression");
-      }
+        setResult(calculation.formatted);
 
-      const tokens = sanitized.match(
-        /(\d+(?:\.\d+)?|[+\-*/()])/g,
-      );
-
-      if (!tokens) {
-        throw new Error("Invalid expression");
-      }
-
-      const values: number[] = [];
-      const operators: string[] = [];
-
-      const precedence = (operator: string) => {
-        if (
-          operator === "*" ||
-          operator === "/"
-        ) {
-          return 2;
-        }
-
-        if (
-          operator === "+" ||
-          operator === "-"
-        ) {
-          return 1;
-        }
-
-        return 0;
-      };
-
-      const applyOperation = () => {
-        const operator =
-          operators.pop();
-
-        const right = values.pop();
-        const left = values.pop();
-
-        if (
-          operator === undefined ||
-          left === undefined ||
-          right === undefined
-        ) {
-          throw new Error(
-            "Invalid expression",
-          );
-        }
-
-        switch (operator) {
-          case "+":
-            values.push(left + right);
-            break;
-
-          case "-":
-            values.push(left - right);
-            break;
-
-          case "*":
-            values.push(left * right);
-            break;
-
-          case "/":
-            if (right === 0) {
-              throw new Error(
-                "Cannot divide by zero",
-              );
-            }
-
-            values.push(left / right);
-            break;
-
-          default:
-            throw new Error(
-              "Invalid operator",
-            );
-        }
-      };
-
-      for (const token of tokens) {
-        if (!Number.isNaN(Number(token))) {
-          values.push(Number(token));
-          continue;
-        }
-
-        if (token === "(") {
-          operators.push(token);
-          continue;
-        }
-
-        if (token === ")") {
-          while (
-            operators.length > 0 &&
-            operators[operators.length - 1] !==
-              "("
-          ) {
-            applyOperation();
-          }
-
-          if (
-            operators.pop() !== "("
-          ) {
-            throw new Error(
-              "Invalid parentheses",
-            );
-          }
-
-          continue;
-        }
-
-        while (
-          operators.length > 0 &&
-          operators[operators.length - 1] !==
-            "(" &&
-          precedence(
-            operators[
-              operators.length - 1
-            ],
-          ) >= precedence(token)
-        ) {
-          applyOperation();
-        }
-
-        operators.push(token);
-      }
-
-      while (operators.length > 0) {
-        if (
-          operators[operators.length - 1] ===
-          "("
-        ) {
-          throw new Error(
-            "Invalid parentheses",
-          );
-        }
-
-        applyOperation();
-      }
-
-      if (values.length !== 1) {
-        throw new Error(
-          "Invalid expression",
-        );
-      }
-
-      const calculatedValue =
-        values[0];
-
-      if (
-        !Number.isFinite(
-          calculatedValue,
-        )
-      ) {
-        throw new Error(
-          "Invalid result",
-        );
-      }
-
-      const formattedResult =
-        Number(
-          calculatedValue.toFixed(10),
-        ).toString();
-
-      setResult(formattedResult);
-
-      setHistory((current) => [
+        setHistory((current) => [
         {
-          expression,
-          result: formattedResult,
+            expression,
+            result: calculation.formatted,
         },
         ...current,
-      ].slice(0, 10));
+        ].slice(0, 10));
     } catch {
-      setResult("Error");
+        setResult("Error");
     }
-  }
+    }
 
   useEffect(() => {
     function handleKeyboard(

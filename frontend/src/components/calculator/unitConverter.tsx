@@ -10,117 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { categoryOptions, convertUnit, formatCalculatorNumber, units } from "@/features/calculator/utils/calculator-utils";
+import type { UnitCategory } from "@/features/calculator/types";
 
-type UnitCategory = "LENGTH" | "AREA" | "VOLUME";
-
-interface Unit {
-  value: string;
-  label: string;
-  shortLabel: string;
-  factor: number;
-}
-
-const units: Record<UnitCategory, Unit[]> = {
-  LENGTH: [
-    {
-      value: "inch",
-      label: "Inch",
-      shortLabel: "in",
-      factor: 0.0254,
-    },
-    {
-      value: "ft",
-      label: "Feet",
-      shortLabel: "ft",
-      factor: 0.3048,
-    },
-    {
-      value: "mm",
-      label: "Millimeter",
-      shortLabel: "mm",
-      factor: 0.001,
-    },
-    {
-      value: "cm",
-      label: "Centimeter",
-      shortLabel: "cm",
-      factor: 0.01,
-    },
-    {
-      value: "m",
-      label: "Meter",
-      shortLabel: "m",
-      factor: 1,
-    },
-  ],
-
-  AREA: [
-    {
-      value: "sqinch",
-      label: "Square Inch",
-      shortLabel: "sq in",
-      factor: 0.00064516,
-    },
-    {
-      value: "sqft",
-      label: "Square Feet",
-      shortLabel: "sq ft",
-      factor: 0.09290304,
-    },
-    {
-      value: "sqm",
-      label: "Square Meter",
-      shortLabel: "sq m",
-      factor: 1,
-    },
-  ],
-
-  VOLUME: [
-    {
-      value: "cuinch",
-      label: "Cubic Inch",
-      shortLabel: "cu in",
-      factor: 0.000016387064,
-    },
-    {
-      value: "cft",
-      label: "Cubic Feet",
-      shortLabel: "CFT",
-      factor: 0.028316846592,
-    },
-    {
-      value: "cbm",
-      label: "Cubic Meter",
-      shortLabel: "CBM",
-      factor: 1,
-    },
-  ],
-};
-
-const categoryOptions = [
-  {
-    value: "LENGTH" as const,
-    label: "Length",
-  },
-  {
-    value: "AREA" as const,
-    label: "Area",
-  },
-  {
-    value: "VOLUME" as const,
-    label: "Volume",
-  },
-];
-
-function formatNumber(value: number): string {
-  if (!Number.isFinite(value)) {
-    return "0";
-  }
-
-  return new Intl.NumberFormat("en-IN", {
-    maximumFractionDigits: 8,
-  }).format(value);
-}
 
 export default function UnitConverter() {
   const [category, setCategory] =
@@ -161,9 +53,10 @@ export default function UnitConverter() {
       return null;
     }
 
-    return (
-      (numericValue * from.factor) /
-      to.factor
+    return convertUnit(
+        numericValue,
+        from,
+        to,
     );
   }, [value, from, to]);
 
@@ -268,10 +161,12 @@ export default function UnitConverter() {
 
           <Select
             value={fromUnit}
-            onValueChange={
-              () => setFromUnit
-            }
-          >
+            onValueChange={(value) => {
+                if (value !== null) {
+                setFromUnit(value);
+                }
+            }}
+            >
             <SelectTrigger className="mt-1 border-0 bg-background shadow-none">
               <SelectValue />
             </SelectTrigger>
@@ -323,15 +218,17 @@ export default function UnitConverter() {
           <div className="flex min-h-10 items-center px-1 text-2xl font-semibold">
             {result === null
               ? "0"
-              : formatNumber(result)}
+              : formatCalculatorNumber(result)}
           </div>
 
           <Select
             value={toUnit}
-            onValueChange={
-              () => setToUnit
-            }
-          >
+            onValueChange={(value) => {
+                if (value !== null) {
+                setToUnit(value);
+                }
+            }}
+            >
             <SelectTrigger className="mt-1 border-0 bg-background shadow-none">
               <SelectValue />
             </SelectTrigger>
@@ -364,14 +261,14 @@ export default function UnitConverter() {
           </p>
 
           <p className="mt-1 break-all text-sm font-medium">
-            {formatNumber(
+            {formatCalculatorNumber(
               Number(value),
             )}{" "}
             {fromUnitLabel}{" "}
             <span className="text-muted-foreground">
               =
             </span>{" "}
-            {formatNumber(result)}{" "}
+            {formatCalculatorNumber(result)}{" "}
             {toUnitLabel}
           </p>
         </div>
