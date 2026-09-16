@@ -27,8 +27,11 @@ import { NavLink } from "react-router-dom";
 
 interface NavigationItem {
   title: string;
-  url: string;
-  icon: React.ComponentType<{ className?: string }>;
+  url?: string;
+  icon: React.ComponentType<{
+    className?: string;
+  }>;
+  action?: "calculator";
 }
 
 interface NavigationGroup {
@@ -85,8 +88,8 @@ const navigationGroups: NavigationGroup[] = [
     items: [
       {
         title: "Quick Calculator",
-        url: "/app/calculator",
         icon: Calculator,
+        action: "calculator",
       },
     ],
   },
@@ -113,7 +116,13 @@ const navigationGroups: NavigationGroup[] = [
   },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  onCalculatorOpen: () => void;
+}
+
+export function AppSidebar({
+  onCalculatorOpen,
+}: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon">
         {/* HEADER */}
@@ -152,22 +161,29 @@ export function AppSidebar() {
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      tooltip={item.title}
-                    >
-                      <NavLink
-                        to={item.url}
-                        className={({ isActive }) =>
-                          isActive
-                            ? "flex items-center gap-2 py-1 font-semibold"
-                            : "flex items-center gap-2 py-1"
-                        }
-                      >
-                        <item.icon className="text-wood-primary"/>
-                        <span>
-                          {item.title}
-                        </span>
-                      </NavLink>
+                    <SidebarMenuButton tooltip={item.title}>
+                      {item.action === "calculator" ? (
+                        <button
+                          type="button"
+                          onClick={onCalculatorOpen}
+                          className="flex w-full items-center gap-2 py-1 text-left cursor-pointer"
+                        >
+                          <item.icon className="text-wood-primary" />
+                          <span>{item.title}</span>
+                        </button>
+                      ) : (
+                        <NavLink
+                          to={item.url ?? "#"}
+                          className={({ isActive }) =>
+                            isActive
+                              ? "flex items-center gap-2 py-1 font-semibold"
+                              : "flex items-center gap-2 py-1"
+                          }
+                        >
+                          <item.icon className="text-wood-primary" />
+                          <span>{item.title}</span>
+                        </NavLink>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
