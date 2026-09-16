@@ -4,6 +4,7 @@ import {
   Text,
   View,
   StyleSheet,
+  Image,
 } from "@react-pdf/renderer";
 
 import type {
@@ -11,6 +12,7 @@ import type {
 } from "../types";
 
 import { woodCategories } from "../data/wood-categories";
+import { getBusinessSettings } from "@/features/settings/services/settings-storage";
 
 const styles = StyleSheet.create({
   page: {
@@ -25,6 +27,23 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#222",
+  },
+
+  companyInfo: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+
+  companyLogo: {
+    width: 55,
+    height: 55,
+    marginRight: 10,
+    objectFit: "contain",
+  },
+
+  headerText: {
+    fontSize: 8,
+    marginTop: 2,
   },
 
   companyName: {
@@ -45,10 +64,6 @@ const styles = StyleSheet.create({
   estimateTitle: {
     fontSize: 14,
     fontWeight: "bold",
-  },
-
-  headerText: {
-    marginTop: 3,
   },
 
   billTo: {
@@ -99,17 +114,19 @@ const styles = StyleSheet.create({
 
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#21140c",
+    backgroundColor: "#432818",
     color: "#fff",
     fontWeight: "bold",
   },
 
   tableRow: {
     flexDirection: "row",
-    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderTopColor: "#ddd",
-    borderBottomColor: "#ddd",
+    borderBottomColor: "#e5e7eb",
+  },
+
+  tableRowAlternate: {
+    backgroundColor: "#fcf6ee",
   },
 
   cell: {
@@ -257,7 +274,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+
   terms: {
+    width: "57%",
     marginTop: 14,
     paddingTop: 10,
     borderTopWidth: 1,
@@ -276,6 +299,7 @@ const styles = StyleSheet.create({
   },
 
   notes: {
+    width: "43%",
     marginTop: 14,
     paddingTop: 10,
     borderTopWidth: 1,
@@ -290,6 +314,11 @@ interface CutSizeEstimatePdfProps {
 export function CutSizeEstimatePdf({
   estimate,
 }: CutSizeEstimatePdfProps) {
+
+  const business = getBusinessSettings(
+    estimate.accountId,
+  );
+
   return (
     <Document>
 
@@ -304,18 +333,42 @@ export function CutSizeEstimatePdf({
 
         <View style={styles.header}>
 
-          <View>
+          <View style={styles.companyInfo}>
+          {business.logo && (
+            <Image
+              src={business.logo}
+              style={styles.companyLogo}
+            />
+          )}
 
+          <View>
             <Text style={styles.companyName}>
-              PRAGATHI TIMBER
+              {business.businessName || " "}
             </Text>
 
             <Text style={styles.companySubtitle}>
               Wood Estimation & Sales
             </Text>
 
-          </View>
+            {business.address && (
+              <Text style={styles.headerText}>
+                {business.address}
+              </Text>
+            )}
 
+            {business.phone && (
+              <Text style={styles.headerText}>
+                Phone: {business.phone}
+              </Text>
+            )}
+
+            {business.gstin && (
+              <Text style={styles.headerText}>
+                GSTIN: {business.gstin}
+              </Text>
+            )}
+          </View>
+        </View>
 
           <View style={styles.estimateHeader}>
 
@@ -493,8 +546,11 @@ export function CutSizeEstimatePdf({
               return (
                 <View
                   key={item.id}
-                  style={styles.tableRow}
                   wrap={false}
+                  style={[
+                    styles.tableRow,
+                    index % 2 === 1 ? styles.tableRowAlternate : {},
+                  ]}
                 >
 
                   <Text
@@ -523,15 +579,14 @@ export function CutSizeEstimatePdf({
                       styles.cellCenter,
                     ]}
                   >
-                    {item.breadth} x {" "}
-                    {item.height}
+                    {item.breadth} x {item.height}
                   </Text>
 
                   <Text
                     style={[
                       styles.cell,
                       styles.length,
-                      styles.cellRight,
+                      styles.cellCenter,
                     ]}
                   >
                     {item.length}
@@ -541,7 +596,7 @@ export function CutSizeEstimatePdf({
                     style={[
                       styles.cell,
                       styles.qty,
-                      styles.cellRight,
+                      styles.cellCenter,
                     ]}
                   >
                     {item.quantity}
@@ -673,8 +728,11 @@ export function CutSizeEstimatePdf({
                 return (
                   <View
                     key={item.id}
-                    style={styles.tableRow}
                     wrap={false}
+                    style={[
+                      styles.tableRow,
+                      index % 2 === 1 ? styles.tableRowAlternate : {},
+                    ]}
                   >
 
                     <Text
@@ -700,7 +758,7 @@ export function CutSizeEstimatePdf({
                       style={[
                         styles.cell,
                         styles.additionalQty,
-                        styles.cellRight,
+                        styles.cellCenter,
                       ]}
                     >
                       {item.quantity}
@@ -996,52 +1054,52 @@ export function CutSizeEstimatePdf({
 
         </View>
 
+        <View style={styles.footer}>
+          {/* ==============================
+              TERMS
+              ============================== */}
 
-        {/* ==============================
-            TERMS
-            ============================== */}
-
-        <View style={styles.terms}>
-
-          <Text style={styles.termsTitle}>
-            TERMS
-          </Text>
-
-          <Text style={styles.term}>
-            1. Goods once sold will not be
-            taken back.
-          </Text>
-
-          <Text style={styles.term}>
-            2. Payment due on delivery unless
-            otherwise agreed.
-          </Text>
-
-          <Text style={styles.term}>
-            3. Subject to local jurisdiction.
-          </Text>
-
-        </View>
-
-
-        {/* ==============================
-            NOTES
-            ============================== */}
-
-        {estimate.notes && (
-          <View style={styles.notes}>
+          <View style={styles.terms}>
 
             <Text style={styles.termsTitle}>
-              NOTES
+              TERMS
             </Text>
 
-            <Text>
-              {estimate.notes}
+            <Text style={styles.term}>
+              1. Goods once sold will not be
+              taken back.
+            </Text>
+
+            <Text style={styles.term}>
+              2. Payment due on delivery unless
+              otherwise agreed.
+            </Text>
+
+            <Text style={styles.term}>
+              3. Subject to local jurisdiction.
             </Text>
 
           </View>
-        )}
 
+
+          {/* ==============================
+              NOTES
+              ============================== */}
+
+          {estimate.notes && (
+            <View style={styles.notes}>
+
+              <Text style={styles.termsTitle}>
+                NOTES
+              </Text>
+
+              <Text>
+                {estimate.notes}
+              </Text>
+
+            </View>
+          )}
+        </View>
       </Page>
 
     </Document>

@@ -21,6 +21,7 @@ import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { toast } from "react-toastify";
 import { useAuth } from "@/features/auth/auth-context";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
+import { formatCurrency } from "@/lib/formatters";
 
 export function PreviewCutSizePage() {
   const { user } = useAuth();
@@ -134,6 +135,7 @@ export function PreviewCutSizePage() {
             onClick={() =>
               navigate(-1)
             }
+            className="cursor-pointer"
           >
             <ArrowLeft className="size-4" />
           </Button>
@@ -500,8 +502,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span className="font-medium">
-                  Rs.{" "}
-                  {estimate.totals.additionalSubtotal.toFixed(2)}
+                  {formatCurrency(estimate.totals.additionalSubtotal)}
                 </span>
               </div>
 
@@ -513,8 +514,7 @@ export function PreviewCutSizePage() {
                   </span>
 
                   <span>
-                    Rs.{" "}
-                    {estimate.totals.additionalGstAmount.toFixed(2)}
+                    {formatCurrency(estimate.totals.additionalGstAmount)}
                   </span>
                 </div>
               )}
@@ -528,8 +528,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  Rs.{" "}
-                  {estimate.totals.additionalTotal.toFixed(2)}
+                  {formatCurrency(estimate.totals.additionalTotal)}
                 </span>
               </div>
 
@@ -569,10 +568,7 @@ export function PreviewCutSizePage() {
                         </span>
 
                         <span>
-                          Rs.{" "}
-                          {Number(
-                            charge.amount,
-                          ).toFixed(2)}
+                          {formatCurrency(charge.amount)}
                         </span>
 
                       </div>
@@ -591,10 +587,7 @@ export function PreviewCutSizePage() {
               <div className="flex justify-between">
                 <span className="font-semibold">Subtotal</span>
                 <span className="font-semibold">
-                  Rs.{" "}
-                  {estimate.totals.subtotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.subtotal)}
                 </span>
               </div>
 
@@ -605,10 +598,7 @@ export function PreviewCutSizePage() {
                   </span>
 
                   <span>
-                    Rs.{" "}
-                    {estimate.totals.gstAmount.toFixed(
-                      2,
-                    )}
+                    {formatCurrency(estimate.totals.gstAmount)}
                   </span>
                 </div>
               )}
@@ -620,26 +610,22 @@ export function PreviewCutSizePage() {
                   </span>
 
                   <span>
-                    Rs.{" "}
-                    {estimate.totals.additionalTotal.toFixed(
-                      2,
-                    )}
+                    {formatCurrency(estimate.totals.additionalTotal)}
                   </span>
                 </div>
               )}
 
+              {estimate.totals.totalOtherCharges !== 0 &&
               <div className="flex justify-between">
                 <span>
                   Other Charges
                 </span>
 
                 <span>
-                  Rs.{" "}
-                  {estimate.totals.totalOtherCharges.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.totalOtherCharges)}
                 </span>
               </div>
+              }
 
               <div className="flex justify-between">
                 <span>
@@ -647,10 +633,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  - Rs.{" "}
-                  {estimate.totals.discountAmount.toFixed(
-                    2,
-                  )}
+                  - {formatCurrency(estimate.totals.discountAmount)}
                 </span>
               </div>
 
@@ -662,10 +645,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  Rs.{" "}
-                  {estimate.totals.grandTotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.grandTotal)}
                 </span>
               </div>
 
@@ -675,10 +655,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  Rs.{" "}
-                  {estimate.totals.advancePaid.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.advancePaid)}
                 </span>
               </div>
 
@@ -688,10 +665,7 @@ export function PreviewCutSizePage() {
                 </span>
 
                 <span>
-                  Rs.{" "}
-                  {estimate.totals.balanceDue.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.balanceDue)}
                 </span>
               </div>
               

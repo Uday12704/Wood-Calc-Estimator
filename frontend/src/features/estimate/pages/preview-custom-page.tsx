@@ -136,6 +136,7 @@ export function PreviewCustomEstimatePage() {
             onClick={() =>
               navigate(-1)
             }
+            className="cursor-pointer"
           >
             <ArrowLeft className="size-4" />
           </Button>
@@ -450,6 +451,7 @@ export function PreviewCustomEstimatePage() {
                 </div>
               )}
 
+              {estimate.totals.totalOtherCharges !== 0 &&
               <div className="flex justify-between">
                 <span>
                   Other Charges
@@ -459,6 +461,7 @@ export function PreviewCustomEstimatePage() {
                   {formatCurrency(estimate.totals.totalOtherCharges)}
                 </span>
               </div>
+              }
 
               <div className="flex justify-between">
                 <span>

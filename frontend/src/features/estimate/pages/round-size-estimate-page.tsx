@@ -38,7 +38,7 @@ export function RoundSizeEstimatePage() {
   const navigate = useNavigate();
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
-      documentTitle: "Round Size Estimate",
+      documentTitle: "Estimate",
       estimateNumber:
         generateEstimateNumber(),
       date: getTodayDate(),

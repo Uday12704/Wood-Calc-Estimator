@@ -477,6 +477,7 @@ function EditCutSizeEstimateForm({
           onClick={() =>
             navigate(-1)
           }
+          className="cursor-pointer"
         >
           <ArrowLeft className="size-4" />
         </Button>

@@ -23,6 +23,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { RoundSizeMeasurePdf } from "../pdf/round-size-measure-pdf";
 import { useAuth } from "@/features/auth/auth-context";
 import { ShareEstimateDialog } from "../components/share-estimate-dialog";
+import { formatCurrency } from "@/lib/formatters";
 
 export function PreviewRoundSizePage() {
   const { user } = useAuth();
@@ -129,6 +130,7 @@ async function handleExport(type: "price" | "measure") {
             onClick={() =>
               navigate(-1)
             }
+            className="cursor-pointer"
           >
             <ArrowLeft className="size-4" />
           </Button>
@@ -438,10 +440,7 @@ async function handleExport(type: "price" | "measure") {
                 </p>
 
                 <p className="mt-1 font-semibold">
-                  ₹
-                  {Number(
-                    estimate.pricePerCbm,
-                  ).toFixed(2)}
+                  {formatCurrency(Number(estimate.pricePerCbm))}
                 </p>
 
               </div>
@@ -456,10 +455,7 @@ async function handleExport(type: "price" | "measure") {
                 </p>
 
                 <p className="mt-1 font-semibold">
-                  ₹
-                  {estimate.totals.subtotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.subtotal)}
                 </p>
 
               </div>
@@ -503,10 +499,7 @@ async function handleExport(type: "price" | "measure") {
                         </span>
 
                         <span>
-                          ₹
-                          {Number(
-                            charge.amount,
-                          ).toFixed(2)}
+                          {formatCurrency(charge.amount)}
                         </span>
 
                       </div>
@@ -530,10 +523,7 @@ async function handleExport(type: "price" | "measure") {
                 </span>
 
                 <span className="font-semibold">
-                  ₹
-                  {estimate.totals.subtotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.subtotal)}
                 </span>
 
               </div>
@@ -547,31 +537,23 @@ async function handleExport(type: "price" | "measure") {
                   </span>
 
                   <span>
-                    ₹
-                    {estimate.totals.gstAmount.toFixed(
-                      2,
-                    )}
+                    {formatCurrency(estimate.totals.gstAmount)}
                   </span>
 
                 </div>
               )}
 
-
+              {estimate.totals.totalOtherCharges !== 0 && 
               <div className="flex justify-between">
-
                 <span>
                   Other Charges
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.totalOtherCharges.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.totalOtherCharges)}
                 </span>
-
               </div>
-
+              }
 
               <div className="flex justify-between">
 
@@ -580,10 +562,7 @@ async function handleExport(type: "price" | "measure") {
                 </span>
 
                 <span>
-                  - ₹
-                  {estimate.totals.discountAmount.toFixed(
-                    2,
-                  )}
+                  - {formatCurrency(estimate.totals.discountAmount)}
                 </span>
 
               </div>
@@ -599,10 +578,7 @@ async function handleExport(type: "price" | "measure") {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.grandTotal.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.grandTotal)}
                 </span>
 
               </div>
@@ -615,10 +591,7 @@ async function handleExport(type: "price" | "measure") {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.advancePaid.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.advancePaid)}
                 </span>
 
               </div>
@@ -631,10 +604,7 @@ async function handleExport(type: "price" | "measure") {
                 </span>
 
                 <span>
-                  ₹
-                  {estimate.totals.balanceDue.toFixed(
-                    2,
-                  )}
+                  {formatCurrency(estimate.totals.balanceDue)}
                 </span>
 
               </div>

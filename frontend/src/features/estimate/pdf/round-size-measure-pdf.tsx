@@ -4,11 +4,13 @@ import {
   Text,
   View,
   StyleSheet,
+  Image,
 } from "@react-pdf/renderer";
 
 import type {
   SavedRoundSizeEstimate,
 } from "../types";
+import { getBusinessSettings } from "@/features/settings/services/settings-storage";
 
 const styles = StyleSheet.create({
   page: {
@@ -23,6 +25,23 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#222",
+  },
+  
+  companyInfo: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+
+  companyLogo: {
+    width: 55,
+    height: 55,
+    marginRight: 10,
+    objectFit: "contain",
+  },
+
+  headerText: {
+    fontSize: 8,
+    marginTop: 2,
   },
 
   companyName: {
@@ -43,10 +62,6 @@ const styles = StyleSheet.create({
   estimateTitle: {
     fontSize: 14,
     fontWeight: "bold",
-  },
-
-  headerText: {
-    marginTop: 3,
   },
 
   billTo: {
@@ -81,15 +96,19 @@ const styles = StyleSheet.create({
 
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#21140c",
+    backgroundColor: "#432818",
     color: "#fff",
     fontWeight: "bold",
   },
 
   tableRow: {
     flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+  },
+
+  tableRowAlternate: {
+    backgroundColor: "#fcf6ee",
   },
 
   cell: {
@@ -165,7 +184,13 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
 
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+
   terms: {
+    width: "57%",
     marginTop: 14,
     paddingTop: 10,
     borderTopWidth: 1,
@@ -184,6 +209,7 @@ const styles = StyleSheet.create({
   },
 
   notes: {
+    width: "43%",
     marginTop: 14,
     paddingTop: 10,
     borderTopWidth: 1,
@@ -198,6 +224,11 @@ interface RoundSizeEstimatePdfProps {
 export function RoundSizeMeasurePdf({
   estimate,
 }: RoundSizeEstimatePdfProps) {
+
+  const business = getBusinessSettings(
+    estimate.accountId,
+  );
+
   return (
     <Document>
 
@@ -212,16 +243,41 @@ export function RoundSizeMeasurePdf({
 
         <View style={styles.header}>
 
-          <View>
+          <View style={styles.companyInfo}>
+            {business.logo && (
+              <Image
+                src={business.logo}
+                style={styles.companyLogo}
+              />
+            )}
 
-            <Text style={styles.companyName}>
-              PRAGATHI TIMBER
-            </Text>
+            <View>
+              <Text style={styles.companyName}>
+                {business.businessName || "—"}
+              </Text>
 
-            <Text style={styles.companySubtitle}>
-              Wood Estimation & Sales
-            </Text>
+              <Text style={styles.companySubtitle}>
+                Wood Estimation & Sales
+              </Text>
 
+              {business.address && (
+                <Text style={styles.headerText}>
+                  {business.address}
+                </Text>
+              )}
+
+              {business.phone && (
+                <Text style={styles.headerText}>
+                  Phone: {business.phone}
+                </Text>
+              )}
+
+              {business.gstin && (
+                <Text style={styles.headerText}>
+                  GSTIN: {business.gstin}
+                </Text>
+              )}
+            </View>
           </View>
 
           <View style={styles.estimateHeader}>
@@ -315,7 +371,7 @@ export function RoundSizeMeasurePdf({
                 styles.center,
               ]}
             >
-              LOG NO.
+              LOG NO
             </Text>
 
             <Text
@@ -369,8 +425,11 @@ export function RoundSizeMeasurePdf({
             (item, index) => (
               <View
                 key={item.id}
-                style={styles.tableRow}
                 wrap={false}
+                style={[
+                  styles.tableRow,
+                  index % 2 === 1 ? styles.tableRowAlternate : {},
+                ]}
               >
 
                 <Text
@@ -406,7 +465,7 @@ export function RoundSizeMeasurePdf({
                   style={[
                     styles.cell,
                     styles.length,
-                    styles.right,
+                    styles.center,
                   ]}
                 >
                   {item.length}
@@ -416,7 +475,7 @@ export function RoundSizeMeasurePdf({
                   style={[
                     styles.cell,
                     styles.girth,
-                    styles.right,
+                    styles.center,
                   ]}
                 >
                   {item.girth}
@@ -519,52 +578,54 @@ export function RoundSizeMeasurePdf({
             </View>
 
         </View>
+        
+        <View style={styles.footer}>
+          {/* =================================
+              TERMS
+              ================================= */}
+          <View style={styles.footer}>
+            <View style={styles.terms}>
 
-        {/* =================================
-            TERMS
-            ================================= */}
+              <Text style={styles.termsTitle}>
+                TERMS
+              </Text>
 
-        <View style={styles.terms}>
+              <Text style={styles.term}>
+                1. Goods once sold will not be
+                taken back.
+              </Text>
 
-          <Text style={styles.termsTitle}>
-            TERMS
-          </Text>
+              <Text style={styles.term}>
+                2. Payment due on delivery unless
+                otherwise agreed.
+              </Text>
 
-          <Text style={styles.term}>
-            1. Goods once sold will not be
-            taken back.
-          </Text>
+              <Text style={styles.term}>
+                3. Subject to local jurisdiction.
+              </Text>
 
-          <Text style={styles.term}>
-            2. Payment due on delivery unless
-            otherwise agreed.
-          </Text>
-
-          <Text style={styles.term}>
-            3. Subject to local jurisdiction.
-          </Text>
-
-        </View>
+            </View>
 
 
-        {/* =================================
-            NOTES
-            ================================= */}
+            {/* =================================
+                NOTES
+                ================================= */}
 
-        {estimate.notes && (
-          <View style={styles.notes}>
+            {estimate.notes && (
+              <View style={styles.notes}>
 
-            <Text style={styles.termsTitle}>
-              NOTES
-            </Text>
+                <Text style={styles.termsTitle}>
+                  NOTES
+                </Text>
 
-            <Text>
-              {estimate.notes}
-            </Text>
+                <Text>
+                  {estimate.notes}
+                </Text>
 
+              </View>
+            )}
           </View>
-        )}
-
+        </View>
       </Page>
 
     </Document>
