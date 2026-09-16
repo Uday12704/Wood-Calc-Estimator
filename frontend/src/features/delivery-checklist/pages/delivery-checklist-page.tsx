@@ -215,15 +215,15 @@ export function DeliveryChecklistPage() {
 
             {/* Result count */}
             <div className="mt-3 text-xs text-muted-foreground">
-            Showing{" "}
-            <span className="font-medium text-foreground">
-                {filteredEstimates.length}
-            </span>{" "}
-            of{" "}
-            <span className="font-medium text-foreground">
-                {estimates.length}
-            </span>{" "}
-            confirmed estimates
+                Showing{" "}
+                <span className="font-medium text-foreground">
+                    {filteredEstimates.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium text-foreground">
+                    {estimates.length}
+                </span>{" "}
+                confirmed estimates
             </div>
         </CardContent>
         </Card>

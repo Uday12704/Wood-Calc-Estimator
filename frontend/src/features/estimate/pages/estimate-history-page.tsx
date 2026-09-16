@@ -349,28 +349,32 @@ export function EstimateHistoryPage() {
       {/* FILTERS */}
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-2">
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 
             {/* SEARCH */}
 
             <div className="lg:col-span-2">
+              <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
+              Search
+              </label>
               <Input
-                placeholder="Search party name or estimate number..."
+                placeholder="Search party name or Est No or reference..."
                 value={search}
                 onChange={(event) =>
                   setSearch(
                     event.target.value,
                   )
                 }
+                className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
             {/* FROM */}
 
-            <div className="relative flex items-center gap-2">
-              <label className="text-md ">From</label>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-muted-foreground">From</label>
 
               <Input
                 type="date"
@@ -380,14 +384,14 @@ export function EstimateHistoryPage() {
                     event.target.value,
                   )
                 }
-                className="pl-9"
+                className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               />
             </div>
 
             {/* TO */}
 
-            <div className="relative flex items-center gap-2">
-              <label className="text-md ">To</label>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-muted-foreground">To</label>
 
               <Input
                 type="date"
@@ -397,13 +401,15 @@ export function EstimateHistoryPage() {
                     event.target.value,
                   )
                 }
-                className="pl-9"
+                className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               />
             </div>
 
             {/* STATUS */}
-            <div className="relative flex items-center gap-2">
-              <label className="text-md ">Status</label>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
+                Status
+              </label>
               <Select
                 value={status}
                 onValueChange={(value) =>
@@ -415,13 +421,13 @@ export function EstimateHistoryPage() {
                   )
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-background">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
 
                 <SelectContent>
                   <SelectItem value="ALL">
-                    All Status
+                    All
                   </SelectItem>
 
                   <SelectItem value="ON_HOLD">
@@ -439,25 +445,38 @@ export function EstimateHistoryPage() {
 
           {/* FILTER ACTIONS */}
 
-          <div className="mt-4 flex flex-wrap justify-end gap-2">
+          <div className="mt-4 flex justify-between items-center gap-2">
+            {/* Result count */}
+            <div className="text-xs text-muted-foreground">
+              Showing{" "}
+              <span className="font-medium text-foreground">
+                  {filteredEstimates.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-medium text-foreground">
+                  {estimates.length}
+              </span>{" "}
+              estimates
+            </div>
 
-            <Button
-              variant="outline"
-              onClick={
-                resetFilters
-              }
-            >
-              <RotateCcw className="mr-2 size-4" />
-              Reset
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={
+                  resetFilters
+                }
+                >
+                <RotateCcw className="mr-2 size-4" />
+                Reset
+              </Button>
 
-            <Button
-              variant="outline"
-            >
-              <Download className="mr-2 size-4" />
-              Export
-            </Button>
-
+              <Button
+                variant="outline"
+                >
+                <Download className="mr-2 size-4" />
+                Export
+              </Button>
+            </div>
           </div>
 
         </CardContent>
