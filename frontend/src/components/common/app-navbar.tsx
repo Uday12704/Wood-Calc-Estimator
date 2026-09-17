@@ -1,5 +1,6 @@
 import {
   Bell,
+  Calculator,
   LogOut,
   Moon,
   Settings,
@@ -48,13 +49,18 @@ const pageTitles: Record<string, string> = {
   "/app/estimates/history": "Estimate History",
   "/app/customers": "Customers",
   "/app/delivery-checklist": "Delivery Checklist",
-  "/app/calculator": "Quick Calculator",
   "/app/notifications": "Notifications",
   "/app/settings": "Settings",
   "/app/support": "Customer Support",
 };
 
-export function AppNavbar() {
+interface AppNavbarProps {
+  onCalculatorOpen: () => void;
+}
+
+export function AppNavbar({
+  onCalculatorOpen
+}: AppNavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -324,6 +330,15 @@ export function AppNavbar() {
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-2">
+
+        <Button
+          type="button"
+          onClick={onCalculatorOpen}
+          className="cursor-pointer"
+          variant="outline"
+        >
+          <Calculator className="size-5" />
+        </Button>
 
           <Link
             to="/app/notifications"

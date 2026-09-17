@@ -15,6 +15,52 @@ export default function NumericCalculator() {
   const [history, setHistory] = useState<HistoryItem[]>(
     [],
   );
+  const [memory, setMemory] = useState(0);
+  const [memoryRecalled, setMemoryRecalled] = useState(false);
+
+  function getCurrentValue(): number {
+    const currentValue = result || expression;
+
+    if (!currentValue) {
+      return 0;
+    }
+
+    const numericValue = Number(currentValue);
+
+    return Number.isFinite(numericValue)
+      ? numericValue
+      : 0;
+  }
+
+  function memoryAdd() {
+    const currentValue = getCurrentValue();
+
+    setMemory((current) => current + currentValue);
+    setMemoryRecalled(false);
+  }
+
+  function memorySubtract() {
+    const currentValue = getCurrentValue();
+
+    setMemory((current) => current - currentValue);
+    setMemoryRecalled(false);
+  }
+
+  function memoryRecallClear() {
+    if (!memoryRecalled) {
+      const formattedMemory =
+        Number(memory.toFixed(10)).toString();
+
+      setExpression(formattedMemory);
+      setResult("");
+      setMemoryRecalled(true);
+
+      return;
+    }
+
+    setMemory(0);
+    setMemoryRecalled(false);
+  }
 
   function appendValue(value: string) {
     setExpression((current) =>
@@ -25,6 +71,7 @@ export default function NumericCalculator() {
     );
 
     setResult("");
+    setMemoryRecalled(false);
     }
 
   function clearCalculator() {
@@ -32,9 +79,19 @@ export default function NumericCalculator() {
     setResult("");
   }
 
-  function backspace() {
-    setExpression((current) => current.slice(0, -1));
+  function clearCurrentEntry() {
+    setExpression("");
     setResult("");
+    setMemoryRecalled(false);
+  }
+
+  function backspace() {
+    setExpression((current) =>
+      current.slice(0, -1),
+    );
+
+    setResult("");
+    setMemoryRecalled(false);
   }
 
   function calculate() {
@@ -133,7 +190,8 @@ export default function NumericCalculator() {
   });
 
   const buttons = [
-    ["AC", "(", ")", "⌫"],
+    ["M+", "M-", "MRC", "⌫"],
+    ["AC", "C", "(", ")"],
     ["7", "8", "9", "÷"],
     ["4", "5", "6", "x"],
     ["1", "2", "3", "-"],
@@ -163,9 +221,12 @@ export default function NumericCalculator() {
               );
 
             const isAction =
-              ["AC", "⌫"].includes(
+              ["AC", "C", "⌫"].includes(
                 button,
               );
+
+            const isMemory =
+              ["M+", "M-", "MRC"].includes(button);
 
             return (
               <Button
@@ -178,18 +239,31 @@ export default function NumericCalculator() {
                       ? "outline"
                       : "secondary"
                 }
-                className={isOperator ? "h-12 text-base bg-wood-primary cursor-pointer dark:text-gray-50 text-xl" : "h-12 text-base bg-sidebar-accent cursor-pointer"}
+                className={
+                  button === ""
+                    ? "h-12 invisible"
+                    : isMemory
+                      ? "h-12 text-sm font-semibold bg-sidebar-accent cursor-pointer"
+                      : isOperator
+                        ? "h-12 text-base bg-wood-primary cursor-pointer dark:text-gray-50 text-xl"
+                        : "h-12 text-base bg-sidebar-accent cursor-pointer"
+                }
                 onClick={() => {
-                  if (button === "AC") {
+                  if (button === "M+") {
+                    memoryAdd();
+                  } else if (button === "M-") {
+                    memorySubtract();
+                  } else if (button === "MRC") {
+                    memoryRecallClear();
+                  } else if (button === "") {
+                    return;
+                  } else if (button === "AC") {
                     clearCalculator();
-                  } 
-                  else if (button === "⌫") {
+                  } else if (button === "C") {
+                    clearCurrentEntry();
+                  } else if (button === "⌫") {
                     backspace();
-                  } 
-                  else if (button === "=") {
-                    calculate();
-                  } 
-                  else {
+                  } else {
                     appendValue(button);
                   }
                 }}

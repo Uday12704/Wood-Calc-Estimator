@@ -23,7 +23,11 @@ export function DashboardLayout() {
       />
 
       <SidebarInset>
-        <AppNavbar />
+        <AppNavbar 
+          onCalculatorOpen={() =>
+            setCalculatorOpen(true)
+          }
+      />
 
         <main className="flex-1 p-4 md:p-6">
           <Outlet />
