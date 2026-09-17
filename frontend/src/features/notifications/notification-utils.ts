@@ -1,3 +1,5 @@
+import { getSavedCustomEstimates, getSavedEstimates, getSavedRoundEstimates } from "../estimate/services/estimate-storage";
+import type { SavedCustomEstimate, SavedEstimate, SavedRoundSizeEstimate } from "../estimate/types";
 import {
   createNotification,
   getNotifications,
@@ -67,7 +69,8 @@ export function createSubscriptionExpiryNotification(
       break;
 
     case 1:
-      title = "Subscription Expires Tomorrow";
+      title =
+        "Subscription Expires Tomorrow";
       message =
         "Your subscription will expire tomorrow. Please renew your subscription to continue using the application.";
       break;
@@ -131,4 +134,138 @@ export function createAndSaveSubscriptionExpiryNotification(
   }
 
   saveNotification(notification);
+}
+
+type AnyEstimate =
+  | SavedEstimate
+  | SavedRoundSizeEstimate
+  | SavedCustomEstimate;
+
+function getPreviousSevenDayRange(
+  today: Date,
+): {
+  start: Date;
+  end: Date;
+} {
+  const end = new Date(today);
+  end.setHours(23, 59, 59, 999);
+
+  const start = new Date(today);
+  start.setDate(start.getDate() - 7);
+  start.setHours(0, 0, 0, 0);
+
+  return {
+    start,
+    end,
+  };
+}
+
+export function createWeeklyOnHoldEstimateNotification(
+  accountId: string,
+  today = new Date(),
+): Notification | null {
+  const {
+    start,
+    end,
+  } = getPreviousSevenDayRange(today);
+
+  const cutEstimates =
+    getSavedEstimates(accountId);
+
+  const roundEstimates =
+    getSavedRoundEstimates(accountId);
+
+  const customEstimates =
+    getSavedCustomEstimates(accountId);
+
+  const allEstimates: AnyEstimate[] = [
+    ...cutEstimates,
+    ...roundEstimates,
+    ...customEstimates,
+  ];
+
+  const onHoldEstimates =
+    allEstimates.filter((estimate) => {
+      if (estimate.status !== "ON_HOLD") {
+        return false;
+      }
+
+      const createdAt = new Date(
+        estimate.createdAt,
+      );
+
+      return (
+        createdAt >= start &&
+        createdAt <= end
+      );
+    });
+
+  if (onHoldEstimates.length === 0) {
+    return null;
+  }
+
+  const weekKey =
+    start.toISOString().slice(0, 10);
+
+  const notificationKey =
+    `on-hold-weekly-${accountId}-${weekKey}`;
+
+  if (
+    hasNotification(
+      accountId,
+      notificationKey,
+    )
+  ) {
+    return null;
+  }
+
+  const estimateList =
+    onHoldEstimates
+      .sort(
+        (a, b) =>
+          new Date(
+            b.createdAt,
+          ).getTime() -
+          new Date(
+            a.createdAt,
+          ).getTime(),
+      )
+      .map(
+        (estimate) =>
+          `• ${estimate.estimateNumber} — ${estimate.partyName || "Unnamed customer"}`,
+      )
+      .join("\n");
+
+  const message =
+    `You have ${onHoldEstimates.length} estimate${
+      onHoldEstimates.length === 1
+        ? ""
+        : "s"
+    } that are currently ON_HOLD from the previous 7 days.\n\n${estimateList}`;
+
+  return createNotification({
+    accountId,
+    createdBy: null,
+    title: "Pending Estimates Reminder",
+    message,
+    type: "SYSTEM",
+    priority: "NORMAL",
+    notificationKey,
+  });
+}
+
+export function checkWeeklyOnHoldEstimateNotification(
+  accountId: string,
+  today = new Date(),
+): Notification | null {
+  const dayOfWeek = today.getDay();
+
+  if (dayOfWeek !== 1) {
+    return null;
+  }
+
+  return createWeeklyOnHoldEstimateNotification(
+    accountId,
+    today,
+  );
 }

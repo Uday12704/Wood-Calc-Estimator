@@ -20,15 +20,88 @@ import {
 } from "@/features/subscription/subscription-storage";
 import { getSavedCustomEstimates, getSavedEstimates, getSavedRoundEstimates } from "../estimate/services/estimate-storage";
 import { getDashboardStats, getRecentEstimates, getSalesData } from "./dashboard-utils";
+import { initializeSubscription } from "../subscription/subscription-seed";
+import { useEffect, useState } from "react";
+import { checkSubscriptionExpiryNotification, checkWeeklyOnHoldEstimateNotification } from "../notifications/notification-utils";
 
 export function DashboardPage() {
   const { user } = useAuth();
+
+  const accountId = user?.accountId ?? "";
+
+  const [subscription, setSubscription] =
+    useState<
+      ReturnType<typeof getSubscription>
+    >(null);
+
+  useEffect(() => {
+    if (!accountId) {
+      return;
+    }
+
+    initializeSubscription(accountId);
+
+    const currentSubscription =
+      getSubscription(accountId);
+
+    setSubscription(currentSubscription);
+  }, [accountId]);
+
+  useEffect(() => {
+    if (!accountId || !subscription) {
+      return;
+    }
+
+    checkSubscriptionExpiryNotification(
+      accountId,
+      subscription.expiryDate,
+    );
+  }, [
+    accountId,
+    subscription?.expiryDate,
+  ]);
+
+  useEffect(() => {
+    if (!accountId) {
+      return;
+    }
+
+    checkWeeklyOnHoldEstimateNotification(
+      accountId,
+    );
+  }, [accountId]);
 
   if (!user) {
     return null;
   }
 
-  const accountId = user.accountId;
+  if (!subscription) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Dashboard
+          </h1>
+
+          <p className="text-sm text-muted-foreground">
+            Overview of your estimates, sales and
+            subscription.
+          </p>
+        </div>
+
+        <div className="rounded-lg border p-6">
+          <p className="font-medium">
+            Subscription information unavailable
+          </p>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            No subscription has been configured for
+            this account.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const cutEstimates =
     getSavedEstimates(accountId);
@@ -44,14 +117,6 @@ export function DashboardPage() {
     ...roundEstimates,
     ...customEstimates,
   ];
-
-  const subscription =
-    getSubscription(accountId);
-
-  if (!subscription) {
-    return null;
-  }
-
   const subscriptionStatus =
     calculateSubscriptionStatus(
       subscription.expiryDate,

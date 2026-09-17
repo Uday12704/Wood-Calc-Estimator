@@ -25,6 +25,7 @@ import {
   saveSecuritySettings,
 } from "../services/settings-storage";
 import type { AppProfile } from "@/features/auth/types";
+import { createNotification } from "@/features/notifications/notification-storage";
 
 export function ChangePasswordCard() {
   const { user } = useAuth();
@@ -207,6 +208,17 @@ export function ChangePasswordCard() {
 
       saveAccounts(updatedAccounts);
 
+      createNotification({
+        accountId: user.accountId,
+        createdBy: user.profileId,
+        title: "Security Alert",
+        message:
+          "Your subscription password was changed successfully.",
+        type: "SYSTEM",
+        priority: "HIGH",
+        notificationKey: `password-changed-${user.accountId}-${Date.now()}`,
+      });
+
       resetForm();
 
       toast.success(
@@ -353,6 +365,17 @@ export function ChangePasswordCard() {
         updatedSecurity,
       );
 
+      createNotification({
+        accountId: user.accountId,
+        createdBy: user.profileId,
+        title: "Security Alert",
+        message:
+          `Recovery email was changed to ${email}. Please verify the new email address.`,
+        type: "SYSTEM",
+        priority: "HIGH",
+        notificationKey: `recovery-email-changed-${user.accountId}-${Date.now()}`,
+      });
+
       setSecuritySettings(updatedSecurity);
       setRecoveryEmail(email);
 
@@ -423,6 +446,17 @@ export function ChangePasswordCard() {
         updatedSecurity,
       );
 
+      createNotification({
+        accountId: user.accountId,
+        createdBy: user.profileId,
+        title: "Security Alert",
+        message:
+          `Your recovery email ${recoveryEmail} was verified successfully.`,
+        type: "SYSTEM",
+        priority: "HIGH",
+        notificationKey: `recovery-email-verified-${user.accountId}-${Date.now()}`,
+      });
+
       setSecuritySettings(updatedSecurity);
 
       setGeneratedOtp(null);
@@ -483,6 +517,17 @@ export function ChangePasswordCard() {
         user.accountId,
         updatedSecurity,
       );
+
+      createNotification({
+        accountId: user.accountId,
+        createdBy: user.profileId,
+        title: "Security Alert",
+        message:
+          "Profile PIN settings were changed successfully.",
+        type: "SYSTEM",
+        priority: "HIGH",
+        notificationKey: `pin-settings-changed-${user.accountId}-${Date.now()}`,
+      });
 
       setSecuritySettings(updatedSecurity);
       setPinValues(updatedSecurity.profilePins);

@@ -183,31 +183,30 @@ export function AppSidebar({
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton tooltip={item.title}>
-                      {item.action === "calculator" ? (
-                        <button
-                          type="button"
-                          onClick={onCalculatorOpen}
-                          className="flex w-full items-center gap-2 py-1 text-left cursor-pointer"
-                        >
-                          <item.icon className="text-wood-primary" />
-                          <span>{item.title}</span>
-                        </button>
-                      ) : (
-                        <NavLink
-                          to={item.url ?? "#"}
-                          className={({ isActive }) =>
-                            isActive
-                              ? "flex items-center gap-2 py-1 font-semibold"
-                              : "flex items-center gap-2 py-1"
-                          }
-                        >
-                          <item.icon className="text-wood-primary" />
-                          <span>{item.title}</span>
-                        </NavLink>
-                      )}
+                  {item.action === "calculator" ? (
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      onClick={onCalculatorOpen}
+                    >
+                      <item.icon className="text-wood-primary" />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  ) : (
+                    <SidebarMenuButton tooltip={item.title}>
+                      <NavLink
+                        to={item.url ?? "#"}
+                        className={({ isActive }) =>
+                          isActive
+                            ? "font-semibold flex items-center gap-2"
+                            : "flex items-center gap-2"
+                        }
+                      >
+                        <item.icon className="text-wood-primary" />
+                        <span>{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  )}
+                </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>

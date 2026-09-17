@@ -29,6 +29,7 @@ import { DeliveryChecklistDetailPage } from "@/features/delivery-checklist/pages
 import { SettingsPage } from "@/features/settings/pages/settings-page";
 import { ProfileSelectionPage } from "@/features/auth/pages/profile-selection-page";
 import Customers from "@/features/customers/pages/customers";
+import { NotificationsPage } from "@/features/notifications/pages/notifications-page";
 
 export function AppRoutes() {
   return (
@@ -165,6 +166,11 @@ export function AppRoutes() {
             <Route
               path="/app/customers"
               element={<Customers />}
+            />
+            
+            <Route
+              path="/app/notifications"
+              element={<NotificationsPage />}
             />
 
           </Route>

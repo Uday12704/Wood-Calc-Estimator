@@ -4,35 +4,34 @@ import {
   calculateSubscriptionStatus,
 } from "./subscription-storage";
 
-const TEST_ACCOUNT_ID =
-  "account-001";
-
-export function initializeSubscription(): void {
+export function initializeSubscription(
+  accountId: string,
+): void {
   const existing =
-    getSubscription(TEST_ACCOUNT_ID);
+    getSubscription(accountId);
 
   if (existing) {
     return;
   }
 
-  const startDate =
+  const createdAt =
     new Date().toISOString();
 
   const expiryDate =
     "2027-07-31";
 
   saveSubscription(
-    TEST_ACCOUNT_ID,
+    accountId,
     {
       planName: "Pro",
-      startDate,
+      startDate: createdAt,
       expiryDate,
       status:
         calculateSubscriptionStatus(
           expiryDate,
         ),
-      createdAt: startDate,
-      updatedAt: startDate,
+      createdAt,
+      updatedAt: createdAt,
     },
   );
 }

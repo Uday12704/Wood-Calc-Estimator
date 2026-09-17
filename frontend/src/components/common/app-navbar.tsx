@@ -31,13 +31,14 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/features/auth/auth-context";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getProfiles } from "@/features/auth/auth-storage";
 import { getSecuritySettings } from "@/features/settings/services/settings-storage";
 import { Input } from "../ui/input";
 import { requestOwnerPinRecovery, resetOwnerPin, verifyOwnerPinRecoveryOtp, type PinRecoveryRequest } from "@/features/auth/pin-recovery";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { getUnreadNotificationCount } from "@/features/notifications/notification-utils";
 
 const pageTitles: Record<string, string> = {
   "/app/dashboard": "Dashboard",
@@ -70,6 +71,40 @@ export function AppNavbar({
     pageTitles[location.pathname] ?? "Wood Estimator";
 
   const { user, logout, selectProfile } = useAuth();
+
+  const [
+    unreadNotificationCount,
+    setUnreadNotificationCount,
+  ] = useState(0);
+
+  useEffect(() => {
+    const updateUnreadCount = () => {
+      if (!user?.accountId) {
+        setUnreadNotificationCount(0);
+        return;
+      }
+
+      setUnreadNotificationCount(
+        getUnreadNotificationCount(
+          user.accountId,
+        ),
+      );
+    };
+
+    updateUnreadCount();
+
+    window.addEventListener(
+      "wood-calc-notifications-updated",
+      updateUnreadCount,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "wood-calc-notifications-updated",
+        updateUnreadCount,
+      );
+    };
+  }, [user?.accountId]);
 
   const [isProfileSwitcherOpen, setIsProfileSwitcherOpen] =
     useState(false);
@@ -351,7 +386,13 @@ export function AppNavbar({
             >
               <Bell className="size-5" />
 
-              <span className="absolute right-1 top-1 size-2 rounded-full bg-destructive" />
+              {unreadNotificationCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex min-w-4 items-center justify-center rounded-full bg-wood-secondary px-1 text-[10px] font-semibold leading-4 text-destructive-foreground">
+                  {unreadNotificationCount > 99
+                    ? "99+"
+                    : unreadNotificationCount}
+                </span>
+              )}
 
               <span className="sr-only">
                 Notifications

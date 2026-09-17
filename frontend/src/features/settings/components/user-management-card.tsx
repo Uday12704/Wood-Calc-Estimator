@@ -25,6 +25,7 @@ import {
   saveProfiles,
 } from "@/features/auth/auth-storage";
 import type { AppProfile } from "@/features/auth/types";
+import { createNotification } from "@/features/notifications/notification-storage";
 
 interface UserForm {
   name: string;
@@ -151,6 +152,16 @@ export function UserManagementCard() {
       newProfile,
     ]);
 
+    createNotification({
+      accountId: user.accountId,
+      createdBy: user.profileId,
+      title: "User Alert",
+      message: `Profile "${newProfile.name}" was added successfully.`,
+      type: "SYSTEM",
+      priority: "HIGH",
+      notificationKey: `profile-added-${user.accountId}-${Date.now()}`,
+    });
+
     toast.success(
       "User added successfully.",
     );
@@ -241,6 +252,17 @@ export function UserManagementCard() {
       ),
     );
 
+    createNotification({
+      accountId: user.accountId,
+      createdBy: user.profileId,
+      title: "User Alert",
+      message:
+        `Profile "${name}" was updated successfully.`,
+      type: "SYSTEM",
+      priority: "HIGH",
+      notificationKey: `profile-updated-${user.accountId}-${editingId}-${Date.now()}`,
+    });
+
     toast.success(
       "User updated successfully.",
     );
@@ -284,6 +306,17 @@ export function UserManagementCard() {
         (item) => item.id !== profile.id,
       ),
     );
+
+    createNotification({
+      accountId: user.accountId,
+      createdBy: user.profileId,
+      title: "Security Alert",
+      message:
+        `Profile "${profile.name}" was removed successfully.`,
+      type: "SYSTEM",
+      priority: "HIGH",
+      notificationKey: `profile-deleted-${user.accountId}-${profile.id}-${Date.now()}`,
+    });
 
     if (editingId === profile.id) {
       resetForm();

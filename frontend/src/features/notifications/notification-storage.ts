@@ -31,6 +31,10 @@ function writeNotifications(
     STORAGE_KEY,
     JSON.stringify(notifications),
   );
+
+  window.dispatchEvent(
+    new Event("wood-calc-notifications-updated"),
+  );
 }
 
 /**
