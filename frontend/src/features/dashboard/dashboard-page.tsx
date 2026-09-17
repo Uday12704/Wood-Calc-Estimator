@@ -12,20 +12,65 @@ import { SubscriptionCard } from "./components/subscription-card";
 import { SalesOverview } from "./components/sales-overview";
 import { RecentEstimates } from "./components/recent-estimates";
 
-import {
-  mockDashboardStats,
-  mockRecentEstimates,
-  mockSalesData,
-} from "./types";
-
 import { formatCurrency } from "@/lib/formatters";
+import { useAuth } from "@/features/auth/auth-context";
+import {
+  getSubscription,
+  calculateSubscriptionStatus,
+} from "@/features/subscription/subscription-storage";
+import { getSavedCustomEstimates, getSavedEstimates, getSavedRoundEstimates } from "../estimate/services/estimate-storage";
+import { getDashboardStats, getRecentEstimates, getSalesData } from "./dashboard-utils";
 
 export function DashboardPage() {
-  const stats = mockDashboardStats;
+  const { user } = useAuth();
+
+  if (!user) {
+    return null;
+  }
+
+  const accountId = user.accountId;
+
+  const cutEstimates =
+    getSavedEstimates(accountId);
+
+  const roundEstimates =
+    getSavedRoundEstimates(accountId);
+
+  const customEstimates =
+    getSavedCustomEstimates(accountId);
+
+  const allEstimates = [
+    ...cutEstimates,
+    ...roundEstimates,
+    ...customEstimates,
+  ];
+
+  const subscription =
+    getSubscription(accountId);
+
+  if (!subscription) {
+    return null;
+  }
+
+  const subscriptionStatus =
+    calculateSubscriptionStatus(
+      subscription.expiryDate,
+    );
+
+  const stats = getDashboardStats(
+    allEstimates,
+    subscription.expiryDate,
+    subscriptionStatus,
+  );
+
+  const recentEstimates =
+    getRecentEstimates(allEstimates);
+
+  const salesData =
+    getSalesData(allEstimates);
 
   return (
     <div className="space-y-6">
-
       {/* PAGE HEADER */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
@@ -33,33 +78,47 @@ export function DashboardPage() {
         </h1>
 
         <p className="text-sm text-muted-foreground">
-          Overview of your estimates, sales and subscription.
+          Overview of your estimates, sales and
+          subscription.
         </p>
       </div>
 
       {/* STATISTICS */}
-
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
         <StatsCard
           title="Total Estimates"
-          value={stats.totalEstimates.toLocaleString("en-IN")}
+          value={stats.totalEstimates.toLocaleString(
+            "en-IN",
+          )}
           icon={FileText}
           description="All estimates created"
         />
 
         <StatsCard
           title="Cut-Size Estimates"
-          value={stats.totalCutSizeEstimates.toLocaleString("en-IN")}
+          value={stats.totalCutSizeEstimates.toLocaleString(
+            "en-IN",
+          )}
           icon={Calculator}
           description="Cut-size estimates"
         />
 
         <StatsCard
           title="Round-Size Estimates"
-          value={stats.totalRoundSizeEstimates.toLocaleString("en-IN")}
+          value={stats.totalRoundSizeEstimates.toLocaleString(
+            "en-IN",
+          )}
           icon={ClipboardList}
           description="Round-size estimates"
+        />
+
+        <StatsCard
+          title="Custom Estimates"
+          value={stats.totalCustomEstimates.toLocaleString(
+            "en-IN",
+          )}
+          icon={FileText}
+          description="Custom estimates"
         />
 
         <StatsCard
@@ -71,54 +130,41 @@ export function DashboardPage() {
 
         <StatsCard
           title="Advance Received"
-          value={formatCurrency(
-            stats.totalAdvanceReceived,
-          )}
+          value={formatCurrency(stats.totalAdvanceReceived)}
           icon={CreditCard}
           description="Total advance received"
         />
 
         <StatsCard
           title="Pending Balance"
-          value={formatCurrency(
-            stats.pendingBalance,
-          )}
+          value={formatCurrency(stats.pendingBalance)}
           icon={Wallet}
           description="Outstanding amount"
         />
-
       </div>
 
       {/* CHART + SUBSCRIPTION */}
-
       <div className="grid gap-4 lg:grid-cols-3">
-
         {/* SALES */}
         <div className="lg:col-span-2">
           <SalesOverview
-            data={mockSalesData}
+            data={salesData}
           />
         </div>
 
         {/* SUBSCRIPTION */}
         <div>
           <SubscriptionCard
-            expiryDate={
-              stats.subscriptionExpiryDate
-            }
-            status={
-              stats.subscriptionStatus
-            }
+            expiryDate={subscription.expiryDate}
+            status={subscriptionStatus}
           />
         </div>
-
       </div>
 
       {/* RECENT ESTIMATES */}
       <RecentEstimates
-        estimates={mockRecentEstimates}
+        estimates={recentEstimates}
       />
-
     </div>
   );
 }

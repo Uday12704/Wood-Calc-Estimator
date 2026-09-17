@@ -24,6 +24,9 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router-dom";
+import { calculateSubscriptionStatus, getSubscription } from "@/features/subscription/subscription-storage";
+import { useAuth } from "@/features/auth/auth-context";
+import { formatDate } from "@/lib/formatters";
 
 interface NavigationItem {
   title: string;
@@ -123,6 +126,25 @@ interface AppSidebarProps {
 export function AppSidebar({
   onCalculatorOpen,
 }: AppSidebarProps) {
+  
+  const { user } = useAuth();
+
+  if(!user){
+    return;
+  }
+
+  const subscription =
+    getSubscription(user.accountId);
+
+  if (!subscription) {
+    return null;
+  }
+
+  const subscriptionStatus =
+    calculateSubscriptionStatus(
+      subscription.expiryDate,
+    );
+
   return (
     <Sidebar collapsible="icon">
         {/* HEADER */}
@@ -204,12 +226,12 @@ export function AppSidebar({
             </span>
 
             <span className="text-[10px] font-medium text-green-600">
-              Active
+              {subscriptionStatus}
             </span>
           </div>
 
           <p className="mt-1 text-xs text-muted-foreground">
-            Expires Aug 31, 2027
+            Expires on {formatDate(subscription.expiryDate)}
           </p>
         </div>
       </SidebarFooter>
