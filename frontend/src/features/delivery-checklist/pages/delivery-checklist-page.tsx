@@ -286,7 +286,7 @@ export function DeliveryChecklistPage() {
             return (
                 <Card
                 key={`${estimate.type}-${estimate.id}`}
-                className="overflow-hidden transition-all hover:shadow-md"
+                className="overflow-hidden bg-gradient-to-br from-primary/10 via-background to-primary/5 shadow-md hover:-translate-y-1 transition-all"
                 >
                 <CardContent className="p-0">
                     <div className="flex items-center gap-6 p-5">

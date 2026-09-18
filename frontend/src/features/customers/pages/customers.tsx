@@ -685,7 +685,7 @@ export default function Customers() {
                     {filteredCustomers.map((customer) => (
                     <div
                         key={customer.phone}
-                        className="rounded-xl border bg-card p-5 shadow-sm"
+                        className="rounded-xl border bg-card p-5 bg-gradient-to-br from-primary/5 via-background to-primary/10 shadow-lg hover:-translate-y-1 transition"
                     >
                         <div className="space-y-2">
                             <h3 className="font-semibold flex items-center gap-2">
@@ -1145,7 +1145,7 @@ export default function Customers() {
                     {profileSummaries.map((profile) => (
                     <div
                         key={profile.profileId}
-                        className="rounded-xl border bg-card p-5 shadow-sm"
+                        className="rounded-xl border bg-card p-5 bg-gradient-to-br from-primary/10 via-background to-primary/5 shadow-md hover:-translate-y-1 transition"
                     >
                         <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">

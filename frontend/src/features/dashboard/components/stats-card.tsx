@@ -15,7 +15,7 @@ export function StatsCard({
   icon: Icon,
 }: StatsCardProps) {
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-primary/10 via-background to-primary/5 shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
