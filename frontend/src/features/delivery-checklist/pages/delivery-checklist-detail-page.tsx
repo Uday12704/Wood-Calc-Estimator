@@ -213,6 +213,29 @@ export function DeliveryChecklistDetailPage() {
     );
   }
 
+  function updateAllItemsStatus(delivered: boolean) {
+    if (!checklist || !user) {
+      return;
+    }
+
+    const updatedChecklist: DeliveryChecklist = {
+      ...checklist,
+      items: checklist.items.map((item) => ({
+        ...item,
+        delivered,
+      })),
+      additionalItems: checklist.additionalItems.map((item) => ({
+        ...item,
+        delivered,
+      })),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setChecklist(updatedChecklist);
+
+    saveDeliveryChecklist(user.accountId, updatedChecklist);
+  }
+
   async function handleDownloadPdf() {
     if (!estimate || !checklist) {
         return;
@@ -314,9 +337,10 @@ export function DeliveryChecklistDetailPage() {
           <div className="flex items-center justify-between gap-4">
             <CardTitle>Estimate</CardTitle>
 
-            <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-              Confirmed
-            </span>
+            <Badge
+              variant="success">
+                Confirmed
+            </Badge>
           </div>
         </CardHeader>
 
@@ -392,8 +416,25 @@ export function DeliveryChecklistDetailPage() {
       {estimate.type === "CUT_SIZE" && (
         <>
           <Card>
-            <CardHeader>
+            <CardHeader className="flex justify-between">
               <CardTitle>Items</CardTitle>
+              <div className="flex gap-2 items-center">
+                <Checkbox
+                  id="mark-all-delivered"
+                  checked={deliveryStats.isDelivered}
+                  onCheckedChange={(checked) =>
+                    updateAllItemsStatus(checked === true)
+                  }
+                  className="border-foreground/30"
+                />
+
+                <label
+                  htmlFor="mark-all-delivered"
+                  className="cursor-pointer text-sm font-medium"
+                >
+                  All Items Delivered
+                </label>
+              </div>
             </CardHeader>
 
             <CardContent className="p-0">
@@ -585,8 +626,25 @@ export function DeliveryChecklistDetailPage() {
 
       {estimate.type === "ROUND_SIZE" && (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex justify-between">
             <CardTitle>Items</CardTitle>
+            <div className="flex gap-2 items-center">
+                <Checkbox
+                  id="mark-all-delivered"
+                  checked={deliveryStats.isDelivered}
+                  onCheckedChange={(checked) =>
+                    updateAllItemsStatus(checked === true)
+                  }
+                  className="border-foreground/30"
+                />
+
+                <label
+                  htmlFor="mark-all-delivered"
+                  className="cursor-pointer text-sm font-medium"
+                >
+                  All Items Delivered
+                </label>
+              </div>
           </CardHeader>
 
           <CardContent className="p-0">
@@ -686,8 +744,25 @@ export function DeliveryChecklistDetailPage() {
 
       {estimate.type === "CUSTOM" && (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex justify-between">
             <CardTitle>Items</CardTitle>
+            <div className="flex gap-2 items-center">
+                <Checkbox
+                  id="mark-all-delivered"
+                  checked={deliveryStats.isDelivered}
+                  onCheckedChange={(checked) =>
+                    updateAllItemsStatus(checked === true)
+                  }
+                  className="border-foreground/30"
+                />
+
+                <label
+                  htmlFor="mark-all-delivered"
+                  className="cursor-pointer text-sm font-medium"
+                >
+                  All Items Delivered
+                </label>
+              </div>
           </CardHeader>
 
           <CardContent className="p-0">

@@ -33,9 +33,34 @@ export default function NumericCalculator() {
   }
 
   function memoryAdd() {
-    const currentValue = getCurrentValue();
+    let valueToStore = 0;
 
-    setMemory((current) => current + currentValue);
+    if (result && result !== "Error") {
+      valueToStore = Number(result);
+    } 
+    else if (expression.trim()) {
+      try {
+        const calculation = evaluateExpression(expression);
+
+        valueToStore = Number(calculation.formatted);
+        setResult(String(valueToStore));
+
+      } catch {
+        setResult("Error");
+        return;
+      }
+    }
+
+    if (!Number.isFinite(valueToStore)) {
+      setResult("Error");
+      return;
+    }
+
+    // Store the calculated value in memory.
+    setMemory((current) => current + valueToStore);
+
+    // Clear the expression and result after storing.
+    setExpression("");
     setMemoryRecalled(false);
   }
 
@@ -52,7 +77,7 @@ export default function NumericCalculator() {
         Number(memory.toFixed(10)).toString();
 
       setExpression(formattedMemory);
-      setResult("");
+      setResult(formattedMemory);
       setMemoryRecalled(true);
 
       return;

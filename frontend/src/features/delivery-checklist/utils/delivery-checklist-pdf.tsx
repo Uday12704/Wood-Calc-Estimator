@@ -4,12 +4,14 @@ import {
   Text,
   View,
   StyleSheet,
+  Image,
 } from "@react-pdf/renderer";
 
 import type {
   DeliveryChecklist,
   DeliveryEstimate,
 } from "../types";
+import { getBusinessSettings } from "@/features/settings/services/settings-storage";
 
 const styles = StyleSheet.create({
   page: {
@@ -28,6 +30,18 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#222",
+  },
+
+  companyInfo: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+
+  companyLogo: {
+    width: 55,
+    height: 55,
+    marginRight: 10,
+    objectFit: "contain",
   },
 
   companyName: {
@@ -116,7 +130,7 @@ const styles = StyleSheet.create({
 
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#21140c",
+    backgroundColor: "#432818",
     color: "#fff",
     fontWeight: "bold",
   },
@@ -125,6 +139,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
+  },
+
+  tableRowAlternate: {
+    backgroundColor: "#fcf6ee",
   },
 
   cell: {
@@ -273,6 +291,8 @@ export function DeliveryChecklistPdf({
 }: DeliveryChecklistPdfProps) {
   const deliveryStats = getDeliveryStats(checklist);
 
+  const business = getBusinessSettings(estimate.accountId);
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -281,14 +301,42 @@ export function DeliveryChecklistPdf({
             ============================== */}
 
         <View style={styles.header}>
-          <View>
-            <Text style={styles.companyName}>
-              PRAGATHI TIMBER
-            </Text>
+          <View style={styles.companyInfo}>
+            {business.logo && (
+              <Image
+                src={business.logo}
+                style={styles.companyLogo}
+              />
+            )}
 
-            <Text style={styles.companySubtitle}>
-              Wood Estimation & Sales
-            </Text>
+            <View>
+              <Text style={styles.companyName}>
+                {business.businessName || " "}
+              </Text>
+
+              <Text style={styles.companySubtitle}>
+                Wood Estimation & Sales
+              </Text>
+
+              {business.address && (
+                <Text style={styles.headerText}>
+                  {business.address}
+                </Text>
+              )}
+
+              {business.phone && (
+                <Text style={styles.headerText}>
+                  Phone: {business.phone}
+                </Text>
+              )}
+
+              {business.gstin && (
+                <Text style={styles.headerText}>
+                  GSTIN: {business.gstin}
+                </Text>
+              )}
+            </View>
+
           </View>
 
           <View style={styles.documentHeader}>
@@ -454,7 +502,10 @@ export function DeliveryChecklistPdf({
                   return (
                     <View
                       key={item.id}
-                      style={styles.tableRow}
+                      style={[
+                        styles.tableRow,
+                        index % 2 === 1 ? styles.tableRowAlternate : {},
+                      ]}
                       wrap={false}
                     >
                       <Text
@@ -594,7 +645,10 @@ export function DeliveryChecklistPdf({
                       return (
                         <View
                           key={item.id}
-                          style={styles.tableRow}
+                          style={[
+                            styles.tableRow,
+                            index % 2 === 1 ? styles.tableRowAlternate : {},
+                          ]}
                           wrap={false}
                         >
                           <Text
@@ -735,7 +789,10 @@ export function DeliveryChecklistPdf({
                 return (
                   <View
                     key={item.id}
-                    style={styles.tableRow}
+                    style={[
+                      styles.tableRow,
+                      index % 2 === 1 ? styles.tableRowAlternate : {},
+                    ]}
                     wrap={false}
                   >
                     <Text
@@ -874,7 +931,10 @@ export function DeliveryChecklistPdf({
                 return (
                   <View
                     key={item.id}
-                    style={styles.tableRow}
+                    style={[
+                      styles.tableRow,
+                      index % 2 === 1 ? styles.tableRowAlternate : {},
+                    ]}
                     wrap={false}
                   >
                     <Text

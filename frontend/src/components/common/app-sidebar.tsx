@@ -183,30 +183,31 @@ export function AppSidebar({
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                  {item.action === "calculator" ? (
-                    <SidebarMenuButton
-                      tooltip={item.title}
-                      onClick={onCalculatorOpen}
-                    >
-                      <item.icon className="text-wood-primary" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  ) : (
-                    <SidebarMenuButton tooltip={item.title}>
-                      <NavLink
-                        to={item.url ?? "#"}
-                        className={({ isActive }) =>
-                          isActive
-                            ? "font-semibold flex items-center gap-2"
-                            : "flex items-center gap-2"
-                        }
+                    {item.action === "calculator" ? (
+                      <SidebarMenuButton
+                        tooltip={item.title}
+                        onClick={onCalculatorOpen}
+                        className="cursor-pointer"
                       >
                         <item.icon className="text-wood-primary" />
                         <span>{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  )}
-                </SidebarMenuItem>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton tooltip={item.title}>
+                        <NavLink
+                          to={item.url ?? "#"}
+                          className={({ isActive }) =>
+                            isActive
+                              ? "font-semibold flex items-center gap-2"
+                              : "flex items-center gap-2"
+                          }
+                        >
+                          <item.icon className="text-wood-primary" />
+                          <span>{item.title}</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    )}
+                  </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>

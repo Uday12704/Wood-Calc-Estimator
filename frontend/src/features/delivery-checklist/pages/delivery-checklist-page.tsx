@@ -298,9 +298,10 @@ export function DeliveryChecklistPage() {
                             {estimate.estimateNumber}
                         </h2>
 
-                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                        <Badge
+                         variant="success">
                             Confirmed
-                        </span>
+                        </Badge>
 
                         <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                             {getEstimateTypeLabel(estimate.type)}
