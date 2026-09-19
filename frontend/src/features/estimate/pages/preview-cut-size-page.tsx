@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Download,
+  Pencil,
   Share2,
 } from "lucide-react";
 
@@ -153,6 +154,17 @@ export function PreviewCutSizePage() {
         </div>
 
         <div className="flex gap-2">
+
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate(`/app/estimates/edit-cut-size/${estimate.id}`)
+            }
+            className="cursor-pointer"
+          >
+            <Pencil className="mr-2 size-4" />
+            Edit
+          </Button>
 
           <Button
             variant="outline"
