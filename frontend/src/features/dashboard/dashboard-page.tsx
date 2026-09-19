@@ -144,9 +144,9 @@ export function DashboardPage() {
       {/* PAGE HEADER */}
 
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e62314] via-[#f19e18] to-wood-secondary bg-clip-text text-transparent max-w-200">
+        <span className="text-3xl font-bold bg-gradient-to-r from-[#e62314] to-[#f19e18] bg-clip-text text-transparent">
           Hello, {user?.name || "there"}!
-        </h1>
+        </span>
 
 
         <p className="text-sm text-muted-foreground">

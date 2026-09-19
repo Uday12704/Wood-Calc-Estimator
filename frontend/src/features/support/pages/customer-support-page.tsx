@@ -432,7 +432,7 @@ export default function CustomerSupportPage() {
           </div>
 
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-wood-primary">
+            <h1 className="text-2xl font-semibold tracking-tight text-wood-secondary">
               Customer Support
             </h1>
 

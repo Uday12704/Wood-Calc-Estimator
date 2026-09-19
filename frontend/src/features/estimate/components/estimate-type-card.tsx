@@ -30,7 +30,7 @@ export function EstimateTypeCard({
 }: EstimateTypeCardProps) {
 
   return (
-    <Card className="group transition-all bg-gradient-to-br from-primary/10 via-background to-primary/5 shadow-md hover:-translate-y-0.5y">
+    <Card className="group transition-all bg-gradient-to-br from-primary/10 via-background to-primary/5 shadow-md hover:-translate-y-1">
 
       <CardHeader>
 

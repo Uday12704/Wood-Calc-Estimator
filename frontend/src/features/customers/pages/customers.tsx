@@ -240,7 +240,7 @@ export default function Customers() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight flex gap-2 items-center text-wood-primary">
+        <h1 className="text-2xl font-semibold tracking-tight flex gap-2 items-center text-wood-secondary">
           <Users /> Customers
         </h1>
 

@@ -336,7 +336,7 @@ export function EstimateHistoryPage() {
       {/* PAGE HEADER */}
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2 text-wood-primary">
+        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2 text-wood-secondary">
           <History />Estimate History
         </h1>
 

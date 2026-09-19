@@ -120,7 +120,7 @@ export function DeliveryChecklistPage() {
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          <span className="flex items-center gap-3 text-wood-primary"><ClipboardCheck />Delivery Checklists</span>
+          <span className="flex items-center gap-3 text-wood-secondary"><ClipboardCheck />Delivery Checklists</span>
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">

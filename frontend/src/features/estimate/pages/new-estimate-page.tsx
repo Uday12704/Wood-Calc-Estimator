@@ -17,6 +17,7 @@ import {
 import type {
   EstimateType,
 } from "../types";
+import { FileText } from "lucide-react";
 
 export function NewEstimatePage() {
   const navigate = useNavigate();
@@ -50,8 +51,8 @@ export function NewEstimatePage() {
       {/* PAGE HEADER */}
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          New Estimate
+        <h1 className="text-2xl font-semibold tracking-tight text-wood-secondary flex items-center gap-2">
+          <FileText /> New Estimate
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
