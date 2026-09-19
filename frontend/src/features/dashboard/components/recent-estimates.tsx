@@ -75,7 +75,7 @@ export function RecentEstimates({
                 <div className="flex items-center gap-2">
 
                   <p className="truncate text-sm font-medium">
-                    {estimate.estimateNumber}
+                    {estimate.partyName}
                   </p>
 
                   <Badge
@@ -94,7 +94,7 @@ export function RecentEstimates({
                 </div>
 
                 <p className="truncate text-xs text-muted-foreground">
-                  {estimate.partyName}
+                  {estimate.estimateNumber}
                 </p>
 
                 <p className="mt-1 text-xs text-muted-foreground">

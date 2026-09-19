@@ -1,9 +1,11 @@
 import {
+  ArrowRight,
   Calculator,
   CircleDollarSign,
   ClipboardList,
   CreditCard,
   FileText,
+  Plus,
   Wallet,
 } from "lucide-react";
 
@@ -23,9 +25,12 @@ import { getDashboardStats, getRecentEstimates, getSalesData } from "./dashboard
 import { initializeSubscription } from "../subscription/subscription-seed";
 import { useEffect, useState } from "react";
 import { checkSubscriptionExpiryNotification, checkWeeklyOnHoldEstimateNotification } from "../notifications/notification-utils";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function DashboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const accountId = user?.accountId ?? "";
 
@@ -137,16 +142,37 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* PAGE HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Dashboard
+
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e62314] via-[#f19e18] to-wood-secondary bg-clip-text text-transparent max-w-200">
+          Hello, {user?.name || "there"}!
         </h1>
 
+
         <p className="text-sm text-muted-foreground">
-          Overview of your estimates, sales and
-          subscription.
+          Welcome back. Here's what's happening with your business today.
         </p>
       </div>
+
+      <Card
+        className="group cursor-pointer border-dashed transition-all hover:border-primary hover:shadow-md"
+        onClick={() => navigate("/app/estimates/new")}
+      >
+        <CardContent className="flex items-center gap-4 p-5">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+            <Plus className="size-6" />
+          </div>
+
+          <div className="flex-1">
+            <h3 className="font-semibold">Create New Estimate</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Start a cut-size, round-size, or custom estimate.
+            </p>
+          </div>
+
+          <ArrowRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+        </CardContent>
+      </Card>
 
       {/* STATISTICS */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
