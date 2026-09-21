@@ -496,19 +496,19 @@ export function EstimateHistoryPage() {
                 <tr>
 
                   <th className="px-4 py-3 text-left font-medium">
-                    Estimate No.
+                    Party
                   </th>
                   
+                  <th className="px-4 py-3 text-left font-medium">
+                    Est No.
+                  </th>
+
                   <th className="px-4 py-3 text-left font-medium">
                     Created By
                   </th>
 
                   <th className="px-4 py-3 text-left font-medium">
                     Date
-                  </th>
-
-                  <th className="px-4 py-3 text-left font-medium">
-                    Party
                   </th>
 
                   <th className="px-4 py-3 text-left font-medium">
@@ -545,6 +545,15 @@ export function EstimateHistoryPage() {
                       }
                       className="hover:bg-muted/30"
                     >
+                      <td className="px-4 py-3 max-w-60">
+                        {
+                          `${estimate.partyName}${
+                              estimate.reference.trim()
+                                ? ` (${estimate.reference})`
+                                : ""
+                            }` || "—"
+                        }
+                      </td>
 
                       <td className="px-4 py-3 font-medium">
                         {
@@ -558,16 +567,6 @@ export function EstimateHistoryPage() {
 
                       <td className="px-4 py-3">
                         {estimate.date}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        {
-                          `${estimate.partyName}${
-                              estimate.reference.trim()
-                                ? ` (${estimate.reference})`
-                                : ""
-                            }` || "—"
-                        }
                       </td>
 
                       <td className="px-4 py-3">

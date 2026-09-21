@@ -14,23 +14,11 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/formatters";
+import { getDaysRemaining } from "@/features/subscription/subscription-storage";
 
 interface SubscriptionCardProps {
   expiryDate: string;
   status: "active" | "expiring" | "expired";
-}
-
-function getDaysRemaining(expiryDate: string) {
-  const today = new Date();
-
-  const expiry = new Date(expiryDate);
-
-  const difference =
-    expiry.getTime() - today.getTime();
-
-  return Math.ceil(
-    difference / (1000 * 60 * 60 * 24),
-  );
 }
 
 export function SubscriptionCard({

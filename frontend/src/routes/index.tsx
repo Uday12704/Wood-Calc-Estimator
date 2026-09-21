@@ -31,6 +31,12 @@ import { ProfileSelectionPage } from "@/features/auth/pages/profile-selection-pa
 import Customers from "@/features/customers/pages/customers";
 import { NotificationsPage } from "@/features/notifications/pages/notifications-page";
 import CustomerSupportPage from "@/features/support/pages/customer-support-page";
+import { AdminDashboardPage } from "@/features/admin/pages/admin-dashboard-page";
+import AdminSubscribersPage from "@/features/admin/pages/admin-subscribers-page";
+import AdminSubscriberDetailsPage from "@/features/admin/pages/admin-subscriber-details-page";
+import AdminSupportPage from "@/features/admin/pages/admin-support-page";
+import AdminSupportDetailsPage from "@/features/admin/pages/admin-support-details-page";
+import AdminLayout from "@/layouts/admin-layout";
 
 export function AppRoutes() {
   return (
@@ -74,7 +80,6 @@ export function AppRoutes() {
           <Route
             element={<DashboardLayout />}
           >
-
             <Route
               path="/app/dashboard"
               element={<DashboardPage />}
@@ -178,7 +183,6 @@ export function AppRoutes() {
               path="/app/support"
               element={<CustomerSupportPage />}
             />
-
           </Route>
         </Route>
 
@@ -193,19 +197,33 @@ export function AppRoutes() {
         >
 
           {/* Admin routes will be added here */}
+          <Route element={<AdminLayout />}>
+            <Route
+              path="/admin/dashboard"
+              element={<AdminDashboardPage />}
+              />
 
-          <Route
-            path="/admin/dashboard"
-            element={
-              <div className="p-6">
-                Admin Dashboard
-              </div>
-            }
-          />
+            <Route
+              path="/admin/subscribers"
+              element={<AdminSubscribersPage />}
+            />
 
+            <Route
+              path="/admin/subscribers/:accountId"
+              element={<AdminSubscriberDetailsPage />}
+            />
 
+            <Route 
+              path="/admin/support" 
+              element={<AdminSupportPage />} 
+            />
+
+            <Route
+              path="/admin/support/:requestId"
+              element={<AdminSupportDetailsPage />}
+            />
+          </Route>
         </Route>
-
       </Route>
 
       {/* ROOT */}

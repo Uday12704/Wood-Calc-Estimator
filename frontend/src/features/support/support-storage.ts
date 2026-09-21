@@ -29,6 +29,14 @@ function getAllRequests(): SupportRequest[] {
   }
 }
 
+export function getAllSupportRequests(): SupportRequest[] {
+  return getAllRequests().sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() -
+      new Date(a.createdAt).getTime(),
+  );
+}
+
 function saveAllRequests(
   requests: SupportRequest[],
 ): void {
@@ -188,4 +196,39 @@ export function saveSupportMessage(
   }
 
   saveAllMessages(messages);
+}
+
+export function updateSupportMessage(
+  accountId: string,
+  messageId: string,
+  updatedText: string,
+): SupportMessage | null {
+  const text = updatedText.trim();
+
+  if (!text) {
+    throw new Error("Message cannot be empty.");
+  }
+
+  const messages = getAllMessages();
+
+  const messageIndex = messages.findIndex(
+    (message) =>
+      message.id === messageId &&
+      message.accountId === accountId &&
+      message.senderType === "ADMIN",
+  );
+
+  if (messageIndex === -1) {
+    return null;
+  }
+
+  const updatedMessage: SupportMessage = {
+    ...messages[messageIndex],
+    message: text,
+  };
+
+  messages[messageIndex] = updatedMessage;
+  saveAllMessages(messages);
+
+  return updatedMessage;
 }

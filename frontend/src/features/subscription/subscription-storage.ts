@@ -100,3 +100,18 @@ export function calculateSubscriptionStatus(
 
   return "active";
 }
+
+export function getDaysRemaining(
+  expiryDate?: string) {
+    if (!expiryDate) return null;
+    const today = new Date();
+
+    const expiry = new Date(expiryDate);
+
+    const difference =
+      expiry.getTime() - today.getTime();
+
+    return Math.ceil(
+      difference / (1000 * 60 * 60 * 24),
+    );
+}

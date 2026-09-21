@@ -27,6 +27,7 @@ import { NavLink } from "react-router-dom";
 import { calculateSubscriptionStatus, getSubscription } from "@/features/subscription/subscription-storage";
 import { useAuth } from "@/features/auth/auth-context";
 import { formatDate } from "@/lib/formatters";
+import logo from "../../assets/logo.jpeg";
 
 interface NavigationItem {
   title: string;
@@ -149,27 +150,24 @@ export function AppSidebar({
     <Sidebar collapsible="icon">
         {/* HEADER */}
         <SidebarHeader>
-            <div className="flex items-center gap-3 py-2">
-                {/* Logo */}
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                    <span className="text-sm font-bold">
-                    W
-                    </span>
-                </div>
+          <div className="flex items-center gap-3 py-2 bg-secondary">
+              {/* Logo */}
+              <div className="flex shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <img src={logo} alt="Company Logo" className="h-10 w-auto" />
+              </div>
 
-                {/* Company */}
-                <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-                    <p className="truncate text-sm font-semibold">
-                    Wood Calc Estimator
-                    </p>
+              {/* Company */}
+              <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+                  <p className="truncate text-sm font-semibold">
+                  TIMEST
+                  </p>
 
-                    <p className="truncate text-xs text-muted-foreground">
-                    Pro
-                    </p>
-                </div>
-            </div>
+                  <p className="truncate text-xs text-muted-foreground">
+                  Pro
+                  </p>
+              </div>
+          </div>
         </SidebarHeader>
-
       <SidebarSeparator />
 
       <SidebarContent>

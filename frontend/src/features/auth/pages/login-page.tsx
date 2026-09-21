@@ -16,6 +16,7 @@ import { useState } from "react";
 
 export function LoginPage() {
   const {
+    user,
     login,
     isAuthenticated,
     isLoading,
@@ -27,9 +28,14 @@ export function LoginPage() {
     useState<string | null>(null);
 
   if (isAuthenticated) {
+    const destination =
+      user?.platformRole === "ADMIN"
+        ? "/admin/dashboard"
+        : "/app/dashboard";
+
     return (
       <Navigate
-        to="/app/dashboard"
+        to={destination}
         replace
       />
     );
