@@ -6,6 +6,7 @@ import { BusinessInfoCard } from "../components/business-info-card";
 import { WoodCategoryCard } from "../components/wood-category-card";
 import { UserManagementCard } from "../components/user-management-card";
 import { ChangePasswordCard } from "../components/change-password-card";
+import { PrintSettingsCard } from "../components/print-settings-card";
 
 export function SettingsPage() {
   return (
@@ -24,19 +25,18 @@ export function SettingsPage() {
       </div>
 
       {/* BUSINESS INFORMATION */}
-
       <BusinessInfoCard />
 
       {/* WOOD CATEGORIES */}
-
       <WoodCategoryCard />
 
-      {/* USER MANAGEMENT */}
+      {/* PRINT SETTINGS */}
+      <PrintSettingsCard />
 
+      {/* USER MANAGEMENT */}
       <UserManagementCard />
 
       {/* CHANGE PASSWORD */}
-
       <ChangePasswordCard />
     </div>
   );

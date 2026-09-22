@@ -16,10 +16,6 @@ export interface BusinessSettings {
   logo: string;
 }
 
-export type PrintLayout =
-  | "A4"
-  | "HALF_A4_LANDSCAPE";
-
 export interface SecuritySettings {
   pinEnabled: boolean;
   profilePins: Record<string, string>;
@@ -32,4 +28,23 @@ export interface SettingsData {
   business: BusinessSettings;
   woodCategories: WoodCategory[];
   security: SecuritySettings;
+  print: PrintSettings;
+}
+
+
+export type BusinessNameFont =
+  | "Helvetica"
+  | "Times-Roman"
+  | "Courier"
+  | "Helvetica-Bold"
+  | "Times-Bold"
+  | "Courier-Bold"
+  | "Helvetica-Oblique"
+  | "Times-Italic"
+  | "Courier-Oblique"
+  | "Helvetica-BoldOblique";
+
+export interface PrintSettings {
+  termsAndConditions: string;
+  businessNameFont: BusinessNameFont;
 }

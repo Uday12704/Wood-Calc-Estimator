@@ -1,5 +1,6 @@
 import type {
   BusinessSettings,
+  PrintSettings,
   SecuritySettings,
   SettingsData,
   WoodCategory,
@@ -17,6 +18,11 @@ const DEFAULT_SETTINGS: Omit<SettingsData, "accountId"> = {
   },
 
   woodCategories: [],
+
+  print: {
+    termsAndConditions: "",
+    businessNameFont: "Helvetica",
+  },
 
   security: {
     pinEnabled: false,
@@ -86,6 +92,13 @@ function getSettings(
       woodCategories:
         existingSettings.woodCategories ??
         DEFAULT_SETTINGS.woodCategories,
+
+      print: {
+        termsAndConditions:
+          existingSettings.print?.termsAndConditions ?? "",
+        businessNameFont:
+          existingSettings.print?.businessNameFont ?? "Helvetica",
+      },
 
       security: {
         ...DEFAULT_SETTINGS.security,
@@ -195,5 +208,23 @@ export function saveSecuritySettings(
   saveSettings(accountId, {
     ...settings,
     security,
+  });
+}
+
+export function getPrintSettings(
+  accountId: string,
+): PrintSettings {
+  return getSettings(accountId).print;
+}
+
+export function savePrintSettings(
+  accountId: string,
+  print: PrintSettings,
+): void {
+  const settings = getSettings(accountId);
+
+  saveSettings(accountId, {
+    ...settings,
+    print,
   });
 }
