@@ -694,7 +694,6 @@ export function CustomEstimatePdf({
             </View>
           )}
 
-
           {/* ==============================
               NOTES
               ============================== */}

@@ -10,7 +10,7 @@ import {
 import type {
   SavedRoundSizeEstimate,
 } from "../types";
-import { getBusinessSettings } from "@/features/settings/services/settings-storage";
+import { getBusinessSettings, getPrintSettings } from "@/features/settings/services/settings-storage";
 
 const styles = StyleSheet.create({
   page: {
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 18,
     fontWeight: "bold",
+    fontFamily: "Helvetica",
   },
 
   companySubtitle: {
@@ -225,9 +226,8 @@ export function RoundSizeMeasurePdf({
   estimate,
 }: RoundSizeEstimatePdfProps) {
 
-  const business = getBusinessSettings(
-    estimate.accountId,
-  );
+  const business = getBusinessSettings(estimate.accountId);
+  const printSettings = getPrintSettings(estimate.accountId);
 
   return (
     <Document>
@@ -252,8 +252,15 @@ export function RoundSizeMeasurePdf({
             )}
 
             <View>
-              <Text style={styles.companyName}>
-                {business.businessName || "—"}
+              <Text
+                style={[
+                  styles.companyName,
+                  {
+                    fontFamily: printSettings.businessNameFont,
+                  },
+                ]}
+              >
+                {business.businessName || " "}
               </Text>
 
               <Text style={styles.companySubtitle}>
@@ -580,32 +587,22 @@ export function RoundSizeMeasurePdf({
         </View>
         
         <View style={styles.footer}>
+
           {/* =================================
-              TERMS
+              TERMS & CONDITIONS
               ================================= */}
-          <View style={styles.footer}>
+              
+            {printSettings.termsAndConditions.trim() && (
             <View style={styles.terms}>
-
               <Text style={styles.termsTitle}>
-                TERMS
+                TERMS & CONDITIONS
               </Text>
 
               <Text style={styles.term}>
-                1. Goods once sold will not be
-                taken back.
+                {printSettings.termsAndConditions}
               </Text>
-
-              <Text style={styles.term}>
-                2. Payment due on delivery unless
-                otherwise agreed.
-              </Text>
-
-              <Text style={styles.term}>
-                3. Subject to local jurisdiction.
-              </Text>
-
             </View>
-
+            )}
 
             {/* =================================
                 NOTES
@@ -624,7 +621,6 @@ export function RoundSizeMeasurePdf({
 
               </View>
             )}
-          </View>
         </View>
       </Page>
 
