@@ -57,6 +57,7 @@ export interface CutSizeAdditionalItem {
   id: string;
   description: string;
   quantity: number | "";
+  unit: "",
   pricePerUnit: number | "";
   note: string;
   lineTotal: number;

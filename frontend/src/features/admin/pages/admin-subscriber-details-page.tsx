@@ -4,11 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   AlertCircle,
   ArrowLeft,
+  CalendarCheck2,
   CalendarDays,
   CheckCircle2,
   CreditCard,
   Mail,
   Save,
+  ScrollText,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -36,6 +38,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/formatters";
 import { calculateSubscriptionStatus, getDaysRemaining, getSubscription, saveSubscription } from "@/features/subscription/subscription-storage";
+import { getEstimateUsage, updateEstimateLimit } from "@/features/subscription/subscription-usage-storage";
 
 export default function AdminSubscriberDetailsPage() {
   const { accountId } = useParams<{ accountId: string }>();
@@ -47,6 +50,9 @@ export default function AdminSubscriberDetailsPage() {
   const [planName, setPlanName] = useState("Pro");
   const [startDate, setStartDate] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
+  const [estimateUsed, setEstimateUsed] = useState(0);
+  const [estimateLimit, setEstimateLimit] = useState(2000);
+  const [newEstimateLimit, setNewEstimateLimit] = useState("2000");
 
   const daysRemaining = getDaysRemaining(expiryDate);
 
@@ -74,10 +80,21 @@ export default function AdminSubscriberDetailsPage() {
       setPlanName(foundSubscription.planName);
       setStartDate(foundSubscription.startDate);
       setExpiryDate(foundSubscription.expiryDate);
+      const usage = getEstimateUsage(
+        accountId,
+        foundSubscription.startDate,
+      );
+
+      setEstimateUsed(usage.used);
+      setEstimateLimit(usage.limit);
+      setNewEstimateLimit(String(usage.limit));
     } else {
       setPlanName("Pro");
       setStartDate("");
       setExpiryDate("");
+      setEstimateUsed(0);
+      setEstimateLimit(2000);
+      setNewEstimateLimit("2000");
     }
   }, [accountId]);
 
@@ -124,6 +141,43 @@ export default function AdminSubscriberDetailsPage() {
 
     setSubscription(getSubscription(account.id));
     toast.success("Subscription saved successfully.");
+  }
+
+  function handleSaveEstimateLimit() {
+    if (!account || !subscription) {
+      toast.error("Assign a subscription before setting an estimate limit.");
+      return;
+    }
+
+    const parsedLimit = Number(newEstimateLimit);
+
+    if (
+      !Number.isInteger(parsedLimit) ||
+      parsedLimit < 0
+    ) {
+      toast.error("Enter a valid non-negative whole number.");
+      return;
+    }
+
+    try {
+      const updatedUsage = updateEstimateLimit(
+        account.id,
+        subscription.startDate,
+        parsedLimit,
+      );
+
+      setEstimateUsed(updatedUsage.used);
+      setEstimateLimit(updatedUsage.limit);
+      setNewEstimateLimit(String(updatedUsage.limit));
+
+      toast.success("Estimate limit updated successfully.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to update estimate limit.",
+      );
+    }
   }
 
   if (!account) {
@@ -191,7 +245,7 @@ export default function AdminSubscriberDetailsPage() {
 
       {/* Compact account summary */}
       <Card>
-        <CardContent className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-muted p-2.5">
               <Mail className="h-5 w-5 text-muted-foreground" />
@@ -204,7 +258,7 @@ export default function AdminSubscriberDetailsPage() {
 
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-muted p-2.5">
-              <CalendarDays className="h-5 w-5 text-muted-foreground" />
+              <CalendarCheck2 className="h-5 w-5 text-muted-foreground" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Registered on</p>
@@ -241,13 +295,25 @@ export default function AdminSubscriberDetailsPage() {
               )}
             </div>
           </div>
+
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-muted p-2.5">
+              <CalendarDays className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Days Remaining</p>
+              <p className="text-sm font-semibold">
+                {`${daysRemaining} ${daysRemaining === 1 ? "day" : "days"}`}
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
       {/* Main two-column workspace */}
-      <div className="grid items-start gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+      <div className="grid items-start gap-5 lg:grid-cols-2">
         {/* Account access */}
-        <Card>
+        <Card className="h-full">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base text-wood-primary">
               <UserRound className="h-5 w-5" />
@@ -309,8 +375,68 @@ export default function AdminSubscriberDetailsPage() {
           </CardContent>
         </Card>
 
+        <Card className="h-full">
+          <CardHeader>
+            <CardTitle className="text-base text-wood-primary flex gap-2 items-center">
+              <ScrollText className="h-5 w-5"/> Estimate Usage & Limit
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              View the subscriber's estimate usage and adjust their allowance.
+            </p>
+          </CardHeader>
+
+          <CardContent className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-lg border p-4">
+                <p className="text-sm text-muted-foreground">Estimates used</p>
+                <p className="mt-1 text-2xl font-bold">{estimateUsed}</p>
+              </div>
+
+              <div className="rounded-lg border p-4">
+                <p className="text-sm text-muted-foreground">Current limit</p>
+                <p className="mt-1 text-2xl font-bold">{estimateLimit}</p>
+              </div>
+
+              <div className="rounded-lg border p-4">
+                <p className="text-sm text-muted-foreground">Remaining</p>
+                <p className="mt-1 text-2xl font-bold">
+                  {Math.max(0, estimateLimit - estimateUsed)}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="newEstimateLimit">New estimate limit</Label>
+              <Input
+                id="newEstimateLimit"
+                type="number"
+                min={estimateUsed}
+                step={1}
+                value={newEstimateLimit}
+                onChange={(event) => setNewEstimateLimit(event.target.value)}
+                placeholder="Enter new estimate limit"
+                disabled={!subscription}
+              />
+              <p className="text-xs text-muted-foreground">
+                The limit cannot be lower than the number of estimates already used.
+              </p>
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                onClick={handleSaveEstimateLimit}
+                disabled={!subscription}
+                className="cursor-pointer"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save Estimate Limit
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Subscription editor */}
-        <Card>
+        <Card className="h-full">
           <CardHeader className="pb-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2 text-base text-wood-primary">
@@ -360,13 +486,14 @@ export default function AdminSubscriberDetailsPage() {
                   onChange={(event) => setExpiryDate(event.target.value)}
                 />
               </div>
-              
-              <div className="space-y-2">
-                <h1 className="text-lg font-semibold">Days Remaining - {daysRemaining}</h1>
+
+              <div className="rounded-lg border p-4">
+                <p className="text-sm text-muted-foreground">Days Remaining</p>
+                <p className="mt-1 text-2xl font-bold">{daysRemaining}</p>
               </div>
             </div>
 
-            <div className="rounded-lg bg-muted/40 p-3">
+            <div className="rounded-lg border p-4">
               <p className="text-xs font-medium text-muted-foreground">
                 Subscription preview
               </p>

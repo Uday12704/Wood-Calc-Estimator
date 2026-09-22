@@ -95,8 +95,7 @@ export function PreviewCutSizePage() {
 
       link.href = url;
 
-      link.download =
-        `${estimate.estimateNumber}.pdf`;
+      link.download = `${estimate.partyName}(${estimate.estimateNumber}).pdf`;
 
       document.body.appendChild(link);
 
@@ -457,6 +456,10 @@ export function PreviewCutSizePage() {
                     </th>
 
                     <th className="px-3 py-2 text-right">
+                      Unit
+                    </th>
+
+                    <th className="px-3 py-2 text-right">
                       Rate
                     </th>
 
@@ -484,6 +487,10 @@ export function PreviewCutSizePage() {
 
                                 <td className="px-3 py-3 text-right">
                                     {item.quantity}
+                                </td>
+
+                                <td className="px-3 py-3 text-right">
+                                    {item.unit ? item.unit : "-"}
                                 </td>
 
                                 <td className="px-3 py-3 text-right">

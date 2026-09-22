@@ -466,7 +466,7 @@ export function WoodItemsTable({
                 TOTAL
               </th>
 
-              <th className="border-b px-3 py-3 text-right text-xs font-semibold">
+              <th className="border-b px-3 py-3 min-w-23 text-right text-xs font-semibold">
                 LINE TOTAL
               </th>
 

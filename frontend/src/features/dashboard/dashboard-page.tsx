@@ -25,6 +25,7 @@ import { checkSubscriptionExpiryNotification, checkWeeklyOnHoldEstimateNotificat
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { calculateSubscriptionStatus, getSubscription } from "../subscription/subscription-storage";
+import { EstimateUsageCard } from "./components/estimate-usage-card";
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -152,25 +153,35 @@ export function DashboardPage() {
         </p>
       </div>
 
-      <Card
-        className="group cursor-pointer border-dashed transition-all hover:border-primary hover:shadow-md"
-        onClick={() => navigate("/app/estimates/new")}
-      >
-        <CardContent className="flex items-center gap-4 p-5">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-            <Plus className="size-6" />
-          </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card
+          className="group cursor-pointer border-dashed transition-all hover:border-primary hover:shadow-md"
+          onClick={() => navigate("/app/estimates/new")}
+          >
+          <CardContent className="flex items-center gap-4 p-5">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <Plus className="size-6" />
+            </div>
 
-          <div className="flex-1">
-            <h3 className="font-semibold">Create New Estimate</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Start a cut-size, round-size, or custom estimate.
-            </p>
-          </div>
+            <div className="flex-1">
+              <h3 className="font-semibold">Create New Estimate</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Start a cut-size, round-size, or custom estimate.
+              </p>
+            </div>
 
-          <ArrowRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
-        </CardContent>
-      </Card>
+            <ArrowRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+          </CardContent>
+        </Card>
+
+        {/* ESTIMATE USAGE */}
+        <div>
+          <EstimateUsageCard
+            accountId={accountId}
+            periodStartDate={subscription.startDate}
+            />
+        </div>
+      </div>
 
       {/* STATISTICS */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

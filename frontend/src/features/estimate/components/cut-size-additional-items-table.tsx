@@ -27,8 +27,9 @@ function createEmptyItem(): CutSizeAdditionalItem {
   return {
     id: crypto.randomUUID(),
     description: "",
-    pricePerUnit: "",
     quantity: 1,
+    unit: "",
+    pricePerUnit: "",
     note: "",
     lineTotal: 0,
   };
@@ -62,8 +63,9 @@ export function AdditionalItemsTable({
     id: string,
     field:
       | "description"
-      | "pricePerUnit"
       | "quantity"
+      | "unit"
+      | "pricePerUnit"
       | "note",
     value: string | number,
   ) {
@@ -130,8 +132,9 @@ export function AdditionalItemsTable({
     itemId: string,
     field:
       | "description"
-      | "pricePerUnit"
-      | "quantity",
+      | "quantity"
+      | "unit"
+      | "pricePerUnit",
   ) {
     if (
       (event.key === "ArrowUp" || event.key === "ArrowDown") &&
@@ -164,8 +167,9 @@ export function AdditionalItemsTable({
 
     const fieldOrder = [
       "description",
-      "pricePerUnit",
       "quantity",
+      "unit",
+      "pricePerUnit",
     ] as const;
 
     const fieldIndex =
@@ -237,19 +241,23 @@ export function AdditionalItemsTable({
                 Description
               </th>
 
-              <th className="px-3 py-3 text-right">
+              <th className="px-3 py-3 text-left">
+                Qty
+              </th>
+              
+              <th className="px-3 py-3 text-left">
+                Unit
+              </th>
+
+              <th className="px-3 py-3 text-left">
                 Price / Unit
               </th>
 
-              <th className="px-3 py-3 text-right">
-                Qty
-              </th>
-
-              <th className="px-3 py-3 text-right">
+              <th className="px-3 py-3 text-left">
                 Notes
               </th>
 
-              <th className="px-3 py-3 text-right">
+              <th className="px-3 py-3 min-w-25 text-right">
                 Line Total
               </th>
 
@@ -293,7 +301,72 @@ export function AdditionalItemsTable({
                           "description",
                         )
                       }
-                      className="h-9"
+                      className="h-9 w-90"
+                    />
+                  </td>
+                  
+                  <td className="px-3 py-2">
+                    <Input
+                      ref={(element) =>
+                        setInputRef(
+                          `${item.id}-quantity`,
+                          element,
+                        )
+                      }
+                      type="number"
+                      min="1"
+                      value={
+                        item.quantity
+                      }
+                      onChange={(event) =>
+                        updateItem(
+                          item.id,
+                          "quantity",
+                          event.target.value === ""
+                            ? ""
+                            : Number(
+                                event.target.value,
+                              ),
+                        )
+                      }
+                      onKeyDown={(event) =>
+                        handleKeyDown(
+                          event,
+                          item.id,
+                          "quantity",
+                        )
+                      }
+                      className="h-9 text-left"
+                    />
+                  </td>
+
+                  <td className="px-3 py-2">
+                    <Input
+                      ref={(element) =>
+                        setInputRef(
+                          `${item.id}-unit`,
+                          element,
+                        )
+                      }
+                      value={
+                        item.unit
+                      }
+                      placeholder="Unit"
+                      onChange={(event) =>
+                        updateItem(
+                          item.id,
+                          "unit",
+                          event.target.value,
+                        )
+                      }
+                      onKeyDown={(event) =>
+                        handleKeyDown(
+                          event,
+                          item.id,
+                          "unit",
+                        )
+                      }
+                      className="h-9 text-left"
                     />
                   </td>
 
@@ -329,44 +402,10 @@ export function AdditionalItemsTable({
                           "pricePerUnit",
                         )
                       }
-                      className="h-9 text-right"
+                      className="h-9 text-left"
                     />
                   </td>
 
-                  <td className="px-3 py-2">
-                    <Input
-                      ref={(element) =>
-                        setInputRef(
-                          `${item.id}-quantity`,
-                          element,
-                        )
-                      }
-                      type="number"
-                      min="1"
-                      value={
-                        item.quantity
-                      }
-                      onChange={(event) =>
-                        updateItem(
-                          item.id,
-                          "quantity",
-                          event.target.value === ""
-                            ? ""
-                            : Number(
-                                event.target.value,
-                              ),
-                        )
-                      }
-                      onKeyDown={(event) =>
-                        handleKeyDown(
-                          event,
-                          item.id,
-                          "quantity",
-                        )
-                      }
-                      className="h-9 text-right"
-                    />
-                  </td>
 
                   {/* NOTES */}
 

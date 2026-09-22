@@ -76,3 +76,28 @@ export function commitEstimateUsage(
     lastSequence: usage.lastSequence + 1,
   });
 }
+
+export function previewEstimateNumber(accountId: string): string {
+  const subscription = getSubscription(accountId);
+
+  if (!subscription) {
+    return "";
+  }
+
+  const usage = getEstimateUsage(accountId, subscription.startDate);
+
+  const access = checkSubscriptionAccess({
+    subscription,
+    estimateCount: usage.used,
+    estimateLimit: usage.limit,
+  });
+
+  if (!access.allowed) {
+    return "";
+  }
+
+  return generateEstimateNumber(
+    usage.lastSequence + 1,
+    subscription.startDate,
+  );
+}

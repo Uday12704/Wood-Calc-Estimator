@@ -21,7 +21,7 @@ import { AdditionalItemsTable } from "../components/cut-size-additional-items-ta
 import { pdf } from "@react-pdf/renderer";
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { useAuth } from "@/features/auth/auth-context";
-import { commitEstimateUsage, prepareEstimateCreation } from "@/features/subscription/subscription-creation-service";
+import { commitEstimateUsage, prepareEstimateCreation, previewEstimateNumber } from "@/features/subscription/subscription-creation-service";
 
 export function CutSizeEstimatePage() {
   const { user } = useAuth();
@@ -29,7 +29,9 @@ export function CutSizeEstimatePage() {
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
       documentTitle: "Estimate",
-      estimateNumber: "",
+      estimateNumber: user
+        ? previewEstimateNumber(user.accountId)
+        : "",
       date: getTodayDate(),
       partyName: "",
       contactNumber: "",
@@ -127,8 +129,9 @@ export function CutSizeEstimatePage() {
         {
           id: crypto.randomUUID(),
           description: "",
-          pricePerUnit: "",
           quantity: 1,
+          unit: "",
+          pricePerUnit: "",
           note: "",
           lineTotal: 0,
         },
@@ -293,8 +296,7 @@ export function CutSizeEstimatePage() {
     
           link.href = url;
     
-          link.download =
-            `${estimate.estimateNumber}.pdf`;
+          link.download = `${estimate.partyName}(${estimate.estimateNumber}).pdf`;
     
           document.body.appendChild(link);
     

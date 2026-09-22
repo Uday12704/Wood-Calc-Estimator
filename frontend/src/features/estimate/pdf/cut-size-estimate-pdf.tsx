@@ -176,11 +176,15 @@ const styles = StyleSheet.create({
   },
 
   additionalDescription: {
-    width: "50%",
+    width: "40%",
   },
 
   additionalQty: {
     width: "15%",
+  },
+
+  additionalUnit: {
+    width: "10%",
   },
   
   additionalRate: {
@@ -696,6 +700,16 @@ export function CutSizeEstimatePdf({
               >
                 QTY
               </Text>
+              
+              <Text
+                style={[
+                  styles.cell,
+                  styles.additionalUnit,
+                  styles.cellCenter,
+                ]}
+              >
+                UNIT
+              </Text>
 
               <Text
                 style={[
@@ -762,6 +776,16 @@ export function CutSizeEstimatePdf({
                       ]}
                     >
                       {item.quantity}
+                    </Text>
+                    
+                    <Text
+                      style={[
+                        styles.cell,
+                        styles.additionalUnit,
+                        styles.cellCenter,
+                      ]}
+                    >
+                      {item.unit}
                     </Text>
 
                     <Text

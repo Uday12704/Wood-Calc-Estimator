@@ -17,7 +17,7 @@ import { CustomEstimateBottomSection } from "../components/custom-bottom-section
 import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
 import { useAuth } from "@/features/auth/auth-context";
-import { commitEstimateUsage, prepareEstimateCreation } from "@/features/subscription/subscription-creation-service";
+import { commitEstimateUsage, prepareEstimateCreation, previewEstimateNumber } from "@/features/subscription/subscription-creation-service";
 
 export function CustomEstimatePage() {
   const { user } = useAuth();
@@ -25,7 +25,9 @@ export function CustomEstimatePage() {
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
       documentTitle: "Estimate",
-      estimateNumber: "",
+      estimateNumber: user
+        ? previewEstimateNumber(user.accountId)
+        : "",
       date: getTodayDate(),
       partyName: "",
       contactNumber: "",
@@ -227,8 +229,7 @@ export function CustomEstimatePage() {
     
           link.href = url;
     
-          link.download =
-            `${estimate.estimateNumber}.pdf`;
+          link.download = `${estimate.partyName}(${estimate.estimateNumber}).pdf`;
     
           document.body.appendChild(link);
     

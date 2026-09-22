@@ -96,8 +96,7 @@ export function PreviewCustomEstimatePage() {
 
       link.href = url;
 
-      link.download =
-        `${estimate.estimateNumber}.pdf`;
+      link.download = `${estimate.partyName}(${estimate.estimateNumber}).pdf`;
 
       document.body.appendChild(link);
 
