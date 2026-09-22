@@ -11,7 +11,7 @@ import type {
   DeliveryChecklist,
   DeliveryEstimate,
 } from "../types";
-import { getBusinessSettings } from "@/features/settings/services/settings-storage";
+import { getBusinessSettings, getPrintSettings } from "@/features/settings/services/settings-storage";
 
 const styles = StyleSheet.create({
   page: {
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 18,
     fontWeight: "bold",
+    fontFamily: "Helvetica",
   },
 
   companySubtitle: {
@@ -292,6 +293,7 @@ export function DeliveryChecklistPdf({
   const deliveryStats = getDeliveryStats(checklist);
 
   const business = getBusinessSettings(estimate.accountId);
+  const printSettings = getPrintSettings(estimate.accountId);
 
   return (
     <Document>
@@ -310,7 +312,14 @@ export function DeliveryChecklistPdf({
             )}
 
             <View>
-              <Text style={styles.companyName}>
+              <Text
+                style={[
+                  styles.companyName,
+                  {
+                    fontFamily: printSettings.businessNameFont,
+                  },
+                ]}
+              >
                 {business.businessName || " "}
               </Text>
 
