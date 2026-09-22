@@ -57,16 +57,16 @@ export function EstimateUsageCard({
           </p>
         </div>
 
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-300">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-[#e62314] to-[#f19e18] transition-all"
             style={{ width: `${usagePercentage}%` }}
           />
         </div>
 
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
-            {usagePercentage.toFixed(1)}% used
+            {usagePercentage.toFixed(2)}% used
           </span>
 
           <span className="font-medium">
