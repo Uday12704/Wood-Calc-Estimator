@@ -8,8 +8,6 @@ import { woodCategories, } from "../data/wood-categories";
 
 import type { CutSizeAdditionalItem, EstimateHeader, OtherCharge, SavedEstimate, WoodItem, } from "../types";
 
-import { generateEstimateNumber, } from "../utils/estimate-number";
-
 import { getTodayDate, } from "../utils/date";
 import { EstimateBottomSection } from "../components/estimate-bottom-section";
 import { calculateEstimateTotals } from "../utils/cut-size-calculations";
@@ -23,6 +21,7 @@ import { AdditionalItemsTable } from "../components/cut-size-additional-items-ta
 import { pdf } from "@react-pdf/renderer";
 import { CutSizeEstimatePdf } from "../pdf/cut-size-estimate-pdf";
 import { useAuth } from "@/features/auth/auth-context";
+import { commitEstimateUsage, prepareEstimateCreation } from "@/features/subscription/subscription-creation-service";
 
 export function CutSizeEstimatePage() {
   const { user } = useAuth();
@@ -30,8 +29,7 @@ export function CutSizeEstimatePage() {
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
       documentTitle: "Estimate",
-      estimateNumber:
-        generateEstimateNumber(),
+      estimateNumber: "",
       date: getTodayDate(),
       partyName: "",
       contactNumber: "",
@@ -430,12 +428,21 @@ export function CutSizeEstimatePage() {
           if (!validateEstimate()) {
             return;
           }
-          const estimate =
-            buildEstimate(header.status);
+          const creation = prepareEstimateCreation(user!.accountId);
 
-            updateStatus(header.status);
+          const estimate = {
+            ...buildEstimate(header.status),
+            estimateNumber: creation.estimateNumber,
+          };
 
-            saveEstimate(user!.accountId, estimate);
+          updateStatus(header.status);
+
+          saveEstimate(user!.accountId, estimate);
+
+          commitEstimateUsage(
+            user!.accountId,
+            creation.periodStartDate,
+          );
             toast.success("Estimate saved.");
             navigate(
               `/app/estimates/history`,
@@ -446,27 +453,44 @@ export function CutSizeEstimatePage() {
           if (!validateEstimate()) {
             return;
           }
-          const estimate =
-            buildEstimate("ON_HOLD");
-
+          const creation = prepareEstimateCreation(user!.accountId);
+          const estimate = {
+            ...buildEstimate("ON_HOLD"),
+            estimateNumber: creation.estimateNumber,
+          };
           updateStatus("ON_HOLD");
 
           saveEstimate(user!.accountId, estimate);
+
+          commitEstimateUsage(
+            user!.accountId,
+            creation.periodStartDate,
+          );
           toast.success("Estimate saved as draft.");
           navigate(
             `/app/estimates/history`,
           );
         }}
+
         onConfirm={() => {
           if (!validateEstimate()) {
             return;
           }
-          const estimate =
-            buildEstimate("CONFIRMED");
+          const creation = prepareEstimateCreation(user!.accountId);
+
+          const estimate = {
+            ...buildEstimate("CONFIRMED"),
+            estimateNumber: creation.estimateNumber,
+          };
 
           updateStatus("CONFIRMED");
 
           saveEstimate(user!.accountId, estimate);
+
+          commitEstimateUsage(
+            user!.accountId,
+            creation.periodStartDate,
+          );
           toast.success("Estimate marked as confirmed.");
           navigate(
             `/app/estimates/history`,

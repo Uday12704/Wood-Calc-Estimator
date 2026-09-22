@@ -16,10 +16,7 @@ import { RecentEstimates } from "./components/recent-estimates";
 
 import { formatCurrency } from "@/lib/formatters";
 import { useAuth } from "@/features/auth/auth-context";
-import {
-  getSubscription,
-  calculateSubscriptionStatus,
-} from "@/features/subscription/subscription-storage";
+
 import { getSavedCustomEstimates, getSavedEstimates, getSavedRoundEstimates } from "../estimate/services/estimate-storage";
 import { getDashboardStats, getRecentEstimates, getSalesData } from "./dashboard-utils";
 import { initializeSubscription } from "../subscription/subscription-seed";
@@ -27,6 +24,7 @@ import { useEffect, useState } from "react";
 import { checkSubscriptionExpiryNotification, checkWeeklyOnHoldEstimateNotification } from "../notifications/notification-utils";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { calculateSubscriptionStatus, getSubscription } from "../subscription/subscription-storage";
 
 export function DashboardPage() {
   const { user } = useAuth();

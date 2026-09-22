@@ -1,5 +1,5 @@
 import {
-    Bell,
+  Bell,
   Calculator,
   ClipboardCheck,
   FileText,

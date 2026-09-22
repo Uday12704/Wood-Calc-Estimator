@@ -37,6 +37,8 @@ import AdminSubscriberDetailsPage from "@/features/admin/pages/admin-subscriber-
 import AdminSupportPage from "@/features/admin/pages/admin-support-page";
 import AdminSupportDetailsPage from "@/features/admin/pages/admin-support-details-page";
 import AdminLayout from "@/layouts/admin-layout";
+import { EstimateCreationGuard } from "@/features/estimate/components/estimate-creation-guard";
+import { SubscriptionExpiryGuard } from "@/features/subscription/components/subscription-expiry-guard";
 
 export function AppRoutes() {
   return (
@@ -75,114 +77,103 @@ export function AppRoutes() {
               allowedRoles={["SUBSCRIBER", "ADMIN"]}
             />
           }
-        >
-
-          <Route
-            element={<DashboardLayout />}
-          >
+        >          
+          <Route element={<DashboardLayout />}>
+            {/* Dashboard remains accessible after expiry */}
             <Route
               path="/app/dashboard"
               element={<DashboardPage />}
             />
 
             <Route
-              path="/app/estimates/new"
-              element={<NewEstimatePage />}
-            />
-
-            <Route
-              path="/app/estimates/new/cut-size"
-              element={<CutSizeEstimatePage />}
-            />
-
-            <Route
-              path="/app/estimates/new/round-size"
-              element={<RoundSizeEstimatePage />}
-            />
-            
-            <Route
-              path="/app/estimates/new/custom-estimate"
-              element={<CustomEstimatePage />}
-            />
-
-            <Route
-              path="/app/estimates/history"
-              element={
-                <EstimateHistoryPage />
-              }
-            />
-
-            <Route
-              path="/app/estimates/preview-cut-size/:id"
-              element={
-                <PreviewCutSizePage />
-              }
-            />
-
-            <Route
-              path="/app/estimates/preview-round-size/:id"
-              element={
-                <PreviewRoundSizePage />
-              }
-            />
-            
-            <Route
-              path="/app/estimates/preview-custom-estimate/:id"
-              element={
-                <PreviewCustomEstimatePage />
-              }
-            />
-
-            <Route
-              path="/app/estimates/edit-cut-size/:id"
-              element={
-                <EditCutSizeEstimatePage />
-              }
-            />
-            
-            <Route
-              path="/app/estimates/edit-round-size/:id"
-              element={
-                <EditRoundSizeEstimatePage />
-              }
-            />
-            
-            <Route
-              path="/app/estimates/edit-custom-estimate/:id"
-              element={
-                <EditCustomEstimatePage />
-              }
-            />
-
-            <Route
-              path="/app/delivery-checklist"
-              element={<DeliveryChecklistPage />}
-            />
-
-            <Route
-              path="/app/delivery-checklist/:type/:id"
-              element={<DeliveryChecklistDetailPage />}
-            />
-
-            <Route
-              path="/app/settings"
-              element={<SettingsPage />}
-            />
-
-            <Route
-              path="/app/customers"
-              element={<Customers />}
-            />
-            
-            <Route
               path="/app/notifications"
               element={<NotificationsPage />}
             />
-            
-            <Route
-              path="/app/support"
-              element={<CustomerSupportPage />}
-            />
+
+            {/* All other subscriber pages require a valid subscription */}
+            <Route element={<SubscriptionExpiryGuard />}>
+              <Route element={<EstimateCreationGuard />}>
+                <Route
+                  path="/app/estimates/new"
+                  element={<NewEstimatePage />}
+                />
+
+                <Route
+                  path="/app/estimates/new/cut-size"
+                  element={<CutSizeEstimatePage />}
+                />
+
+                <Route
+                  path="/app/estimates/new/round-size"
+                  element={<RoundSizeEstimatePage />}
+                />
+
+                <Route
+                  path="/app/estimates/new/custom-estimate"
+                  element={<CustomEstimatePage />}
+                />
+              </Route>
+
+              <Route
+                path="/app/estimates/history"
+                element={<EstimateHistoryPage />}
+              />
+
+              <Route
+                path="/app/estimates/preview-cut-size/:id"
+                element={<PreviewCutSizePage />}
+              />
+
+              <Route
+                path="/app/estimates/preview-round-size/:id"
+                element={<PreviewRoundSizePage />}
+              />
+
+              <Route
+                path="/app/estimates/preview-custom-estimate/:id"
+                element={<PreviewCustomEstimatePage />}
+              />
+
+              <Route
+                path="/app/estimates/edit-cut-size/:id"
+                element={<EditCutSizeEstimatePage />}
+              />
+
+              <Route
+                path="/app/estimates/edit-round-size/:id"
+                element={<EditRoundSizeEstimatePage />}
+              />
+
+              <Route
+                path="/app/estimates/edit-custom-estimate/:id"
+                element={<EditCustomEstimatePage />}
+              />
+
+              <Route
+                path="/app/delivery-checklist"
+                element={<DeliveryChecklistPage />}
+              />
+
+              <Route
+                path="/app/delivery-checklist/:type/:id"
+                element={<DeliveryChecklistDetailPage />}
+              />
+
+              <Route
+                path="/app/settings"
+                element={<SettingsPage />}
+              />
+
+              <Route
+                path="/app/customers"
+                element={<Customers />}
+              />
+
+              <Route
+                path="/app/support"
+                element={<CustomerSupportPage />}
+              />
+            </Route>
           </Route>
         </Route>
 

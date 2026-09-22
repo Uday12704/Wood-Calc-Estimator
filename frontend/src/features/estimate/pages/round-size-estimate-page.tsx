@@ -12,10 +12,6 @@ import type {
 } from "../types";
 
 import {
-  generateEstimateNumber,
-} from "../utils/estimate-number";
-
-import {
   getTodayDate,
 } from "../utils/date";
 import { RoundSizeItemsTable } from "../components/round-size-items-table";
@@ -32,6 +28,7 @@ import { ShareEstimateDialog } from "../components/share-estimate-dialog";
 import { RoundSizeEstimatePdf } from "../pdf/round-size-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
 import { useAuth } from "@/features/auth/auth-context";
+import { commitEstimateUsage, prepareEstimateCreation } from "@/features/subscription/subscription-creation-service";
 
 export function RoundSizeEstimatePage() {
   const { user } = useAuth();
@@ -39,8 +36,7 @@ export function RoundSizeEstimatePage() {
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
       documentTitle: "Estimate",
-      estimateNumber:
-        generateEstimateNumber(),
+      estimateNumber: "",
       date: getTodayDate(),
       partyName: "",
       contactNumber: "",
@@ -368,51 +364,99 @@ export function RoundSizeEstimatePage() {
             
       <EstimateActions
         onSave={() => {
-          if (!validateEstimate()) {
-            return;
-          }
-          const estimate =
-            buildEstimate(header.status);
+            if (!validateEstimate()) {
+              return;
+            }
 
-            updateStatus(header.status);
+            try {
+              const creation = prepareEstimateCreation(user!.accountId);
 
-            saveRoundEstimate(user!.accountId, estimate);
-            toast.success("Estimate saved.");
-            navigate(
-              `/app/estimates/history`,
-            );
-        }}
+              const estimate = {
+                ...buildEstimate(header.status),
+                estimateNumber: creation.estimateNumber,
+              };
+
+              saveRoundEstimate(user!.accountId, estimate);
+
+              commitEstimateUsage(
+                user!.accountId,
+                creation.periodStartDate,
+              );
+
+              updateStatus(header.status);
+              toast.success("Estimate saved.");
+              navigate("/app/estimates/history");
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : "Unable to save estimate.",
+              );
+            }
+          }}
 
         onSaveDraft={() => {
           if (!validateEstimate()) {
             return;
           }
-          const estimate =
-            buildEstimate("ON_HOLD");
 
-            updateStatus("ON_HOLD");
+          try {
+            const creation = prepareEstimateCreation(user!.accountId);
+
+            const estimate = {
+              ...buildEstimate("ON_HOLD"),
+              estimateNumber: creation.estimateNumber,
+            };
 
             saveRoundEstimate(user!.accountId, estimate);
-            toast.success("Estimate saved as draft.");
-            navigate(
-              `/app/estimates/history`,
+
+            commitEstimateUsage(
+              user!.accountId,
+              creation.periodStartDate,
             );
+
+            updateStatus("ON_HOLD");
+            toast.success("Estimate saved as draft.");
+            navigate("/app/estimates/history");
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Unable to save estimate.",
+            );
+          }
         }}
 
         onConfirm={() => {
           if (!validateEstimate()) {
             return;
           }
-          const estimate =
-            buildEstimate("CONFIRMED");
 
-            updateStatus("CONFIRMED");
+          try {
+            const creation = prepareEstimateCreation(user!.accountId);
+
+            const estimate = {
+              ...buildEstimate("CONFIRMED"),
+              estimateNumber: creation.estimateNumber,
+            };
 
             saveRoundEstimate(user!.accountId, estimate);
-            toast.success("Estimate marked as confirmed.");
-            navigate(
-              `/app/estimates/history`,
+
+            commitEstimateUsage(
+              user!.accountId,
+              creation.periodStartDate,
             );
+
+            updateStatus("CONFIRMED");
+            toast.success("Estimate marked as confirmed.");
+            navigate("/app/estimates/history");
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Unable to save estimate.",
+            );
+          }
         }}
 
         onShare={() => {

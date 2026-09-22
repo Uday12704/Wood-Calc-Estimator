@@ -4,8 +4,6 @@ import { EstimateHeaderForm, } from "../components/estimate-header-form";
 
 import type { CustomEstimateItem, EstimateHeader, OtherCharge, SavedCustomEstimate } from "../types";
 
-import { generateEstimateNumber, } from "../utils/estimate-number";
-
 import { getTodayDate, } from "../utils/date";
 import { EstimateNotes } from "../components/estimate-notes";
 import { EstimateActions } from "../components/estimate-actions";
@@ -19,6 +17,7 @@ import { CustomEstimateBottomSection } from "../components/custom-bottom-section
 import { CustomEstimatePdf } from "../pdf/custom-estimate-pdf";
 import { pdf } from "@react-pdf/renderer";
 import { useAuth } from "@/features/auth/auth-context";
+import { commitEstimateUsage, prepareEstimateCreation } from "@/features/subscription/subscription-creation-service";
 
 export function CustomEstimatePage() {
   const { user } = useAuth();
@@ -26,8 +25,7 @@ export function CustomEstimatePage() {
   const [header, setHeader] =
     useState<EstimateHeader>(() => ({
       documentTitle: "Estimate",
-      estimateNumber:
-        generateEstimateNumber(),
+      estimateNumber: "",
       date: getTodayDate(),
       partyName: "",
       contactNumber: "",
@@ -323,49 +321,86 @@ export function CustomEstimatePage() {
       
       <EstimateActions
         onSave={() => {
-          if (!validateEstimate()) {
-            return;
-          }
-          const estimate =
-            buildEstimate(header.status);
+          try {
+            const creation = prepareEstimateCreation(user!.accountId);
 
-            updateStatus(header.status);
+            const estimate = {
+              ...buildEstimate(header.status),
+              estimateNumber: creation.estimateNumber,
+            };
 
             saveCustomEstimate(user!.accountId, estimate);
-            toast.success("Estimate saved.");
-            navigate(
-              `/app/estimates/history`,
+
+            commitEstimateUsage(
+              user!.accountId,
+              creation.periodStartDate,
             );
-        }}
-        onSaveDraft={() => {
-          if (!validateEstimate()) {
-            return;
+
+            updateStatus(header.status);
+            toast.success("Estimate saved.");
+            navigate("/app/estimates/history");
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Unable to save estimate.",
+            );
           }
-          const estimate =
-            buildEstimate("ON_HOLD");
+        }}
 
-          updateStatus("ON_HOLD");
+        onSaveDraft={() => {
+          try {
+            const creation = prepareEstimateCreation(user!.accountId);
 
-          saveCustomEstimate(user!.accountId, estimate);
-          toast.success("Estimate saved as draft.");
-          navigate(
-            `/app/estimates/history`,
-          );
+            const estimate = {
+              ...buildEstimate("ON_HOLD"),
+              estimateNumber: creation.estimateNumber,
+            };
+
+            saveCustomEstimate(user!.accountId, estimate);
+
+            commitEstimateUsage(
+              user!.accountId,
+              creation.periodStartDate,
+            );
+
+            updateStatus("ON_HOLD");
+            toast.success("Estimate saved as draft.");
+            navigate("/app/estimates/history");
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Unable to save estimate.",
+            );
+          }
         }}
         onConfirm={() => {
-          if (!validateEstimate()) {
-            return;
+          try {
+            const creation = prepareEstimateCreation(user!.accountId);
+
+            const estimate = {
+              ...buildEstimate("CONFIRMED"),
+              estimateNumber: creation.estimateNumber,
+            };
+
+            saveCustomEstimate(user!.accountId, estimate);
+
+            commitEstimateUsage(
+              user!.accountId,
+              creation.periodStartDate,
+            );
+
+            updateStatus("CONFIRMED");
+            toast.success("Estimate marked as confirmed.");
+            navigate("/app/estimates/history");
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Unable to save estimate.",
+            );
           }
-          const estimate =
-            buildEstimate("CONFIRMED");
-
-          updateStatus("CONFIRMED");
-
-          saveCustomEstimate(user!.accountId, estimate);
-          toast.success("Estimate marked as confirmed.");
-          navigate(
-            `/app/estimates/history`,
-          );
         }}
         onShare={() => {
           setShareOpen(true);

@@ -43,8 +43,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/features/auth/auth-context";
-import { generateEstimateNumber } from "../utils/estimate-number";
-import { getTodayDate } from "../utils/date";
+import { commitEstimateUsage, prepareEstimateCreation } from "@/features/subscription/subscription-creation-service";
 
 type EstimateUnion =
   | ({ kind: "CUT" } & SavedEstimate)
@@ -236,98 +235,99 @@ export function EstimateHistoryPage() {
     );
   }
 
-  function handleCopy(
-    estimate: EstimateUnion,
-  ) {
-    if (estimate.kind === "CUT") {
-    const copiedEstimate: SavedEstimate = {
-      ...estimate,
+  
+  function handleCopy(estimate: EstimateUnion) {
+    if (!user?.accountId) {
+      toast.error("Unable to identify the current account.");
+      return;
+    }
 
-      id: crypto.randomUUID(),
-      estimateNumber: generateEstimateNumber(),
-      date: getTodayDate(),
+    try {
+      const creation = prepareEstimateCreation(user.accountId);
+      const now = new Date().toISOString();
 
-      status: "ON_HOLD",
+      if (estimate.kind === "CUT") {
+        const copiedEstimate: SavedEstimate = {
+          ...estimate,
+          id: crypto.randomUUID(),
+          accountId: user.accountId,
+          estimateNumber: creation.estimateNumber,
+          date: new Date().toISOString().slice(0, 10),
+          status: "ON_HOLD",
+          createdBy: user.name,
+          createdAt: now,
+          updatedAt: now,
+        };
 
-      createdBy: user?.name ?? estimate.createdBy,
+        saveEstimate(user.accountId, copiedEstimate);
 
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+        commitEstimateUsage(
+          user.accountId,
+          creation.periodStartDate,
+        );
 
-    saveEstimate(
-      estimate.accountId,
-      copiedEstimate,
-    );
+        setEstimates((current) => [
+          { ...copiedEstimate, kind: "CUT" },
+          ...current,
+        ]);
+      } else if (estimate.kind === "ROUND") {
+        const copiedEstimate: SavedRoundSizeEstimate = {
+          ...estimate,
+          id: crypto.randomUUID(),
+          accountId: user.accountId,
+          estimateNumber: creation.estimateNumber,
+          date: new Date().toISOString().slice(0, 10),
+          status: "ON_HOLD",
+          createdBy: user.name,
+          createdAt: now,
+          updatedAt: now,
+        };
 
-    setEstimates((current) => [
-      {
-        ...copiedEstimate,
-        kind: "CUT",
-      },
-      ...current,
-    ]);
-  } else if (estimate.kind === "ROUND") {
-    const copiedEstimate: SavedRoundSizeEstimate = {
-      ...estimate,
+        saveRoundEstimate(user.accountId, copiedEstimate);
 
-      id: crypto.randomUUID(),
-      estimateNumber: generateEstimateNumber(),
-      date: getTodayDate(),
+        commitEstimateUsage(
+          user.accountId,
+          creation.periodStartDate,
+        );
 
-      status: "ON_HOLD",
+        setEstimates((current) => [
+          { ...copiedEstimate, kind: "ROUND" },
+          ...current,
+        ]);
+      } else {
+        const copiedEstimate: SavedCustomEstimate = {
+          ...estimate,
+          id: crypto.randomUUID(),
+          accountId: user.accountId,
+          estimateNumber: creation.estimateNumber,
+          date: new Date().toISOString().slice(0, 10),
+          status: "ON_HOLD",
+          createdBy: user.name,
+          createdAt: now,
+          updatedAt: now,
+        };
 
-      createdBy: user?.name ?? estimate.createdBy,
+        saveCustomEstimate(user.accountId, copiedEstimate);
 
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+        commitEstimateUsage(
+          user.accountId,
+          creation.periodStartDate,
+        );
 
-    saveRoundEstimate(
-      estimate.accountId,
-      copiedEstimate,
-    );
+        setEstimates((current) => [
+          { ...copiedEstimate, kind: "CUSTOM" },
+          ...current,
+        ]);
+      }
 
-    setEstimates((current) => [
-      {
-        ...copiedEstimate,
-        kind: "ROUND",
-      },
-      ...current,
-    ]);
-  } else {
-    const copiedEstimate: SavedCustomEstimate = {
-      ...estimate,
-
-      id: crypto.randomUUID(),
-      estimateNumber: generateEstimateNumber(),
-      date: getTodayDate(),
-
-      status: "ON_HOLD",
-
-      createdBy: user?.name ?? estimate.createdBy,
-
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    saveCustomEstimate(
-      estimate.accountId,
-      copiedEstimate,
-    );
-
-    setEstimates((current) => [
-      {
-        ...copiedEstimate,
-        kind: "CUSTOM",
-      },
-      ...current,
-    ]);
-  }
-
-    toast.success(
-      "Estimate copied successfully.",
-    );
+      toast.success("Estimate copied successfully.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to copy estimate.",
+      );
+    }
   }
 
   return (
