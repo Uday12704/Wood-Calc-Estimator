@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronRight, ClipboardCheck, Clock3, ListChecks, Search, X } from "lucide-react";
+import { CheckCircle2, ChevronRight, ClipboardCheck, Clock3, ListChecks, Search, User, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import { getDeliveryProgress } from "../services/delivery-checklist-storage";
 import { Badge } from "@/components/ui/badge";
 import type { DeliveryEstimate } from "../types";
 import { useAuth } from "@/features/auth/auth-context";
+import { formatDate } from "@/lib/formatters";
 
 
 function getTotalDeliveryItems(
@@ -294,8 +295,8 @@ export function DeliveryChecklistPage() {
                     <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                         <h2 className="text-base font-semibold flex items-center">
-                            <ListChecks className="mr-2 size-4" />
-                            {estimate.estimateNumber}
+                            <User className="mr-2 size-4" />
+                            {estimate.partyName || "—"}
                         </h2>
 
                         <Badge
@@ -310,17 +311,17 @@ export function DeliveryChecklistPage() {
 
                         <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-muted-foreground">
                         <span>
-                            <span className="font-medium text-foreground">
-                            Party:
-                            </span>{" "}
-                            {estimate.partyName || "—"}
+                            <span className="font-medium flex items-center">
+                            <ListChecks className="mr-2 size-4" />
+                            {estimate.estimateNumber}
+                            </span>
                         </span>
 
                         <span>
                             <span className="font-medium text-foreground">
                             Date:
                             </span>{" "}
-                            {estimate.date}
+                            {formatDate(estimate.date)}
                         </span>
 
                         <span>
