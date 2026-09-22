@@ -10,7 +10,7 @@ import {
 import type {
   SavedCustomEstimate,
 } from "../types";
-import { getBusinessSettings } from "@/features/settings/services/settings-storage";
+import { getBusinessSettings, getPrintSettings } from "@/features/settings/services/settings-storage";
 
 const styles = StyleSheet.create({
   page: {
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 18,
     fontWeight: "bold",
+    fontFamily: "Helvetica",
   },
 
   companySubtitle: {
@@ -235,10 +236,8 @@ export function CustomEstimatePdf({
   estimate,
 }: CustomEstimatePdfProps) {
 
-    const business = getBusinessSettings(
-      estimate.accountId,
-    );
-
+    const business = getBusinessSettings(estimate.accountId);
+    const printSettings = getPrintSettings(estimate.accountId);
   
   return (
     <Document>
@@ -263,7 +262,14 @@ export function CustomEstimatePdf({
             )}
 
             <View>
-              <Text style={styles.companyName}>
+              <Text
+                style={[
+                  styles.companyName,
+                  {
+                    fontFamily: printSettings.businessNameFont,
+                  },
+                ]}
+              >
                 {business.businessName || " "}
               </Text>
 
@@ -676,27 +682,17 @@ export function CustomEstimatePdf({
               TERMS
               ============================== */}
 
-          <View style={styles.terms}>
+          {printSettings.termsAndConditions.trim() && (
+            <View style={styles.terms}>
+              <Text style={styles.termsTitle}>
+                TERMS & CONDITIONS
+              </Text>
 
-            <Text style={styles.termsTitle}>
-              TERMS
-            </Text>
-
-            <Text style={styles.term}>
-              1. Goods once sold will not be
-              taken back.
-            </Text>
-
-            <Text style={styles.term}>
-              2. Payment due on delivery unless
-              otherwise agreed.
-            </Text>
-
-            <Text style={styles.term}>
-              3. Subject to local jurisdiction.
-            </Text>
-
-          </View>
+              <Text style={styles.term}>
+                {printSettings.termsAndConditions}
+              </Text>
+            </View>
+          )}
 
 
           {/* ==============================

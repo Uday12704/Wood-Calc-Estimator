@@ -537,33 +537,33 @@ export default function Customers() {
                             {/* Estimate Info */}
                             <div className="space-y-1">
                                 <div className="flex flex-wrap items-center gap-2">
-                                <h4 className="font-semibold">
-                                    #
-                                    {
-                                    estimate.estimateNumber
-                                    }
-                                </h4>
+                                    <h4 className="font-semibold">
+                                        #
+                                        {
+                                        estimate.estimateNumber
+                                        }
+                                    </h4>
 
-                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
-                                    {estimate.type ===
-                                    "CUT_SIZE"
-                                    ? "Cut Size"
-                                    : estimate.type ===
-                                        "ROUND_SIZE"
-                                        ? "Round Size"
-                                        : "Custom"}
-                                </span>
+                                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                                        {estimate.type ===
+                                        "CUT_SIZE"
+                                        ? "Cut Size"
+                                        : estimate.type ===
+                                            "ROUND_SIZE"
+                                            ? "Round Size"
+                                            : "Custom"}
+                                    </span>
 
-                                <Badge variant={estimate.status === "CONFIRMED" ? "success" : "warning"}>
-                                    {estimate.status ===
-                                    "CONFIRMED"
-                                    ? "Confirmed"
-                                    : "On Hold"}
-                                </Badge>
+                                    <Badge variant={estimate.status === "CONFIRMED" ? "success" : "warning"}>
+                                        {estimate.status ===
+                                        "CONFIRMED"
+                                        ? "Confirmed"
+                                        : "On Hold"}
+                                    </Badge>
                                 </div>
                                 <div className="flex gap-5">
                                     <p className="text-sm text-muted-foreground">
-                                        Ref: {estimate.reference}
+                                        Ref: <span className="font-semibold text-primary">{estimate.reference}</span>
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         Date: {formatDate(estimate.date)}
@@ -1030,10 +1030,7 @@ export default function Customers() {
                             <div className="space-y-1">
                                 <div className="flex flex-wrap items-center gap-2">
                                 <h4 className="font-semibold">
-                                    #
-                                    {
-                                    estimate.estimateNumber
-                                    }
+                                    {estimate.partyName || "Unnamed"}
                                 </h4>
 
                                 <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
@@ -1058,10 +1055,10 @@ export default function Customers() {
 
                                 <div className="flex gap-5">
                                     <p className="text-sm text-muted-foreground">
-                                        {estimate.partyName || "Unnamed"}
+                                        #{estimate.estimateNumber}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        Ref: {estimate.reference}
+                                        Ref: <span className="font-semibold text-primary">{estimate.reference}</span>
                                     </p>
                                 </div>
 
