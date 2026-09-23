@@ -202,16 +202,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 3,
+    fontSize: 9
   },
 
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 5,
+    marginVertical: 5,
     paddingTop: 6,
     borderTopWidth: 1,
     borderTopColor: "#222",
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "bold",
   },
 
@@ -227,6 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 3,
     color: "#555",
+    fontSize: 8
   },
 
   footer: {

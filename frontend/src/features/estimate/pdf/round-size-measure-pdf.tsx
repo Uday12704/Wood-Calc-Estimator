@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 3,
+    fontSize: 9
   },
 
   pricingLabel: {
@@ -183,6 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 3,
+    fontSize: 9
   },
 
   footer: {

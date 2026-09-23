@@ -220,6 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 3,
+    fontSize: 9
   },
 
   additionalRow: {
@@ -257,11 +258,11 @@ const styles = StyleSheet.create({
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 5,
+    marginVertical: 5,
     paddingTop: 6,
     borderTopWidth: 1,
     borderTopColor: "#222",
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "bold",
   },
 
@@ -271,6 +272,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#ddd",
     color: "#555",
+    fontSize: 8
   },
 
   otherChargesTitle: {
@@ -657,7 +659,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. {estimate.totals.subtotal.toFixed(2)}
+                Rs.{" "}{estimate.totals.subtotal.toFixed(2)}
               </Text>
             </View>
           }
@@ -830,7 +832,7 @@ export function CutSizeEstimatePdf({
                 </Text>
 
                 <Text>
-                  Rs. {estimate.totals.additionalSubtotal.toFixed(2)}
+                  Rs.{" "}{estimate.totals.additionalSubtotal.toFixed(2)}
                 </Text>
               </View>
 
@@ -842,7 +844,7 @@ export function CutSizeEstimatePdf({
                   </Text>
 
                   <Text>
-                    Rs. {estimate.totals.additionalGstAmount.toFixed(2)}
+                    Rs.{" "}{estimate.totals.additionalGstAmount.toFixed(2)}
                   </Text>
                 </View>
               )}
@@ -854,7 +856,8 @@ export function CutSizeEstimatePdf({
                 </Text>
 
                 <Text>
-                  Rs. {estimate.totals.additionalTotal.toFixed(2)}
+                  Rs.{" "}
+                  {estimate.totals.additionalTotal.toFixed(2)}
                 </Text>
               </View>
             </View>
@@ -895,7 +898,7 @@ export function CutSizeEstimatePdf({
                     </Text>
 
                     <Text>
-                      Rs. 
+                      Rs.{" "}
                       {Number(
                         charge.amount,
                       ).toFixed(2)}
@@ -918,7 +921,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.subtotal.toFixed(
                   2,
                 )}
@@ -934,7 +937,7 @@ export function CutSizeEstimatePdf({
                 </Text>
 
                 <Text>
-                  Rs. 
+                  Rs.{" "}
                   {estimate.totals.gstAmount.toFixed(
                     2,
                   )}
@@ -951,7 +954,7 @@ export function CutSizeEstimatePdf({
                 </Text>
 
                 <Text>
-                  Rs. 
+                  Rs.{" "}
                   {estimate.totals.additionalTotal.toFixed(
                     2,
                   )}
@@ -968,7 +971,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.totalOtherCharges.toFixed(
                   2,
                 )}
@@ -984,7 +987,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                - Rs. 
+                - Rs.{" "}
                 {estimate.totals.discountAmount.toFixed(
                   2,
                 )}
@@ -1000,7 +1003,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. {" "}
+                Rs.{" "}
                 {estimate.totals.grandTotal.toFixed(
                   2,
                 )}
@@ -1016,7 +1019,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.advancePaid.toFixed(
                   2,
                 )}
@@ -1032,7 +1035,7 @@ export function CutSizeEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.balanceDue.toFixed(
                   2,
                 )}

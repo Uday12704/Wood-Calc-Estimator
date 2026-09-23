@@ -232,6 +232,7 @@ export function AppSidebar({
             Expires on {formatDate(subscription.expiryDate)}
           </p>
         </div>
+        <p className="ml-2 text-[10px] text-muted-foreground group-data-[collapsible=icon]:hidden">© 2026 Timest. All rights reserved.</p>
       </SidebarFooter>
     </Sidebar>
   );

@@ -175,17 +175,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 3,
+    fontSize: 9
   },
 
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 5,
+    marginVertical: 5,
     paddingTop: 6,
     paddingBottom: 3,
     borderTopWidth: 1,
     borderTopColor: "#222",
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "bold",
   },
 
@@ -545,7 +546,7 @@ export function CustomEstimatePdf({
                     </Text>
 
                     <Text>
-                      Rs. 
+                      Rs.{" "}
                       {Number(
                         charge.amount,
                       ).toFixed(2)}
@@ -568,7 +569,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.subtotal.toFixed(
                   2,
                 )}
@@ -584,7 +585,7 @@ export function CustomEstimatePdf({
                 </Text>
 
                 <Text>
-                  Rs. 
+                  Rs.{" "}
                   {estimate.totals.gstAmount.toFixed(
                     2,
                   )}
@@ -601,7 +602,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.totalOtherCharges.toFixed(
                   2,
                 )}
@@ -617,7 +618,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                - Rs. 
+                - Rs.{" "}
                 {estimate.totals.discountAmount.toFixed(
                   2,
                 )}
@@ -649,7 +650,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.advancePaid.toFixed(
                   2,
                 )}
@@ -665,7 +666,7 @@ export function CustomEstimatePdf({
               </Text>
 
               <Text>
-                Rs. 
+                Rs.{" "}
                 {estimate.totals.balanceDue.toFixed(
                   2,
                 )}
