@@ -28,7 +28,7 @@ function createEmptyItem(): WoodItem {
   return {
     id: crypto.randomUUID(),
 
-    breadth: "",
+    width: "",
     height: "",
 
     woodType: "",
@@ -68,7 +68,7 @@ export function WoodItemsTable({
 
     setTimeout(() => {
       inputRefs.current[
-        `${newItem.id}-breadth`
+        `${newItem.id}-width`
       ]?.focus();
     }, 0);
   }
@@ -111,8 +111,8 @@ export function WoodItemsTable({
 
         const calculation =
           calculateWoodItem({
-            breadth:
-              updatedItem.breadth,
+            width:
+              updatedItem.width,
             height:
               updatedItem.height,
             length:
@@ -148,7 +148,7 @@ export function WoodItemsTable({
    */
   if (
     (event.key === "ArrowUp" || event.key === "ArrowDown") &&
-    ["breadth", "height", "length", "quantity", "pricePerUnit"].includes(field)
+    ["width", "height", "length", "quantity", "pricePerUnit"].includes(field)
   ) {
     event.preventDefault();
     return;
@@ -175,7 +175,7 @@ export function WoodItemsTable({
     const fieldOrder: (
       keyof WoodItem
     )[] = [
-      "breadth",
+      "width",
       "height",
       "woodType",
       "pricePerUnit",
@@ -224,7 +224,7 @@ export function WoodItemsTable({
     * TAB
     *
     * When Tab is pressed from Quantity,
-    * create a new row and focus its Breadth.
+    * create a new row and focus its Width.
     */
     if (
       event.key === "Tab" &&
@@ -252,7 +252,7 @@ export function WoodItemsTable({
 
         const calculation =
           calculateWoodItem({
-            breadth: currentItem.breadth,
+            width: currentItem.width,
             height: currentItem.height,
             length: currentItem.length,
             quantity: 1,
@@ -270,7 +270,7 @@ export function WoodItemsTable({
           * Copy the values from the
           * previous row.
           */
-          breadth: currentItem.breadth,
+          width: currentItem.width,
           height: currentItem.height,
           woodType: currentItem.woodType,
           pricePerUnit:
@@ -304,13 +304,13 @@ export function WoodItemsTable({
 
       /*
       * If there is already another row,
-      * move directly to its Breadth.
+      * move directly to its Width.
       */
       const nextItem =
         items[currentIndex + 1];
 
       inputRefs.current[
-        `${nextItem.id}-breadth`
+        `${nextItem.id}-width`
       ]?.focus();
 
       return;
@@ -353,7 +353,7 @@ export function WoodItemsTable({
         items[currentIndex + 1];
 
       inputRefs.current[
-        `${nextItem.id}-breadth`
+        `${nextItem.id}-width`
       ]?.focus();
 
       return;
@@ -366,7 +366,7 @@ export function WoodItemsTable({
     const fieldOrder: (
       keyof WoodItem
     )[] = [
-      "breadth",
+      "width",
       "height",
       "woodType",
       "pricePerUnit",
@@ -435,7 +435,7 @@ export function WoodItemsTable({
               </th>
 
               <th className="border-b px-3 py-3 text-left text-xs font-semibold">
-                BREADTH (IN)
+                WIDTH (IN)
               </th>
 
               <th className="border-b px-3 py-3 text-left text-xs font-semibold">
@@ -518,24 +518,24 @@ export function WoodItemsTable({
                       {index + 1}
                     </td>
 
-                    {/* BREADTH */}
+                    {/* WIDTH */}
 
                     <td className="px-2 py-2">
                       <Input
                         ref={(element) =>
                           setInputRef(
-                            `${item.id}-breadth`,
+                            `${item.id}-width`,
                             element,
                           )
                         }
                         type="number"
                         min="0"
                         step="any"
-                        value={item.breadth}
+                        value={item.width}
                         onChange={(event) =>
                           updateItem(
                             item.id,
-                            "breadth",
+                            "width",
                             event.target
                               .value === ""
                               ? ""
@@ -549,7 +549,7 @@ export function WoodItemsTable({
                           handleKeyDown(
                             event,
                             item.id,
-                            "breadth",
+                            "width",
                           )
                         }
                         className="h-9 min-w-[85px]"

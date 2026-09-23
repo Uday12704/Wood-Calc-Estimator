@@ -3,7 +3,7 @@ import type {
 } from "../types";
 
 interface WoodCalculationInput {
-  breadth: number | "";
+  width: number | "";
   height: number | "";
   length: number | "";
   quantity: number | "";
@@ -20,14 +20,14 @@ function toNumber(
 export function calculateWoodItem(
   input: WoodCalculationInput,
 ) {
-  const breadth = toNumber(input.breadth);
+  const width = toNumber(input.width);
   const height = toNumber(input.height);
   const length = toNumber(input.length);
   const quantity = toNumber(input.quantity);
   const price = toNumber(input.pricePerUnit);
 
   if (
-    breadth <= 0 ||
+    width <= 0 ||
     height <= 0 ||
     length <= 0 ||
     quantity <= 0
@@ -44,7 +44,7 @@ export function calculateWoodItem(
     /*
      * CFT
      *
-     * Breadth(in) × Height(in) × Length(ft)
+     * Width(in) × Height(in) × Length(ft)
      * --------------------------------------
      *                 144
      *
@@ -52,7 +52,7 @@ export function calculateWoodItem(
      */
 
     total =
-      (breadth *
+      (width *
         height *
         length *
         quantity) /
@@ -71,7 +71,7 @@ export function calculateWoodItem(
      */
 
     total =
-      (breadth *
+      (width *
         height *
         length *
         quantity) /

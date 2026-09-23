@@ -325,7 +325,7 @@ export function PreviewCutSizePage() {
                     </th>
 
                     <th className="px-3 py-2 text-left">
-                      Breadth (in)
+                      Width (in)
                     </th>
 
                     <th className="px-3 py-2 text-left">
@@ -382,7 +382,7 @@ export function PreviewCutSizePage() {
                                 </td>
 
                                 <td className="px-3 py-3">
-                                    {item.breadth}
+                                    {item.width}
                                 </td>
 
                                 <td className="px-3 py-3">

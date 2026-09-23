@@ -491,7 +491,7 @@ export function DeliveryChecklistDetailPage() {
                             </td>
 
                             <td className="px-4 py-3">
-                              {item.breadth} x{" "}
+                              {item.width} x{" "}
                               {item.height}
                             </td>
 

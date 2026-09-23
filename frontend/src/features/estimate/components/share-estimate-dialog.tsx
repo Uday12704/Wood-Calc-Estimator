@@ -180,7 +180,7 @@ export function ShareEstimateDialog({
             `${index + 1}. ${
               item.woodType || "Wood"
             } | ${
-              item.breadth
+              item.width
             } x ${
               item.height
             } | ${

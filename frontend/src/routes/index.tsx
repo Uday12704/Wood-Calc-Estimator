@@ -39,6 +39,7 @@ import AdminSupportDetailsPage from "@/features/admin/pages/admin-support-detail
 import AdminLayout from "@/layouts/admin-layout";
 import { EstimateCreationGuard } from "@/features/estimate/components/estimate-creation-guard";
 import { SubscriptionExpiryGuard } from "@/features/subscription/components/subscription-expiry-guard";
+import AdminNotificationsPage from "@/features/admin/pages/admin-notifications-page";
 
 export function AppRoutes() {
   return (
@@ -212,6 +213,11 @@ export function AppRoutes() {
             <Route
               path="/admin/support/:requestId"
               element={<AdminSupportDetailsPage />}
+            />
+
+            <Route
+              path="/admin/notifications"
+              element={<AdminNotificationsPage />}
             />
           </Route>
         </Route>

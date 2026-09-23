@@ -37,7 +37,7 @@ export interface WoodCategory {
 export interface WoodItem {
   id: string;
 
-  breadth: number | "";
+  width: number | "";
   height: number | "";
 
   woodType: string;

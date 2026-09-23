@@ -5,27 +5,27 @@ import { Input } from "@/components/ui/input";
 import { calculateCft } from "@/features/calculator/utils/calculator-utils";
 
 export default function CftCalculator() {
-  const [breadth, setBreadth] = useState("");
+  const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
   const [length, setLength] = useState("");
   const [quantity, setQuantity] = useState("1");
 
   const totalCft = useMemo(() => {
     return calculateCft({
-      breadth: Number(breadth),
+      width: Number(width),
       height: Number(height),
       length: Number(length),
       quantity: Number(quantity),
     });
   }, [
-    breadth,
+    width,
     height,
     length,
     quantity,
   ]);
 
   function clearCalculator() {
-    setBreadth("");
+    setWidth("");
     setHeight("");
     setLength("");
     setQuantity("1");
@@ -46,22 +46,22 @@ export default function CftCalculator() {
 
       <div className="space-y-2">
         <label
-          htmlFor="cft-breadth"
+          htmlFor="cft-width"
           className="text-sm font-medium"
         >
-          Breadth (in)
+          Width (in)
         </label>
 
         <Input
-          id="cft-breadth"
+          id="cft-width"
           type="number"
           min="0"
           step="any"
           inputMode="decimal"
-          placeholder="Enter breadth"
-          value={breadth}
+          placeholder="Enter width"
+          value={width}
           onChange={(event) =>
-            setBreadth(event.target.value)
+            setWidth(event.target.value)
           }
           className="bg-orange-100/30"
         />
@@ -146,7 +146,7 @@ export default function CftCalculator() {
         </p>
 
         <p className="mt-2 text-xs text-muted-foreground">
-          ({breadth || 0} x {height || 0} x{" "}
+          ({width || 0} x {height || 0} x{" "}
           {length || 0} x {quantity || 0}) ÷ 144
         </p>
       </div>

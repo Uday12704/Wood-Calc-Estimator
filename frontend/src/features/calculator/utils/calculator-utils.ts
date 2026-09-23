@@ -146,20 +146,20 @@ export function formatCalculatorNumber(
 // ============================================================
 
 export interface CftCalculationInput {
-  breadth: number;
+  width: number;
   height: number;
   length: number;
   quantity: number;
 }
 
 export function calculateCft({
-  breadth,
+  width,
   height,
   length,
   quantity,
 }: CftCalculationInput): number {
   if (
-    !Number.isFinite(breadth) ||
+    !Number.isFinite(width) ||
     !Number.isFinite(height) ||
     !Number.isFinite(length) ||
     !Number.isFinite(quantity)
@@ -168,7 +168,7 @@ export function calculateCft({
   }
 
   if (
-    breadth <= 0 ||
+    width <= 0 ||
     height <= 0 ||
     length <= 0 ||
     quantity <= 0
@@ -177,7 +177,7 @@ export function calculateCft({
   }
 
   return (
-    (breadth *
+    (width *
       height *
       length *
       quantity) /

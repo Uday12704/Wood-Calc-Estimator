@@ -1,9 +1,12 @@
 import {
+  AlertTriangle,
   Bell,
   BellRing,
   CheckCheck,
+  Megaphone,
   ShieldAlert,
   Trash2,
+  UserCog,
   X,
 } from "lucide-react";
 
@@ -215,7 +218,7 @@ export function NotificationsPage() {
                   <div className="flex gap-3">
                     {/* Icon */}
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/5">
-                      {notification.priority === "HIGH" ? <ShieldAlert className="size-4 text-red-500" /> : <Bell className="size-4 text-yellow-500" />}
+                      {notification.type === "SYSTEM" ? <AlertTriangle className="size-4 text-red-500" /> : notification.type === "ANNOUNCEMENT" ?  <Megaphone className="size-4 text-blue-500" /> : notification.type === "SUPPORT" ? <UserCog className="size-4" /> : <Bell className="size-4 text-yellow-500" />}
                     </div>
 
                     {/* Content */}

@@ -4,6 +4,7 @@ import {
   Users,
   CreditCard,
   LifeBuoy,
+  Bell,
 } from "lucide-react";
 
 import {
@@ -42,6 +43,11 @@ const adminNavigationGroups: AdminNavigationGroup[] = [
         title: "Dashboard",
         url: "/admin/dashboard",
         icon: LayoutDashboard,
+      },
+      {
+        title: "Notifications",
+        url: "/admin/notifications",
+        icon: Bell,
       },
     ],
   },

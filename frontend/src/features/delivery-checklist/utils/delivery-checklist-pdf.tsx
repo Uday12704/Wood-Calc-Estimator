@@ -543,7 +543,7 @@ export function DeliveryChecklistPdf({
                           styles.center,
                         ]}
                       >
-                        {item.breadth} x{" "}
+                        {item.width} x{" "}
                         {item.height}
                       </Text>
 

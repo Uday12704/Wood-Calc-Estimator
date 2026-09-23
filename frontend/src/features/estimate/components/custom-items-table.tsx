@@ -126,7 +126,7 @@ export function CustomItemsTable({
     * TAB
     *
     * When Tab is pressed from Quantity,
-    * create a new row and focus its Breadth.
+    * create a new row and focus its Width.
     */
     if (
       event.key === "Tab" &&

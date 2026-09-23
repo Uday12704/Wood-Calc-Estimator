@@ -592,7 +592,7 @@ export function CutSizeEstimatePdf({
                       styles.cellCenter,
                     ]}
                   >
-                    {item.breadth} x {item.height}
+                    {item.width} x {item.height}
                   </Text>
 
                   <Text

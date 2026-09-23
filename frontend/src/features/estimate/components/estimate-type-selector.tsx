@@ -16,21 +16,21 @@ const estimateTypes = [
     type: "CUT_SIZE" as const,
     title: "Cut Size",
     description:
-      "Calculate wood using breadth, height, length and quantity.",
+      "Calculate wood using width, height, length and quantity.",
     image: cutSizeImg,
   },
   {
     type: "ROUND_SIZE" as const,
     title: "Round Size",
     description:
-      "Calculate round wood and logs using the required measurements.",
+      "Calculate round wood and logs by providing measurements.",
     image: roundSizeImg,
   },
   {
     type: "CUSTOM" as const,
     title: "Custom Estimate",
     description:
-      "Calculate custom estimates with your specific measurements.",
+      "Calcutate estimate of multiple commodities",
     image: customImg,
   },
 ];

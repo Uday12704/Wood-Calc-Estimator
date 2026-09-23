@@ -44,7 +44,7 @@ export function CutSizeEstimatePage() {
       {
         id: crypto.randomUUID(),
 
-        breadth: "",
+        width: "",
         height: "",
 
         woodType: "",
@@ -249,7 +249,7 @@ export function CutSizeEstimatePage() {
       if (!items.some(
         (item) =>
           item.woodType &&
-          item.breadth !== "" &&
+          item.width !== "" &&
           item.height !== "" &&
           item.length !== "",
       )) {

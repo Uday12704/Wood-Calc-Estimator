@@ -276,7 +276,7 @@ function EditCutSizeEstimateForm({
       !items.some(
         (item) =>
           item.woodType &&
-          item.breadth !== "" &&
+          item.width !== "" &&
           item.height !== "" &&
           item.length !== "",
       )
